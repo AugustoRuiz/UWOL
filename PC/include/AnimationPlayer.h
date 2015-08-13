@@ -1,0 +1,24 @@
+#pragma once
+
+#include "GameData.h"
+#include "Animation.h"
+#include "Event.h"
+
+class AnimationPlayer {
+	unsigned int _ticksSinceLastFrame;
+	Animation *_animation;
+	vector<AnimationFrame>::iterator _current;
+
+public:
+	AnimationPlayer();
+	~AnimationPlayer();
+
+	bool AnimationEnded;
+	void setAnimation(Animation &animation);
+	Frame GetCurrentFrame();
+	vector<Event> Update(Uint32 millisec);
+
+	void setFrame(unsigned int frame);
+	void setTicks(unsigned int ticks);
+};
+

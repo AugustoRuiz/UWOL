@@ -1,0 +1,207 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{11D07005-89D7-42D8-8DFF-07FBEAD3DE3D}</ProjectGuid>
+    <RootNamespace>UWOL</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>14.0.23107.0</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>bin\</OutDir>
+    <IntDir>obj\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>bin\</OutDir>
+    <IntDir>obj\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>include;ext\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>SDLmain.lib;SDL.lib;SDL_image.lib;SDL_mixer.lib;opengl32.lib;glu32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)UWOL.exe</OutputFile>
+      <AdditionalLibraryDirectories>ext\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(OutDir)UWOL.pdb</ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>include;ext\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <DisableLanguageExtensions>false</DisableLanguageExtensions>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat />
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>SDLmain.lib;SDL.lib;SDL_image.lib;SDL_mixer.lib;opengl32.lib;glu32.lib;MSVCRT.lib;MSVCPRT.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ShowProgress>NotSet</ShowProgress>
+      <OutputFile>$(OutDir)UWOL.exe</OutputFile>
+      <AdditionalLibraryDirectories>ext\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX86</TargetMachine>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Animation.cpp" />
+    <ClCompile Include="src\AnimationFrame.cpp" />
+    <ClCompile Include="src\AnimationPlayer.cpp" />
+    <ClCompile Include="src\Background.cpp" />
+    <ClCompile Include="src\Coin.cpp" />
+    <ClCompile Include="src\CollisionMap.cpp" />
+    <ClCompile Include="src\EFanty.cpp" />
+    <ClCompile Include="src\EFranky.cpp" />
+    <ClCompile Include="src\Enemigo.cpp" />
+    <ClCompile Include="src\EVampy.cpp" />
+    <ClCompile Include="src\Event.cpp" />
+    <ClCompile Include="src\EWolfy.cpp" />
+    <ClCompile Include="src\FactoriaEnemigo.cpp" />
+    <ClCompile Include="src\Frame.cpp" />
+    <ClCompile Include="src\Game.cpp" />
+    <ClCompile Include="src\GameData.cpp" />
+    <ClCompile Include="src\GLFuncs.cpp" />
+    <ClCompile Include="src\Graphics.cpp" />
+    <ClCompile Include="src\InputManager.cpp" />
+    <ClCompile Include="src\jsoncpp.cpp" />
+    <ClCompile Include="src\Log.cpp" />
+    <ClCompile Include="src\MusicManager.cpp" />
+    <ClCompile Include="src\NileEngine.cpp" />
+    <ClCompile Include="src\Plataforma.cpp" />
+    <ClCompile Include="src\Player.cpp" />
+    <ClCompile Include="src\Portada.cpp" />
+    <ClCompile Include="src\Presentacion.cpp" />
+    <ClCompile Include="src\Room.cpp" />
+    <ClCompile Include="src\Scanlines.cpp" />
+    <ClCompile Include="src\Stage.cpp" />
+    <ClCompile Include="src\StaticInitalizers.cpp" />
+    <ClCompile Include="src\stdafx.cpp" />
+    <ClCompile Include="src\TextRenderer.cpp" />
+    <ClCompile Include="src\TextureMgr.cpp" />
+    <ClCompile Include="src\TimerFuncs.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\Animation.h" />
+    <ClInclude Include="include\AnimationFrame.h" />
+    <ClInclude Include="include\AnimationPlayer.h" />
+    <ClInclude Include="include\Background.h" />
+    <ClInclude Include="include\Coin.h" />
+    <ClInclude Include="include\CollisionMap.h" />
+    <ClInclude Include="include\EFanty.h" />
+    <ClInclude Include="include\EFranky.h" />
+    <ClInclude Include="include\Enemigo.h" />
+    <ClInclude Include="include\EVampy.h" />
+    <ClInclude Include="include\Event.h" />
+    <ClInclude Include="include\EWolfy.h" />
+    <ClInclude Include="include\FactoriaEnemigo.h" />
+    <ClInclude Include="include\Frame.h" />
+    <ClInclude Include="include\Game.h" />
+    <ClInclude Include="include\GameData.h" />
+    <ClInclude Include="include\GLFuncs.h" />
+    <ClInclude Include="include\Graphics.h" />
+    <ClInclude Include="include\IDrawable.h" />
+    <ClInclude Include="include\IGameState.h" />
+    <ClInclude Include="include\InputManager.h" />
+    <ClInclude Include="include\IUpdatable.h" />
+    <ClInclude Include="include\json\json-forwards.h" />
+    <ClInclude Include="include\json\json.h" />
+    <ClInclude Include="include\Log.h" />
+    <ClInclude Include="include\MusicManager.h" />
+    <ClInclude Include="include\Plataforma.h" />
+    <ClInclude Include="include\Player.h" />
+    <ClInclude Include="include\Portada.h" />
+    <ClInclude Include="include\Presentacion.h" />
+    <ClInclude Include="include\Room.h" />
+    <ClInclude Include="include\Scanlines.h" />
+    <ClInclude Include="include\Stage.h" />
+    <ClInclude Include="include\stdafx.h" />
+    <ClInclude Include="include\TextRenderer.h" />
+    <ClInclude Include="include\TextureMgr.h" />
+    <ClInclude Include="include\TimerFuncs.h" />
+    <ClInclude Include="include\UWOL.h" />
+    <ClInclude Include="include\UWOL_private.h" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="UWOL.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="resources\UWOL.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="resources.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="animations.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="animations.json" />
+    <None Include="resources.json" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
