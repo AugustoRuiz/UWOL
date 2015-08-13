@@ -1,0 +1,173 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="14.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{8023BD8B-D232-4D98-9BC6-85E7EE48D1A7}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>UWOLMaps</RootNamespace>
+    <AssemblyName>UWOLMaps</AssemblyName>
+    <ApplicationIcon>Uwolin.ico</ApplicationIcon>
+    <TargetZone>LocalIntranet</TargetZone>
+    <GenerateManifests>true</GenerateManifests>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>2.0</OldToolsVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DebugSymbols>true</DebugSymbols>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CodeGenerators\CodeGeneratorFactory.cs" />
+    <Compile Include="CodeGenerators\CPCCodeGenerator.cs" />
+    <Compile Include="CodeGenerators\ICodeGenerator.cs" />
+    <Compile Include="CodeGenerators\MSXCodeGenerator.cs" />
+    <Compile Include="CodeGenerators\PCCodeGenerator.cs" />
+    <Compile Include="CodeGenerators\ZXbinCodeGenerator.cs" />
+    <Compile Include="CodeGenerators\ZXCodeGenerator.cs" />
+    <Compile Include="CodeView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CodeView.Designer.cs">
+      <DependentUpon>CodeView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Enemigo.cs" />
+    <Compile Include="ErrorDumper.cs" />
+    <Compile Include="frmEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmEditor.Designer.cs">
+      <DependentUpon>frmEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmPyramid.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmPyramid.Designer.cs">
+      <DependentUpon>frmPyramid.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmSplash.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmSplash.Designer.cs">
+      <DependentUpon>frmSplash.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Level.cs" />
+    <Compile Include="LevelProperties.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="LevelProperties.Designer.cs">
+      <DependentUpon>LevelProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Levels.cs" />
+    <Compile Include="LevelSelector.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="LevelSelector.Designer.cs">
+      <DependentUpon>LevelSelector.cs</DependentUpon>
+    </Compile>
+    <Compile Include="LevelViewer.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MinidumpType.cs" />
+    <Compile Include="Moneda.cs" />
+    <Compile Include="Plataforma.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="CodeView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>CodeView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmEditor.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>frmEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmPyramid.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>frmPyramid.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmSplash.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>frmSplash.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LevelProperties.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>LevelProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LevelSelector.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>LevelSelector.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="Properties\DataSources\Level.datasource" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="PyramidViewer.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Utils.cs" />
+    <Compile Include="Version.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <BaseApplicationManifest Include="Properties\app.manifest" />
+    <None Include="Properties\DataSources\Levels.datasource" />
+    <None Include="uwol.sna" />
+    <Content Include="Add.ico" />
+    <Content Include="Uwolin.ico" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

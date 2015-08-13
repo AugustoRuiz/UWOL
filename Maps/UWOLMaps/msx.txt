@@ -1,0 +1,120 @@
+;.Pantalla 1
+   db 0 ; FONDO
+
+        ;Objetos
+        ;datos "al reves", por eso del "endian"
+        ;LLLLTTTD   XXXXYYYY
+   db 11000110B, 00000000B
+   db 00110000B, 00010011B
+   db 00110000B, 10000011B
+   db 00100000B, 01010101B
+   db 00110000B, 00010111B
+   db 00110000B, 10000111B
+   db 11000110B, 00001001B
+
+   DB   $FF
+
+        ;Moviles
+        ;YYYYTTTD   AAAABBBB
+   db 00010101B, 00011010B
+   db 01100011B, 00011010B
+
+   DB   $FF
+
+        ;Monedas
+        ;XXXXYYYY
+   db 00010010B
+   db 00110010B
+   db 10010010B
+   db 10100010B
+   db 01010100B
+   db 01100100B
+   db 00010110B
+   db 00110110B
+   db 10000110B
+   db 10100110B
+
+   DB   $FF
+
+;.Pantalla 2
+db 0 ; FONDO
+
+        ;Objetos
+        ;datos "al reves", por eso del "endian"
+        ;LLLLTTTD   XXXXYYYY
+   db 11000100B, 00000000B
+   db 00110101B, 00000001B
+   db 00010111B, 10100010B
+   db 00010111B, 10010011B
+   db 00110110B, 00100101B
+   db 00110110B, 10000101B
+   db 00110101B, 10110110B
+   db 00110110B, 01010111B
+   db 11000100B, 00001001B
+
+   DB   $FF
+
+        ;Moviles
+        ;YYYYTTTD   AAAABBBB
+   db 00100010B, 01101001B
+   db 01010000B, 01010111B
+
+   DB   $FF
+
+        ;Monedas
+        ;XXXXYYYY
+   db 10010010B
+   db 00100100B
+   db 00110100B
+   db 01000100B
+   db 10000100B
+   db 10110101B
+   db 01010110B
+   db 01100110B
+   db 01110110B
+   db 00011000B
+
+   DB   $FF
+
+
+;.Pantalla 3
+   db 1 ; FONDO
+
+        ;Objetos
+        ;datos "al reves", por eso del "endian"
+        ;LLLLTTTD   XXXXYYYY
+   db 11000010B, 00000000B
+   db 00011011B, 00010100B
+   db 00011011B, 01000100B
+   db 00011011B, 01110100B
+   db 00011011B, 10100100B
+   db 00011011B, 01010110B
+   db 00011011B, 01100110B
+   db 01001010B, 01000111B
+   db 01101010B, 00111000B
+   db 11000010B, 00001001B
+
+   DB   $FF
+
+        ;Moviles
+        ;YYYYTTTD   AAAABBBB
+   db 00110011B, 00101001B
+   db 01010000B, 00100101B
+   db 01010100B, 01101001B
+
+   DB   $FF
+
+        ;Monedas
+        ;XXXXYYYY
+   db 00100010B
+   db 00110010B
+   db 01010010B
+   db 01100010B
+   db 10000010B
+   db 10010010B
+   db 00010011B
+   db 01000011B
+   db 01110011B
+   db 10100011B
+
+   DB   $FF
