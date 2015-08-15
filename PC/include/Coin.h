@@ -15,17 +15,17 @@ public:
 	void setTileSize(VECTOR2 tileSize);
 	void setPos(char tileX, char tileY);
 
-	void Draw();
+	void Draw() override;
 	void DrawInPos(int pX, int pY, float alpha);
-	void DrawShadow(void);
+	void DrawShadow(void) override;
 
-	void Update(Uint32 milliSec);
+	void Update(Uint32 milliSec) override;
 
 	void Initialize();
 	void Dispose();
 
-	bool DrawWhenNoCoins();
-    bool UpdateWhenNoCoins();
+	bool DrawWhenNoCoins() override;
+    bool UpdateWhenNoCoins() override;
 
 	int _x;
 	int _y;

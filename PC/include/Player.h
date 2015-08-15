@@ -81,6 +81,4 @@ private:
 	void checkMapCollisions(Uint32 milliSec);
 
 	void setAnimation(string name);
-	void playMusic(string name, bool looped);
-	void playSound(string name, bool looped);
 };

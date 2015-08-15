@@ -23,7 +23,7 @@ public:
 	void Draw(void);
 	void Dispose(void);
 
-	void GoToRoom(int roomIndex, int depth);
+	void GoToRoom(int roomIndex);
 private:
 
 	bool _disposed;

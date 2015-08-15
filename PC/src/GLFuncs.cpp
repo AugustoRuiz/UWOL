@@ -10,7 +10,7 @@ SDL_Surface *GLFuncs::Initialize(int width, int height, GLboolean fullscreen)
 	SDL_Surface *screen;
 	Uint32 flags;
 
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK) != 0) {
 		Log::Out << "Unable to initialize SDL: " << SDL_GetError() << endl;
 		return NULL;
 	}

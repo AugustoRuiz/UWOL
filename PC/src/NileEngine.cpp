@@ -10,105 +10,110 @@
 #include "TimerFuncs.h"
 #include "GameData.h"
 
-int main(int argc, char **argv)
+int main(int argc, char *argv[])
 {
 	Log::Initialize();
-	Game *game = Game::GetInstance();
-	MusicManager *musicMgr = MusicManager::GetInstance();
-	Uint32 lastTick, currentTick;
-	Uint32 delta;
-	Uint32 accum = 0;
+	try {
+		Game *game = Game::GetInstance();
+		MusicManager *musicMgr = MusicManager::GetInstance();
+		Uint32 lastTick, currentTick;
+		Uint32 delta;
+		Uint32 accum = 0;
 
-	bool attract = false;
-	bool saveState = false;
-	bool fullScreen = true;
+		bool attract = false;
+		bool saveState = false;
+		bool fullScreen = true;
 
-    Log::Out << "main: Initializing Engine..." << endl;
+		Log::Out << "main: Initializing Engine..." << endl;
 
-	Log::Out << "Parsing parameters..." << endl;
-	for(int param=1; param<argc; param ++)
-	{
-		if(!strcmp(argv[param], "-a") || !strcmp(argv[param], "-A") || !strcmp(argv[param], "/a") || !strcmp(argv[param], "/A"))
+		Log::Out << "Parsing parameters..." << endl;
+		for (int param = 1; param < argc; param++)
 		{
-			if(!saveState)
+			if (!strcmp(argv[param], "-a") || !strcmp(argv[param], "-A") || !strcmp(argv[param], "/a") || !strcmp(argv[param], "/A"))
 			{
-				attract = true;
+				if (!saveState)
+				{
+					attract = true;
+				}
+				else
+				{
+					Log::Out << "main: Cannot use both -a and -s parameters. -s will be ignored." << endl;
+				}
 			}
-			else
+			if (!strcmp(argv[param], "-s") || !strcmp(argv[param], "-S") || !strcmp(argv[param], "/s") || !strcmp(argv[param], "/S"))
 			{
-				Log::Out << "main: Cannot use both -a and -s parameters. -s will be ignored." << endl;
+				if (!attract)
+				{
+					saveState = true;
+				}
+				else
+				{
+					Log::Out << "main: Cannot use both -s and -a parameters. -a will be ignored." << endl;
+				}
+			}
+			if (!strcmp(argv[param], "-w") || !strcmp(argv[param], "-W") || !strcmp(argv[param], "/w") || !strcmp(argv[param], "/W"))
+			{
+				fullScreen = false;
 			}
 		}
-		if(!strcmp(argv[param], "-s") || !strcmp(argv[param], "-S") || !strcmp(argv[param], "/s") || !strcmp(argv[param], "/S"))
+
+		aliasing = false;
+		scanlines = true;
+		debugPaint = false;
+
+		musicMgr->Initialize();
+		// 512 x 384
+		if (game->Initialize(512, 384, fullScreen))
 		{
-			if(!attract)
+			game->ShowCursor(false);
+			game->SetWindowName("CEZGS - UWOL: Quest for money");
+
+			game->SetAttractMode(attract);
+			game->SetSaveAttract(saveState);
+
+			Log::Out << "main: Starting main loop..." << endl;
+
+			srand(1); //(unsigned)time( NULL ) );
+
+			lastTick = TimerFuncs::GetTicks();
+
+			while (game->Running())
 			{
-				saveState = true;
+				// Qué tiempo ha pasado desde la última vez?
+				currentTick = TimerFuncs::GetTicks();
+				delta = currentTick - lastTick;
+
+				accum += delta;
+				while (accum >= TICKS_PER_FRAME)
+				{
+					// Mientras no toque pintar, actualizamos
+					accum -= TICKS_PER_FRAME;
+					game->Update(TICKS_PER_FRAME);
+				}
+				// Pintamos
+				game->Render();
+				lastTick = currentTick;
 			}
-			else
+
+			if (saveState)
 			{
-				Log::Out << "main: Cannot use both -s and -a parameters. -a will be ignored." << endl;
+				game->SaveAttractModeData();
 			}
+
+			Log::Out << "main: Main loop finished." << endl;
+			Log::Out << "Checking errors:" << endl << SDL_GetError() << endl << Mix_GetError();
+
+			game->ShowCursor(true);
+			game->Dispose();
 		}
-		if(!strcmp(argv[param], "-w") || !strcmp(argv[param], "-W") || !strcmp(argv[param], "/w") || !strcmp(argv[param], "/W"))
-		{
-			fullScreen = false;
-		}
+		musicMgr->Dispose();
+		musicMgr->DeleteMusic();
 	}
-
-    aliasing = false;
-    scanlines = true;
-	debugPaint = false;
-
-	musicMgr->Initialize();	
-	// 512 x 384
-	if ( game->Initialize(512, 384, fullScreen) )
+	catch (exception& e)
 	{
-		game->ShowCursor(false);
-		game->SetWindowName("CEZGS - UWOL: Quest for money");
-		
-		game->SetAttractMode(attract);
-		game->SetSaveAttract(saveState);
-
-        Log::Out << "main: Starting main loop..." << endl;
-
-		srand( 1 ); //(unsigned)time( NULL ) );
-
-		lastTick = TimerFuncs::GetTicks();
-
-		while( game->Running() )
-		{
-			// Qué tiempo ha pasado desde la última vez?
-			currentTick = TimerFuncs::GetTicks();
-			delta = currentTick - lastTick;
-
-			accum += delta;
-			while(accum >= TICKS_PER_FRAME)
-			{
-				// Mientras no toque pintar, actualizamos
-				accum -= TICKS_PER_FRAME;
-				game->Update(TICKS_PER_FRAME);
-			}
-			// Pintamos
-			game->Render();
-			lastTick = currentTick;
-		}
-		
-		if(saveState)
-		{
-			game->SaveAttractModeData();
-		}
-
-		Log::Out << "main: Main loop finished." << endl;
-		Log::Out << "Checking errors:" << endl << SDL_GetError() << endl << Mix_GetError();
-	
-		game->ShowCursor(true);
-		game->Dispose();
+		cout << e.what() << endl;
 	}
-	musicMgr->Dispose();
-	musicMgr->DeleteMusic();
 
 	Log::Dispose();
-
 	return 0;
 }

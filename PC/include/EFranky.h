@@ -8,9 +8,9 @@ public:
 	~EFranky();
 
 	void Initialize();
-	void Update(Uint32 milliSec);
-	void Draw();
-	void DrawShadow(void);
+	void Update(Uint32 milliSec) override;
+	void Draw() override;
+	void DrawShadow(void) override;
 
 protected:
 	static const char ESTADO_MOVIENDO = 0;

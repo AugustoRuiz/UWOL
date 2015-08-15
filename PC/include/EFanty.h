@@ -8,12 +8,12 @@ public:
 	EFanty();
 	~EFanty();
 
-	virtual bool DrawWhenNoCoins(void); // override;
-	virtual bool UpdateWhenNoCoins(void); // override;
+	virtual bool DrawWhenNoCoins(void) override;
+	virtual bool UpdateWhenNoCoins(void) override;
 
 	void Initialize();
-	void Update(Uint32 milliSec);
-	void Draw();
+	void Update(Uint32 milliSec) override;
+	void Draw() override;
 
 private:
 

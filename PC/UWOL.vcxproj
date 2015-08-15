@@ -72,7 +72,7 @@
       <IgnoreSpecificDefaultLibraries>msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)UWOL.pdb</ProgramDatabaseFile>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
@@ -85,7 +85,8 @@
       <DisableLanguageExtensions>false</DisableLanguageExtensions>
       <PrecompiledHeader />
       <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat />
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
       <AdditionalDependencies>SDLmain.lib;SDL.lib;SDL_image.lib;SDL_mixer.lib;opengl32.lib;glu32.lib;MSVCRT.lib;MSVCPRT.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -94,16 +95,13 @@
       <AdditionalLibraryDirectories>ext\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateDebugInformation>false</GenerateDebugInformation>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <TargetMachine>MachineX86</TargetMachine>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Animation.cpp" />
     <ClCompile Include="src\AnimationFrame.cpp" />
@@ -128,6 +126,7 @@
     <ClCompile Include="src\Log.cpp" />
     <ClCompile Include="src\MusicManager.cpp" />
     <ClCompile Include="src\NileEngine.cpp" />
+    <ClCompile Include="src\Piramide.cpp" />
     <ClCompile Include="src\Plataforma.cpp" />
     <ClCompile Include="src\Player.cpp" />
     <ClCompile Include="src\Portada.cpp" />
@@ -168,6 +167,7 @@
     <ClInclude Include="include\json\json.h" />
     <ClInclude Include="include\Log.h" />
     <ClInclude Include="include\MusicManager.h" />
+    <ClInclude Include="include\Piramide.h" />
     <ClInclude Include="include\Plataforma.h" />
     <ClInclude Include="include\Player.h" />
     <ClInclude Include="include\Portada.h" />

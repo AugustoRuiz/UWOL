@@ -8,7 +8,7 @@ MusicManager::~MusicManager(void)
 {
 }
 
-Mix_Chunk* MusicManager::LoadMusic(const string &sFileName)
+Mix_Chunk* MusicManager::loadMusic(const string &sFileName)
 {
 	Mix_Chunk* result = NULL;
 
@@ -56,7 +56,7 @@ MusicManager* MusicManager::GetInstance()
 	return &_instance;
 }
 
-void MusicManager::PlayMusic(Mix_Chunk* song, bool looped)
+void MusicManager::playMusic(Mix_Chunk* song, bool looped)
 {
 	if(looped)
 	{
@@ -73,7 +73,7 @@ void MusicManager::FadeOutMusic(int mSec)
 	Mix_FadeOutChannel(0, mSec);
 }
 
-void MusicManager::FadeInMusic(Mix_Chunk* song, bool looped, int mSec)
+void MusicManager::fadeInMusic(Mix_Chunk* song, bool looped, int mSec)
 {
 	Mix_FadeInChannel(0, song, looped, mSec);
 }
@@ -83,7 +83,7 @@ bool MusicManager::IsPlayingMusic()
 	return (Mix_Playing(0) != 0);
 }
 
-int MusicManager::PlayFX(Mix_Chunk* fx, bool looped)
+int MusicManager::playFX(Mix_Chunk* fx, bool looped)
 {
 	int channelNo;
 	if(looped)
@@ -126,4 +126,26 @@ void MusicManager::Initialize()
 void MusicManager::Dispose()
 {
 	Mix_CloseAudio();
+}
+
+void MusicManager::PlayMusic(const string &name, bool looped)
+{
+	MusicManager *inst = MusicManager::GetInstance();
+	inst->playMusic(inst->loadMusic(name), looped);
+}
+
+int MusicManager::PlayFx(const string &name, bool looped)
+{
+	MusicManager *inst = MusicManager::GetInstance();
+	return inst->playFX(inst->loadMusic(name), looped);
+}
+
+void MusicManager::FadeInMusic(const string &name, bool looped, int mSec)
+{
+	MusicManager *inst = MusicManager::GetInstance();
+	inst->fadeInMusic(inst->loadMusic(name), looped, mSec);
+}
+
+void MusicManager::LoadMusic(const string &name) {
+	MusicManager::GetInstance()->loadMusic(name);
 }

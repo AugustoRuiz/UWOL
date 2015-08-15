@@ -7,6 +7,8 @@
 #include "IGameState.h"
 #include "TextRenderer.h"
 
+#define WAIT_TIME 4000
+
 class Portada : public IGameState
 {
 public:
@@ -26,7 +28,10 @@ private:
 	Graphics *_g;
 
 	vector<Frame> _imagenes;
-	vector<Frame>::iterator _currentFrame;
+	vector<string> _sonidos;
+
+	int _currentFrame;
+
 
 	float _currentAlpha;
 	int _incrFactor;

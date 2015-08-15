@@ -9,6 +9,7 @@
 #include "Stage.h"
 #include "Presentacion.h"
 #include "Portada.h"
+#include "Piramide.h"
 #include <iostream>
 #include <iterator>
 #include <algorithm>

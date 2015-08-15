@@ -152,10 +152,10 @@ void Player::Update(Uint32 milliSec)
 	for (Event e : evts) {
 		if (e.Name == "uwol_step" && this->_vy != 0) {
 			if (this->_lastStep == 0) {
-				this->playSound("sounds/StepStone1.ogg", false);
+				MusicManager::PlayFx("sounds/StepStone1.ogg", false);
 			}
 			else {
-				this->playSound("sounds/StepStone2.ogg", false);
+				MusicManager::PlayFx("sounds/StepStone2.ogg", false);
 			}
 		}
 	}
@@ -335,7 +335,7 @@ void Player::checkInput(Uint32 milliSec)
 		{
 			this->_saltando = true;
 			this->_contSalto = 0;
-			this->playSound("sounds/boing.ogg", false);
+			MusicManager::PlayFx("sounds/boing.ogg", false);
 		}
 
 		if (this->_saltando && this->_contSalto < TICKS_SALTO)
@@ -444,8 +444,8 @@ void Player::setEstado(int estado)
 	if (estado & Muriendo)
 	{
 		this->setAnimation("uwol_die");
-		this->playSound("sounds/DeathCry.ogg", false);
-		this->playMusic("music/Death.ogg", false);
+		MusicManager::PlayFx("sounds/DeathCry.ogg", false);
+		MusicManager::PlayMusic("music/Death.ogg", false);
 		this->_vy = -10.0f;
 	}
 }
@@ -478,14 +478,4 @@ void Player::setAnimation(string name) {
 		ss << "_naked";
 	}
 	this->_animPlayer.setAnimation(Animation::Get(ss.str()));
-}
-
-void Player::playMusic(string name, bool looped) {
-	MusicManager* musMgr = MusicManager::GetInstance();
-	musMgr->PlayMusic(musMgr->LoadMusic(name), looped);
-}
-
-void Player::playSound(string name, bool looped) {
-	MusicManager* musMgr = MusicManager::GetInstance();
-	musMgr->PlayFX(musMgr->LoadMusic(name), looped);
 }

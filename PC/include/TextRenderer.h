@@ -10,7 +10,7 @@ public:
 	TextRenderer();
 	~TextRenderer();
 
-	void DrawString(int x, int y, const string &text, float rTop, float gTop, float bTop, float rBot, float gBot, float bBot);
+	void DrawStringAlpha(int x, int y, int textSize, const string &text, float rTop, float gTop, float bTop, float rBot, float gBot, float bBot, float alpha);
 
 private:
     TEXTUREINFO *texture;

@@ -2,16 +2,6 @@
 
 Room::Room(void)
 {
-	this->Initialize();
-}
-
-Room::~Room(void)
-{
-	this->Dispose();
-}
-
-void Room::Initialize(void)
-{
 	this->Name = "Room";
 	_g = Graphics::GetInstance();
 
@@ -32,17 +22,20 @@ void Room::Initialize(void)
 	this->_textureCamiseta = Frame("data/Camiseta.png");
 	this->_textureSombra = Frame("data/pixBlanco.png");
 
-	this->_camisetaVisible = false;
-
-	MusicManager *musMgr = MusicManager::GetInstance();
-
-	this->_timeAttack = musMgr->LoadMusic("music/Ghosts3.ogg");
-	this->_levelMusic = musMgr->LoadMusic("music/Money.ogg");
-	this->_bells = musMgr->LoadMusic("sounds/Bells.ogg");
-	this->_coinPicked = musMgr->LoadMusic("sounds/coinPicked.ogg");
-	this->_hitFx = musMgr->LoadMusic("sounds/Hu.ogg");
-
 	this->_disposed = false;
+
+	this->Completada = false;
+}
+
+Room::~Room(void)
+{
+	this->Dispose();
+}
+
+void Room::Initialize(void)
+{
+	this->_camisetaVisible = false;
+	this->restartLevel();
 }
 
 void Room::setPlayer(Player *player)
@@ -89,7 +82,17 @@ string Room::Update(Uint32 milliSec, IGameState *lastState)
 
 	if(!(this->_player->getEstado() & Muriendo) && playerWasKilled)
 	{
-		this->restartLevel();
+		this->Initialize();
+
+		vector<Coin*>::iterator iter;
+		Coin *coin;
+		for (iter = this->_monedasRecogidas.begin(); iter != this->_monedasRecogidas.end(); iter++)
+		{
+			coin = *iter;
+			this->_monedas.push_back(coin);
+			this->_drawables.push_back(coin);
+		}
+		this->_monedasRecogidas.clear();
 	}
 
 	int tileX1, tileX2, tileY1, tileY2;
@@ -116,17 +119,15 @@ string Room::Update(Uint32 milliSec, IGameState *lastState)
 			this->_checkTime = false;
 			this->AddFanty();
 			
-			MusicManager *musMgr = MusicManager::GetInstance();
-			musMgr->FadeOutMusic(500);
-			_bellChannel = musMgr->PlayFX(this->_bells, false);
+			MusicManager::FadeOutMusic(500);
+			MusicManager::PlayFx("sounds/Bells.ogg", false);
 		}
 	}
 	else
 	{
-		MusicManager *musMgr = MusicManager::GetInstance();
-		if(!musMgr->IsPlayingMusic())
+		if(!MusicManager::IsPlayingMusic())
 		{
-			musMgr->PlayMusic(this->_timeAttack, true);
+			MusicManager::PlayMusic("music/Ghosts3.ogg", true);
 		}
 	}
 
@@ -147,36 +148,21 @@ int Room::getEstado()
 
 void Room::restartLevel()
 {	
-	vector<Coin*>::iterator iter;
 	vector<Enemigo*>::iterator enemIter;
 	vector<IDrawable*>::iterator iterDraw;
 	
-	Coin *coin;
 	Enemigo *enem;
 
 	// Posición del foco!
-
 	_g->LightPosition.x = _g->WorldWidth / 2;
 	_g->LightPosition.y = 0;
 	_valorOscuro = 0.0001f;
-
-	MusicManager *musMgr = MusicManager::GetInstance();
-	musMgr->SetMusicVol(MIX_MAX_VOLUME);
-	musMgr->PlayMusic(this->_levelMusic, true);
 
 	this->_timeLeft = this->_initialTime;
 	this->_checkTime = true;
 
 	this->_player->initializePlayerData();
 	this->quitarCamiseta();
-
-	for(iter = this->_monedasRecogidas.begin(); iter != this->_monedasRecogidas.end(); iter++)
-	{
-		coin = *iter;
-		this->_monedas.push_back(coin);
-		this->_drawables.push_back(coin);
-	}
-	this->_monedasRecogidas.clear();
 
 	for(enemIter = this->_enemigos.begin(); enemIter != this->_enemigos.end(); enemIter++)
 	{
@@ -209,13 +195,25 @@ void Room::restartLevel()
 			break;
 		}
 	}
+
+	string song;
+	if (this->Depth < 4)
+		song = "music/Zona1.ogg";
+	else if (this->Depth < 7)
+		song = "music/Zona2.ogg";
+	else if (this->Depth < 9)
+		song = "music/Zona3.ogg";
+	else
+		song = "music/Zona4.ogg";
+
+	MusicManager::PlayMusic(song, true);
+
 }
 
 void Room::checkEnemies(RECTANGLEF rect)
 {
 	vector<Enemigo*>::iterator iter;
 	Enemigo* enem;
-	MusicManager *musMgr = MusicManager::GetInstance();
 
 	for(iter = this->_enemigos.begin() ; iter != this->_enemigos.end(); iter++)
 	{
@@ -237,7 +235,7 @@ void Room::checkEnemies(RECTANGLEF rect)
 				{
 					this->_player->setEstado((this->_player->getEstado() & 0xFFFFFFF0) | Parpadeo | Desnudo);
 					this->colocarCamiseta();
-					musMgr->PlayFX(this->_hitFx, false);
+					MusicManager::PlayFx("sounds/Hu.ogg", false);
 				}
 				enem->_direccion *= -1;
 			}
@@ -325,7 +323,6 @@ void Room::pickCoins(int tileX1, int tileX2, int tileY1, int tileY2)
 	vector<Coin*>::iterator iter;
 	vector<IDrawable*>::iterator iterDraw;
 	Coin *coin;
-	MusicManager *musMgr = MusicManager::GetInstance();
 	
 	for(iter = this->_monedas.begin(); iter != this->_monedas.end(); iter++)
 	{
@@ -349,7 +346,7 @@ void Room::pickCoins(int tileX1, int tileX2, int tileY1, int tileY2)
 			this->_player->_coinsTaken ++;
 			this->_player->_score ++;
 			
-			musMgr->PlayFX(this->_coinPicked, false);
+			MusicManager::PlayFx("sounds/coinPicked.ogg", false);
 
 			break;
 		}

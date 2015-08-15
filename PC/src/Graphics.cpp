@@ -56,7 +56,19 @@ void Graphics::DrawPolyLinesAbs(const vector<VECTOR2> &vertexes, float red, floa
 }
 
 void Graphics::DrawStringAbs(int x, int y, const string &text, float rTop, float gTop, float bTop, float rBot, float gBot, float bBot) {
-	this->_textRenderer.DrawString(x, y, text, rTop, gTop, bTop, rBot, gBot, bBot);
+	this->_textRenderer.DrawStringAlpha(x, y, 16, text, rTop, gTop, bTop, rBot, gBot, bBot, 1.0f);
+}
+
+void Graphics::DrawStringAbs(int x, int y, int textSize, const string &text, float rTop, float gTop, float bTop, float rBot, float gBot, float bBot) {
+	this->_textRenderer.DrawStringAlpha(x, y, textSize, text, rTop, gTop, bTop, rBot, gBot, bBot, 1.0f);
+}
+
+void Graphics::DrawStringAlphaAbs(int x, int y, const string &text, float rTop, float gTop, float bTop, float rBot, float gBot, float bBot, float alpha) {
+	this->_textRenderer.DrawStringAlpha(x, y, 16, text, rTop, gTop, bTop, rBot, gBot, bBot, alpha);
+}
+
+void Graphics::DrawStringAlphaAbs(int x, int y, int textSize, const string &text, float rTop, float gTop, float bTop, float rBot, float gBot, float bBot, float alpha) {
+	this->_textRenderer.DrawStringAlpha(x, y, textSize, text, rTop, gTop, bTop, rBot, gBot, bBot, alpha);
 }
 
 void Graphics::BlitColoredFrame(const Frame& frame, int x, int y, int width, int height,
@@ -114,6 +126,17 @@ void Graphics::DrawPolyLines(const vector<VECTOR2> &vertexes, float red, float g
 }
 
 void Graphics::DrawString(int x, int y, const string &text, float rTop, float gTop, float bTop, float rBot, float gBot, float bBot) {
-	this->_textRenderer.DrawString(x + this->OffsetX, y + this->OffsetY, text, rTop, gTop, bTop, rBot, gBot, bBot);
+	this->_textRenderer.DrawStringAlpha(x + this->OffsetX, y + this->OffsetY, 16, text, rTop, gTop, bTop, rBot, gBot, bBot, 1.0f);
 }
 
+void Graphics::DrawString(int x, int y, int textSize, const string &text, float rTop, float gTop, float bTop, float rBot, float gBot, float bBot) {
+	this->_textRenderer.DrawStringAlpha(x + this->OffsetX, y + this->OffsetY, textSize, text, rTop, gTop, bTop, rBot, gBot, bBot, 1.0f);
+}
+
+void Graphics::DrawStringAlpha(int x, int y, const string &text, float rTop, float gTop, float bTop, float rBot, float gBot, float bBot, float alpha) {
+	this->_textRenderer.DrawStringAlpha(x + this->OffsetX, y + this->OffsetY, 16, text, rTop, gTop, bTop, rBot, gBot, bBot, alpha);
+}
+
+void Graphics::DrawStringAlpha(int x, int y, int textSize, const string &text, float rTop, float gTop, float bTop, float rBot, float gBot, float bBot, float alpha) {
+	this->_textRenderer.DrawStringAlpha(x + this->OffsetX, y + this->OffsetY, textSize, text, rTop, gTop, bTop, rBot, gBot, bBot, alpha);
+}

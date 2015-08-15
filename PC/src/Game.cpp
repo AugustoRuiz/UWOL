@@ -56,10 +56,11 @@ bool Game::Initialize(int width, int height, bool fullscreen)
 
 	this->AddState(new Portada());
 	this->AddState(new Presentacion());
+	this->AddState(new Piramide());
 	this->AddState(new Stage());
 
+	_statesIt = _states.end();
 	_currentStatus = "";
-	_statesIt = _states.begin();
 
 	Log::Out << "Game: Initializing Scanlines..." << endl;
 
@@ -96,8 +97,49 @@ void Game::Dispose()
 
 void Game::Update(Uint32 mSecs)
 {
-	SDL_Event event;
-	SDL_PollEvent(&event);
+	Event currentEvent = InputManager::GetInstance()->Update(mSecs);
+
+	if (currentEvent.Name == "KEY_DOWN") {
+		SDLKey keySym = (SDLKey)currentEvent.Data["key"].asInt();
+		switch (keySym) {
+			case SDLK_ESCAPE:
+				_running = false;
+				break;
+			case SDLK_SPACE:
+				aliasing = !aliasing;
+				break;
+			case SDLK_s:
+				scanlines = !scanlines;
+					break;
+			case SDLK_a:
+				this->_scanlines->Mode ^= 1;
+				break;
+			case SDLK_d:
+				debugPaint = !debugPaint;
+				break;
+			case SDLK_r:
+				// Dejamos de guardar después de guardar la pulsación de la tecla de grabar. Así la grabación 
+				// durará hasta el momento en el que se ha pulsado la tecla.
+				this->_savingStatus = false;
+				break;
+		}
+
+		if (this->_savingStatus)
+		{
+			this->_statusSaved = true;
+			this->_eventBuffer.push_back(this->_totalTicks);
+			this->_eventBuffer.push_back((Uint32)(0x3FFF & keySym));
+		}
+	}
+	if (currentEvent.Name == "KEY_UP") {
+		SDLKey keySym = (SDLKey)currentEvent.Data["key"].asInt();
+		if (this->_savingStatus)
+		{
+			this->_statusSaved = true;
+			this->_eventBuffer.push_back(this->_totalTicks);
+			this->_eventBuffer.push_back((Uint32)(0x4000 | (0x3FFF & keySym)));
+		}
+	}
 
 	if (this->_attractMode || this->_savingStatus)
 	{
@@ -127,95 +169,34 @@ void Game::Update(Uint32 mSecs)
 		{
 			Log::Out << "Exiting attract mode..." << endl;
 			this->_attractMode = false;
-
-			if (_states.find(_currentStatus) != _states.end()) {
-				Stage* stage = (Stage*)_states[_currentStatus];
-				stage->GoToRoom(0, 0);
-			}
+			_currentStatus = "Portada";
 		}
 	}
 
-	switch (event.type) {
-		// Look for a keypress 
-	case SDL_KEYDOWN:
-		if (!this->_attractMode)
-		{
-			_input->SetKeyPressedState(&(event.key));
-		}
-
-		if (event.key.keysym.sym == SDLK_ESCAPE)
-		{
-			_running = false;
-		}
-		if (event.key.keysym.sym == SDLK_SPACE)
-		{
-			aliasing = !aliasing;
-		}
-		if (event.key.keysym.sym == SDLK_s)
-		{
-			scanlines = !scanlines;
-		}
-		if (event.key.keysym.sym == SDLK_a)
-		{
-			this->_scanlines->Mode ^= 1;
-		}
-
-		if (event.key.keysym.sym == SDLK_d)
-		{
-			debugPaint = !debugPaint;
-		}
-
-		if (this->_savingStatus)
-		{
-			this->_statusSaved = true;
-			this->_eventBuffer.push_back(this->_totalTicks);
-			this->_eventBuffer.push_back((Uint32)(0x3FFF & event.key.keysym.sym));
-		}
-
-		// Dejamos de guardar después de guardar la pulsación de la tecla de grabar. Así la grabación 
-		// durará hasta el momento en el que se ha pulsado la tecla.
-		if (event.key.keysym.sym == SDLK_r)
-		{
-			this->_savingStatus = false;
-		}
-		break;
-	case SDL_KEYUP:
-		if (this->_savingStatus)
-		{
-			this->_statusSaved = true;
-
-			this->_eventBuffer.push_back(this->_totalTicks);
-			this->_eventBuffer.push_back((Uint32)(0x4000 | (0x3FFF & event.key.keysym.sym)));
-		}
-		if (!this->_attractMode)
-		{
-			_input->SetKeyPressedState(&(event.key));
-		}
-		break;
-	case SDL_QUIT:
-		//Log::WriteLog("Received SDL_QUIT... Ignoring...\n");
-	   // _running = false;
-		break;
-	default:
-		break;
-	}
-
-	if (_currentStatus != "")
+	if (_currentStatus == "")
 	{
-		map<string, IGameState*>::iterator it = _states.find(_currentStatus);
-		if (it != _states.end()){
-			IGameState *state = it->second;
-			_currentStatus = state->Update(mSecs, state);
-		}
-	}
-	else
-	{
-		if (this->_statesIt != _states.end()) {
-			_currentStatus = this->_statesIt->first;
-			++this->_statesIt;
+		if (this->_statesIt == _states.end()) {
+			this->_statesIt = this->_states.begin();
 		}
 		else {
-			_running = false;
+			++this->_statesIt;
+		}
+		_currentStatus = this->_statesIt->first;
+		this->_statesIt->second->Initialize();
+	}
+
+	map<string, IGameState*>::iterator it = _states.find(_currentStatus);
+	if (it != _states.end()) {
+		this->_statesIt = it;
+		IGameState *state = it->second;
+		string oldStatus = _currentStatus;
+		_currentStatus = state->Update(mSecs, state);
+		// Si la ejecución del estado provoca un cambio de estado,
+		// y ese estado tiene un nombre, lo inicializamos.
+		if (oldStatus != _currentStatus) {
+			if (_states.find(_currentStatus) != _states.end()) {
+				_states[_currentStatus]->Initialize();
+			}
 		}
 	}
 }
@@ -247,6 +228,7 @@ void Game::SetAttractMode(bool attract)
 
 	if (attract)
 	{
+		_input->Enabled = false;
 		this->_savingStatus = false;
 
 		this->_totalTicks = 0;
@@ -259,7 +241,7 @@ void Game::SetAttractMode(bool attract)
 		map<string, IGameState*>::iterator it = _states.find(_currentStatus);
 		if (it != _states.end())
 		{
-			((Stage*) it->second)->GoToRoom(0, 0);
+			((Stage*) it->second)->GoToRoom(0);
 			this->_totalTicks = 0;
 		}
 	}

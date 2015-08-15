@@ -1,19 +1,9 @@
 #include "Presentacion.h"
 
-#define NUM_COINS 500
+#define NUM_COINS 300
 #define INCR_FACTOR 1
 
 Presentacion::Presentacion()
-{
-	this->Initialize();
-}
-
-Presentacion::~Presentacion()
-{
-	this->Dispose();
-}
-
-void Presentacion::Initialize()
 {
 	this->Name = "Presentacion";
 	VECTOR2 tileSize;
@@ -21,21 +11,12 @@ void Presentacion::Initialize()
 	tileSize.x = 32;
 	tileSize.y = 32;
 
-	TextureMgr *texMgr = TextureMgr::GetInstance();
-
 	this->_g = Graphics::GetInstance();
 
 	this->_frameSombra = Frame("data/TileSombra.PNG");
-
 	this->_logos.push_back(Frame("data/texturaUWOL.png"));
-	this->_currentFrame = this->_logos.begin();
 
 	this->_disposed = false;
-
-	this->_currentAlpha = 0.0f;
-	this->_currentTick = 0;
-
-	this->_incrFactor = INCR_FACTOR;
 
 	this->_coins = new Coin*[NUM_COINS];
 
@@ -46,9 +27,26 @@ void Presentacion::Initialize()
 		this->_coins[i]->_x = (int)((_g->ScreenWidth)*rand() / (RAND_MAX + 1.0));
 		this->_coins[i]->_y = (int)((_g->ScreenHeight)*rand() / (RAND_MAX + 1.0));
 		this->_coins[i]->SetFrame((int)(7 * rand() / (RAND_MAX + 1.0)));
-		this->_coins[i]->_speed.y = 1 + (float)(10 * rand() / (RAND_MAX + 1.0));
+		this->_coins[i]->_speed.y = (i/100) + 1 + (float)(2 * rand() / (RAND_MAX + 1.0));
 		this->_coins[i]->SetTicks((int)(TICKS_ANIM_COIN * rand() / (RAND_MAX + 1.0)));
 	}
+}
+
+Presentacion::~Presentacion()
+{
+	this->Dispose();
+}
+
+void Presentacion::Initialize()
+{
+	this->_currentAlpha = 0.0f;
+	this->_currentTick = 0;
+	this->_totalTicks = 0;
+	this->_currentFrame = this->_logos.begin();
+
+	this->_incrFactor = INCR_FACTOR;
+
+	MusicManager::PlayMusic("music/Money.ogg", true);
 }
 
 void Presentacion::Dispose()
@@ -69,10 +67,17 @@ void Presentacion::Draw()
 	Frame &current = *(this->_currentFrame);
 
 	for (int i = 0; i < NUM_COINS; i++) {
-		this->_coins[i]->DrawInPos(this->_coins[i]->_x, this->_coins[i]->_y, 1.0f);
+		this->_coins[i]->DrawInPos(this->_coins[i]->_x, this->_coins[i]->_y, (((i/100)+1) / (NUM_COINS/100.0f)));
 	}
 
 	_g->BlitCenteredFrameAlpha(current, current.Texture->width * 2, current.Texture->height * 2, this->_currentAlpha, false, false);
+
+	string text = "PUSH JUMP TO START";
+	int posX = (_g->WorldWidth - (text.size() * 16)) / 2;
+	int posY = _g->WorldHeight - 32;
+
+	_g->DrawStringAlpha(posX + 1, posY + 1, text, 0, 0, 0, 0, 0, 0, _textAlpha);
+	_g->DrawStringAlpha(posX, posY, text, _rTextTop, _gTextTop, _bTextTop, _rTextBot, _gTextBot, _bTextBot, _textAlpha);
 
 	_g->BlitFrameAbs(this->_frameSombra, 0, 0, _g->ScreenWidth, _g->OffsetY - 1, false, false);
 	_g->BlitFrameAbs(this->_frameSombra, 0, _g->ScreenHeight - _g->OffsetY, _g->ScreenWidth, _g->OffsetY, false, false);
@@ -82,13 +87,27 @@ void Presentacion::Draw()
 
 string Presentacion::Update(Uint32 milliSec, IGameState *lastState)
 {
+	float val = (float)(.001 * this->_totalTicks);
+	this->_rTextTop = (float)(sin(val + 0) * .5 + .5);
+	this->_gTextTop = (float)(sin(val + 2) * .5 + .5);
+	this->_bTextTop = (float)(sin(val + 4) * .5 + .5);
+
+	this->_totalTicks += milliSec;
+
+	val = (float)(.002 * this->_totalTicks);
+	this->_rTextBot = (float)(sin(val + 0) * .5 + .5);
+	this->_gTextBot = (float)(sin(val + 2) * .5 + .5);
+	this->_bTextBot = (float)(sin(val + 4) * .5 + .5);
+
+	_textAlpha = (float) (sin(.05 * (this->_totalTicks/milliSec)) * .5 + .5);
+
 	this->_currentAlpha += ((float)this->_incrFactor) *  milliSec * 0.001f;
 
 	if (this->_incrFactor == 0)
 	{
 		this->_currentTick += milliSec;
 
-		if (this->_currentTick >= 4000)
+		if (this->_currentTick >= 60000)
 		{
 			this->_currentTick = 0;
 			this->_incrFactor = -INCR_FACTOR;
@@ -117,8 +136,25 @@ string Presentacion::Update(Uint32 milliSec, IGameState *lastState)
 			this->_coins[i]->_y = 0;
 			this->_coins[i]->_x = (int)((_g->ScreenWidth)*rand() / (RAND_MAX + 1.0));
 			this->_coins[i]->SetFrame((int)(7 * rand() / (RAND_MAX + 1.0)));
-			this->_coins[i]->_speed.y = 1 + (float)(10.0f * rand() / (RAND_MAX + 1.0));
+			this->_coins[i]->_speed.y = (i / 100) + 1 + (float)(2 * rand() / (RAND_MAX + 1.0));
 			this->_coins[i]->SetTicks((int)(TICKS_ANIM_COIN * rand() / (RAND_MAX + 1.0)));
+		}
+	}
+
+	InputManager *input = InputManager::GetInstance();
+	Event evt = input->GetLastEvent();
+	if (evt.Name == "KEY_DOWN") {
+		SDLKey keySym = (SDLKey)evt.Data["key"].asInt();
+		if (keySym == input->DefaultKeyJump) {
+			input->SetControlMode(Keyboard);
+			return "Stage";
+		}
+	}
+	if (evt.Name == "JOY_DOWN") {
+		int button = evt.Data["button"].asInt();
+		if (button == input->DefaultJoyJump) {
+			input->SetControlMode(Joystick);
+			return "Stage";
 		}
 	}
 
@@ -128,7 +164,8 @@ string Presentacion::Update(Uint32 milliSec, IGameState *lastState)
 	}
 	else
 	{
-		return "";
+		MusicManager::FadeOutMusic(300);
+		return "Portada";
 	}
 }
 

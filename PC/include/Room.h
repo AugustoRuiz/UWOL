@@ -34,7 +34,9 @@ public:
 
 	int _timeLeft;
 	bool _checkTime;
-	
+	int Depth;
+	bool Completada;
+
 	Plataforma* AddPlatform(TilePlataforma tipo, Direccion dir, char longitud, char tileX, char tileY, VECTOR2 tileSize);
     Enemigo* AddEnemy(TipoEnemigo tipo, Velocidad velocidad, char tileIni, char tileFin, char tileVert, VECTOR2 tileSize);
     Coin* AddCoin(char tileX, char tileY, VECTOR2 tileSize);
@@ -42,7 +44,6 @@ public:
 	Player *_player;
 
 	bool loadRoom(ifstream &roomsFile);
-	void restartLevel();
 
 	int getEstado();
 
@@ -60,14 +61,6 @@ private:
 	Frame _textureFlechaDer;
 	Frame _textureSombra;
 
-	Mix_Chunk * _levelMusic;
-	Mix_Chunk * _timeAttack;
-	Mix_Chunk * _bells;
-	Mix_Chunk * _coinPicked;
-	Mix_Chunk * _hitFx;
-
-	int _bellChannel;
-
 	Background *_back;
 
 	Graphics *_g;
@@ -77,6 +70,8 @@ private:
 	Enemigo* _fanty;
 
 	void AddFanty();
+
+	void restartLevel();
 
 	void pickCoins(int tileX1, int tileX2, int tileY1, int tileY2);
 	void checkEnemies(RECTANGLEF rect);

@@ -167,8 +167,8 @@ void CollisionMap::DebugPaint()
 				vertexes.push_back(VECTOR2(x1, y1));
 				vertexes.push_back(VECTOR2(x2, y1));
 			}
-			_g->DrawPolyLines(vertexes, 1.0, 1.0, 1.0, 1.0);
 		}
 	}
+	_g->DrawPolyLines(vertexes, 1.0, 1.0, 1.0, 1.0);
 }
 

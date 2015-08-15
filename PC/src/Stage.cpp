@@ -2,16 +2,6 @@
 
 Stage::Stage(void)
 {
-	this->Initialize();
-}
-
-Stage::~Stage(void)
-{
-	this->Dispose();
-}
-
-void Stage::Initialize()
-{
 	this->Name = "Stage";
 	_g = Graphics::GetInstance();
 
@@ -29,11 +19,20 @@ void Stage::Initialize()
 	this->_player = new Player();
 
 	this->_currentRoom = this->loadRooms();
-	this->_currentRoom->setPlayer(this->_player);
-	this->_currentRoom->restartLevel();
 
 	this->_fading = false;
 	this->_disposed = false;
+}
+
+Stage::~Stage(void)
+{
+	this->Dispose();
+}
+
+void Stage::Initialize()
+{
+	this->_currentRoom->setPlayer(this->_player);
+	this->GoToRoom(0);
 }
 
 void Stage::Dispose()
@@ -161,6 +160,7 @@ string Stage::Update(Uint32 milliSec, IGameState *lastState)
 			{
 				this->_player->_score += ( ( (this->_currentRoom->_timeLeft / 1000) + 1) * 5);
 			}
+			this->_currentRoom->Completada = true;
 			this->_fadeLevel = 0.0f;
 			this->_fadeInc = 1.0f;
 		}
@@ -195,17 +195,19 @@ string Stage::Update(Uint32 milliSec, IGameState *lastState)
 			}
 			
 			this->_profundidad ++;
+
 			if(this->_currentRoomIdx >= (int)this->rooms.size())
 			{
+				// Comprobar si es el final del juego o no...
 				this->_currentRoomIdx = 0;
 				this->_profundidad = 1;
 			}
 			this->_currentRoom = this->rooms[this->_currentRoomIdx];
 
 			Log::Out << "Current Room: " << this->_currentRoomIdx << " of " << this->rooms.size() << "." << endl;
-			
+
 			this->_currentRoom->setPlayer(this->_player);
-			this->_currentRoom->restartLevel();
+			this->_currentRoom->Initialize();
 		}
 
 		if(this->_fadeLevel <= 0.0f)
@@ -219,13 +221,11 @@ string Stage::Update(Uint32 milliSec, IGameState *lastState)
 	return this->Name;
 }
 
-void Stage::GoToRoom(int roomIndex, int depth)
+void Stage::GoToRoom(int roomIndex)
 {
-	this->_fading = true;
-	this->_fadeLevel = 0.0f;
-	this->_fadeInc = 1.0f;
 	this->_currentRoomIdx = roomIndex;
-	this->_profundidad = depth;
+	this->rooms[this->_currentRoomIdx]->Initialize();
+	this->_profundidad = this->rooms[this->_currentRoomIdx]->Depth;
 }
 
 Room* Stage::loadRooms()
@@ -238,6 +238,9 @@ Room* Stage::loadRooms()
 	vect.x = 32;
 	vect.y = 32;
 
+	int roomDepth = 1;
+	int roomCount = 0;
+
 	if(roomsFile)
 	{
 		bool more = true;
@@ -245,6 +248,13 @@ Room* Stage::loadRooms()
 		{	
 			Room* room = new Room();
 			more = room->loadRoom(roomsFile);
+			room->Depth = roomDepth;
+
+			if (++roomCount >= roomDepth) {
+				++roomDepth;
+				roomCount = 0;
+			}
+
 			this->rooms.push_back(room);
 		}
 		roomsFile.close();

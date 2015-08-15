@@ -10,6 +10,9 @@
 
 class Presentacion : public IGameState
 {
+	float _rTextTop, _gTextTop, _bTextTop, _rTextBot, _gTextBot, _bTextBot, _textAlpha;
+	Uint32 _totalTicks;
+
 public:
 	Presentacion(void);
 	~Presentacion(void);

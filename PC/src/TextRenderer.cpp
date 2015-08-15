@@ -8,7 +8,7 @@ TextRenderer::~TextRenderer()
 {
 }
 
-void TextRenderer::DrawString(int x, int y, const string &text, float rTop, float gTop, float bTop, float rBot, float gBot, float bBot)
+void TextRenderer::DrawStringAlpha(int x, int y, int textSize, const string &text, float rTop, float gTop, float bTop, float rBot, float gBot, float bBot, float alpha)
 {
 	float tx1, tx2, ty1, ty2;
     int xPos;
@@ -54,26 +54,26 @@ void TextRenderer::DrawString(int x, int y, const string &text, float rTop, floa
 		updateTexCoords(currentChar, &tx1, &tx2, &ty1, &ty2);
 
 		//Top-left vertex (corner)
-		glColor4f(rTop, gTop, bTop, 1.0f);	
+		glColor4f(rTop, gTop, bTop, alpha);	
 		glTexCoord2f(tx1, ty1);
 		glVertex2i(xPos, y);
 
 		//Top-right vertex (corner)
-		glColor4f(rTop, gTop, bTop, 1.0f);	
+		glColor4f(rTop, gTop, bTop, alpha);
 		glTexCoord2f(tx2, ty1);
-		glVertex2i(xPos + 16, y);
+		glVertex2i(xPos + textSize, y);
 
 		//Bottom-right vertex (corner)
-		glColor4f(rBot, gBot, bBot, 1.0f);	
+		glColor4f(rBot, gBot, bBot, alpha);
 		glTexCoord2f(tx2, ty2);
-		glVertex2i(xPos + 16, y + 16);
+		glVertex2i(xPos + textSize, y + textSize);
 
 		//Bottom-left vertex (corner)
-		glColor4f(rBot, gBot, bBot, 1.0f);	
+		glColor4f(rBot, gBot, bBot, alpha);
 		glTexCoord2f(tx1, ty2);
-		glVertex2i(xPos, y + 16);
+		glVertex2i(xPos, y + textSize);
 
-		xPos += 16;
+		xPos += textSize;
 	}
 
 	glEnd();

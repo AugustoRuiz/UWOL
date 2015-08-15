@@ -64,3 +64,9 @@ enum ActionKeys
 	ActionKeysLeft = 3,
 	ActionKeysRight = 4
 };
+
+enum ControlMode
+{
+	Keyboard = 1,
+	Joystick = 2
+};
