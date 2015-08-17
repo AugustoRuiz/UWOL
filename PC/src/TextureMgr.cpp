@@ -101,7 +101,7 @@ TEXTUREINFO* TextureMgr::GL_LoadTexture(SDL_Surface *textureSurf)
 
 	if (texNumber == 0) {
 		GLenum err = glGetError();
-		Log::Out << "Error loading texture: " << gluErrorString(err) << err;
+		Log::Out << "Error loading texture: ERROR " << err << endl;
 	}
 	else {
 		//Load the texture
@@ -110,12 +110,12 @@ TEXTUREINFO* TextureMgr::GL_LoadTexture(SDL_Surface *textureSurf)
 		if (textureSurf->format->BitsPerPixel == 24)
 		{
 			//Generate the texture
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureSurf->w, textureSurf->h, 0, GL_RGB, GL_UNSIGNED_BYTE, textureSurf->pixels);
+			glTexImage2D(GL_TEXTURE_2D, 0, 4, textureSurf->w, textureSurf->h, 0, GL_BGR, GL_UNSIGNED_BYTE, textureSurf->pixels);
 		}
 		else
 		{
 			//Generate the texture
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureSurf->w, textureSurf->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureSurf->pixels);
+			glTexImage2D(GL_TEXTURE_2D, 0, 4, textureSurf->w, textureSurf->h, 0, GL_BGRA, GL_UNSIGNED_BYTE, textureSurf->pixels);
 		}
 
 		//Use nearest filtering, very good

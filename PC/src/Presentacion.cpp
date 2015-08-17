@@ -67,7 +67,7 @@ void Presentacion::Draw()
 	Frame &current = *(this->_currentFrame);
 
 	for (int i = 0; i < NUM_COINS; i++) {
-		this->_coins[i]->DrawInPos(this->_coins[i]->_x, this->_coins[i]->_y, (((i/100)+1) / (NUM_COINS/100.0f)));
+		this->_coins[i]->DrawInPos(this->_coins[i]->_x, this->_coins[i]->_y, 1.0f);
 	}
 
 	_g->BlitCenteredFrameAlpha(current, current.Texture->width * 2, current.Texture->height * 2, this->_currentAlpha, false, false);

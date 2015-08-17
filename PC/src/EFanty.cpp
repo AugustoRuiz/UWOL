@@ -22,7 +22,7 @@ void EFanty::Initialize()
 
  void EFanty::Draw()
 {
-	float alpha = 0.5f + ( sin(_haloValue) / 6.0f );
+	//float alpha = 0.5f + ( sin(_haloValue) / 6.0f );
 	float haloAlpha = 0.5f + ( sin(7.0f * _haloValue) / 6.0f );
 
 	_g->BlitColoredFrame(_frameHalo, -16 + (int)this->_x, - 16 + (int) this->_y, this->_tileSize.x * 2, this->_tileSize.y * 2, 1.0f, 1.0f, 1.0f, (1.0f - haloAlpha), true, false, false);

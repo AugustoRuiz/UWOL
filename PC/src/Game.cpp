@@ -76,7 +76,7 @@ bool Game::Initialize(int width, int height, bool fullscreen)
 	return _running;
 }
 
-void Game::SetWindowName(char *name)
+void Game::SetWindowName(const char *name)
 {
 	SDL_WM_SetCaption(name, NULL);
 }
@@ -121,6 +121,8 @@ void Game::Update(Uint32 mSecs)
 				// Dejamos de guardar después de guardar la pulsación de la tecla de grabar. Así la grabación 
 				// durará hasta el momento en el que se ha pulsado la tecla.
 				this->_savingStatus = false;
+				break;
+			default:
 				break;
 		}
 
@@ -301,7 +303,7 @@ void Game::loadResources() {
 	if (Json::Value::null != images) {
 		TextureMgr* texMgr = TextureMgr::GetInstance();
 		for (Json::Value::iterator img = images.begin(); img != images.end(); ++img) {
-			string &file = img->asString();
+			string file = img->asString();
 			Log::Out << "Loading image " << file << endl;
 			texMgr->LoadTexture(file);
 		}
@@ -310,7 +312,7 @@ void Game::loadResources() {
 	if (Json::Value::null != music) {
 		MusicManager* musicMgr = MusicManager::GetInstance();
 		for (Json::Value::iterator mus = music.begin(); mus != music.end(); ++mus) {
-			string &file = mus->asString();
+			string file = mus->asString();
 			Log::Out << "Loading song " << file << endl;
 			musicMgr->LoadMusic(mus->asString());
 		}
@@ -319,7 +321,7 @@ void Game::loadResources() {
 	if (Json::Value::null != effects) {
 		MusicManager* musicMgr = MusicManager::GetInstance();
 		for (Json::Value::iterator fx = effects.begin(); fx != effects.end(); ++fx) {
-			string &file = fx->asString();
+			string file = fx->asString();
 			Log::Out << "Loading effect " << file << endl;
 			musicMgr->LoadMusic(fx->asString());
 		}

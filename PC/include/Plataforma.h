@@ -43,8 +43,6 @@ private:
 	int _iniY;
 	int _finX;
 	int _finY;
-	float _tX;
-	float _tY;
 
 	bool _disposed;
 

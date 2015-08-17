@@ -12,8 +12,6 @@ Plataforma::~Plataforma(void)
 
 void Plataforma::Initialize()
 {
-	TextureMgr *texMgr = TextureMgr::GetInstance();
-
 	_frames.push_back(Frame("data/TilePlat0.png"));
 	_frames.push_back(Frame("data/TilePlat1.png"));
 	_frames.push_back(Frame("data/TilePlat2.png"));

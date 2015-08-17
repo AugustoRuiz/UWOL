@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SDL.h"
+#include <SDL/SDL.h>
 #include "Log.h"
 #include "UWOL.h"
 #include "Event.h"

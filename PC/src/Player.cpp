@@ -221,7 +221,6 @@ void Player::checkMapCollisions(Uint32 milliSec)
 {
 	int tileX, tileY, tileX2, tileY2;
 	float dx, dy;
-	MusicManager *musMgr = MusicManager::GetInstance();
 
 	dy = this->_vy * milliSec * PIX_PER_MILLISEC;
 	this->_y += dy;

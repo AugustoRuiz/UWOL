@@ -20,7 +20,7 @@ public:
 	static Game* GetInstance();
 
 	bool Initialize(int width, int height, bool fullscreen);
-	void SetWindowName(char *name);
+	void SetWindowName(const char *name);
 	void Update(Uint32 mSecs);
 	void Render();
 	void Dispose();

@@ -51,8 +51,6 @@ private:
 	AnimationPlayer _animPlayer;
 	InputManager *_input;
 
-	int* _frameOrder;
-
 	VECTOR2 _tileSize;
 	RECTANGLEF _colRect;
 
@@ -71,7 +69,6 @@ private:
 	int _contParpadeo;
 	bool _visibleParpadeo;
 	Facing _facing;
-	int _ct_estado;
 	float _alpha;
 	bool _disposed;
 	unsigned char _lastStep;

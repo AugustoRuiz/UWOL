@@ -1,4 +1,3 @@
-#pragma once
 
 #include "Graphics.h"
 #include "InputManager.h"
