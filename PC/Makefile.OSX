@@ -1,0 +1,48 @@
+INCDIR=include
+SRCDIR=src
+OBJDIR=obj
+BINDIR=bin
+LIBDIR=lib
+MKDIR=mkdir
+
+CC=gcc
+CXX=g++
+CXXFLAGS=-std=c++11 -I/usr/local/include/SDL -D_GNU_SOURCE=1 -D_THREAD_SAFE -O3 -Werror -Wall -fsigned-char
+LDLIBS=-L/usr/local/lib -lSDLmain -lSDL -lSDL_Image -lSDL_Mixer -logg -lvorbis -Wl,-framework,Cocoa -framework OpenGL
+
+vpath %.h $(INCDIR)
+vpath %.cpp $(SRCDIR)
+vpath %.cc $(SRCDIR)
+vpath %.o $(OBJDIR)
+
+HEADERS = $(wildcard $(INCDIR)/*)
+SRCS = $(wildcard $(SRCDIR)/*.cc) $(wildcard $(SRCDIR)/*.cpp)
+OBJS = $(patsubst $(SRCDIR)%,$(OBJDIR)%,$(patsubst %.cc,%.o,$(patsubst %.cpp,%.o,$(SRCS))))
+APPNAME = $(BINDIR)/uwol
+
+all: createFolders $(APPNAME)
+
+$(APPNAME): $(OBJS)
+	$(CXX) $(LDFLAGS) -o $@ $(OBJS) $(LDLIBS) `sdl-config --cflags --libs`
+
+$(OBJDIR)/%.o: %.cc
+	$(CXX) $(CXXFLAGS) -o $@ -c -I$(INCDIR) $<
+
+$(OBJDIR)/%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -o $@ -c -I$(INCDIR) $<
+
+showVars:
+	$(info %.o)
+	$(info $(HEADERS))
+	$(info $(SRCS))
+	$(info $(OBJS))
+
+createFolders:
+	$(MKDIR) -p $(OBJDIR)
+	$(MKDIR) -p $(BINDIR)
+	
+clean:
+	$(RM) $(OBJDIR)/*
+
+cleanall: clean
+	$(RM) $(BINDIR)/*

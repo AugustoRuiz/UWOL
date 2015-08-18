@@ -80,7 +80,7 @@ bool Game::Initialize(int width, int height, bool fullscreen)
 	return _running;
 }
 
-void Game::SetWindowName(char *name)
+void Game::SetWindowName(const char *name)
 {
 	SDL_WM_SetCaption(name, NULL);
 }
@@ -145,26 +145,28 @@ void Game::handleInput(Event &currentEvent) {
 	if (currentEvent.Name == "KEY_DOWN") {
 		SDLKey keySym = (SDLKey)(currentEvent.Data["key"].asInt());
 		switch (keySym) {
-		case SDLK_ESCAPE:
-			_running = false;
-			break;
-		case SDLK_SPACE:
-			aliasing = !aliasing;
-			break;
-		case SDLK_s:
-			scanlines = !scanlines;
-			break;
-		case SDLK_a:
-			this->_scanlines->Mode ^= 1;
-			break;
-		case SDLK_d:
-			debugPaint = !debugPaint;
-			break;
-		case SDLK_r:
-			// Dejamos de guardar después de guardar la pulsación de la tecla de grabar. Así la grabación 
-			// durará hasta el momento en el que se ha pulsado la tecla.
-			this->_savingStatus = false;
-			break;
+			case SDLK_ESCAPE:
+				_running = false;
+				break;
+			case SDLK_SPACE:
+				aliasing = !aliasing;
+				break;
+			case SDLK_s:
+				scanlines = !scanlines;
+					break;
+			case SDLK_a:
+				this->_scanlines->Mode ^= 1;
+				break;
+			case SDLK_d:
+				debugPaint = !debugPaint;
+				break;
+			case SDLK_r:
+				// Dejamos de guardar después de guardar la pulsación de la tecla de grabar. Así la grabación 
+				// durará hasta el momento en el que se ha pulsado la tecla.
+				this->_savingStatus = false;
+				break;
+			default:
+				break;
 		}
 
 		if (this->_savingStatus) {
@@ -181,30 +183,30 @@ void Game::handleInput(Event &currentEvent) {
 			this->_eventBuffer.push_back((Uint32)(0x4000 | (0x3FFF & keySym)));
 		}
 	}
-}
+	}
 
 void Game::updateAttractMode() {
 	if (this->_evtBufferIterator != this->_eventBuffer.end()) {
 		if (this->_totalTicks >= *this->_evtBufferIterator) {
-			++this->_evtBufferIterator;
-			Uint32 keyData = *this->_evtBufferIterator++;
+				++this->_evtBufferIterator;
+				Uint32 keyData = *this->_evtBufferIterator++;
 
-			SDL_KeyboardEvent fakeEvent;
+				SDL_KeyboardEvent fakeEvent;
 
-			fakeEvent.keysym.sym = (SDLKey)(keyData & 0x3FFF);
-			fakeEvent.type = ((keyData & 0x4000) == 0x4000) ? SDL_KEYUP : SDL_KEYDOWN;
+				fakeEvent.keysym.sym = (SDLKey)(keyData & 0x3FFF);
+				fakeEvent.type = ((keyData & 0x4000) == 0x4000) ? SDL_KEYUP : SDL_KEYDOWN;
 
-			_input->SetKeyPressedState(&fakeEvent);
+				_input->SetKeyPressedState(&fakeEvent);
 
-			//this->_running = (keyData & 0x3FFF) != SDLK_ESCAPE;
+				//this->_running = (keyData & 0x3FFF) != SDLK_ESCAPE;
+			}
+		}
+	else {
+			Log::Out << "Exiting attract mode..." << endl;
+			this->_attractMode = false;
+			_currentStatus = "Portada";
 		}
 	}
-	else {
-		Log::Out << "Exiting attract mode..." << endl;
-		this->_attractMode = false;
-		_currentStatus = "Portada";
-	}
-}
 
 void Game::Render()
 {
@@ -306,7 +308,7 @@ void Game::loadResources() {
 	if (Json::Value::null != images) {
 		TextureMgr* texMgr = TextureMgr::GetInstance();
 		for (Json::Value::iterator img = images.begin(); img != images.end(); ++img) {
-			string &file = img->asString();
+			string file = img->asString();
 			Log::Out << "Loading image " << file << endl;
 			texMgr->LoadTexture(file);
 		}
@@ -315,7 +317,7 @@ void Game::loadResources() {
 	if (Json::Value::null != music) {
 		MusicManager* musicMgr = MusicManager::GetInstance();
 		for (Json::Value::iterator mus = music.begin(); mus != music.end(); ++mus) {
-			string &file = mus->asString();
+			string file = mus->asString();
 			Log::Out << "Loading song " << file << endl;
 			musicMgr->LoadMusic(mus->asString());
 		}
@@ -324,7 +326,7 @@ void Game::loadResources() {
 	if (Json::Value::null != effects) {
 		MusicManager* musicMgr = MusicManager::GetInstance();
 		for (Json::Value::iterator fx = effects.begin(); fx != effects.end(); ++fx) {
-			string &file = fx->asString();
+			string file = fx->asString();
 			Log::Out << "Loading effect " << file << endl;
 			musicMgr->LoadMusic(fx->asString());
 		}

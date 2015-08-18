@@ -1,11 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include "SDL.h"
-#include "SDL_main.h"
-#include "TextureMgr.h"
+#include <SDL/SDL_main.h>
 #include "MusicManager.h"
-#include "GLFuncs.h"
 #include "Game.h"
 #include "TimerFuncs.h"
 #include "GameData.h"
@@ -63,10 +60,10 @@ int main(int argc, char *argv[])
 
 		musicMgr->Initialize();
 		// 512 x 384
-		if (game->Initialize(512, 384, fullScreen))
+		if (game->Initialize(640, 480, fullScreen))
 		{
 			game->ShowCursor(false);
-			game->SetWindowName("CEZGS - UWOL: Quest for money");
+			game->SetWindowName("Retroworks - UWOL: Quest for money");
 
 			game->SetAttractMode(attract);
 			game->SetSaveAttract(saveState);

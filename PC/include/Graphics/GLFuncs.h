@@ -1,8 +1,5 @@
 #pragma once
 
-#include "SDL.h"
-#include "SDL_Image.h"
-#include "SDL_opengl.h"
 #include "GameData.h"
 
 class GLFuncs

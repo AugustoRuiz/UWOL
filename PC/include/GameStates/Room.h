@@ -94,6 +94,4 @@ private:
     std::vector<Enemigo*> _enemigos;
 	std::vector<Coin*> _monedasRecogidas;
     std::vector<Coin*> _monedas;
-
-	int miContador;
 };

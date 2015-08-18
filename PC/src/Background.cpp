@@ -23,8 +23,6 @@ void Background::InitBackground(TilesFondo tileFondo,
 			   int tilesY)
 {
 
-	TextureMgr *texMgr = TextureMgr::GetInstance();
-
 	this->_frames.push_back(Frame("data/TileFondo0.png", 0.0f, (float)tilesX, 0.0f, (float)tilesY));
 	this->_frames.push_back(Frame("data/TileFondo1.png", 0.0f, (float)tilesX, 0.0f, (float)tilesY));
 	this->_frames.push_back(Frame("data/TileFondo2.png", 0.0f, (float)tilesX, 0.0f, (float)tilesY));
