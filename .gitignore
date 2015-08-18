@@ -1,0 +1,13 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/PC/.vs
+/PC/bin/stderr.txt
+/PC/bin/stdout.txt
+/PC/bin/UWOL.exe - Acceso directo.lnk
+/PC/bin/UWOL.ilk
+/PC/bin/UWOL.log
+/PC/bin/UWOL.pdb
+/PC/obj
+/PC/UWOL.sdf

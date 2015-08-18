@@ -6,7 +6,7 @@
 #include "GameData.h"
 #include "IGameState.h"
 #include "CollisionMap.h"
-#include "GLFuncs.h"
+#include "Graphics.h"
 #include "Background.h"
 #include "InputManager.h"
 #include "Plataforma.h"
@@ -24,10 +24,11 @@ public:
 	~Room(void);
 
 	// Implementación de IGameState.
-	void Initialize(void);
-	string Update(Uint32 milliSec, IGameState *lastState);
-	void Draw(void);
-	void Dispose(void);
+	void OnEnter(void) override;
+	void OnExit(void) override;
+	string Update(Uint32 milliSec, Event & inputEvent) override;
+	void Draw(void) override;
+	void Dispose(void) override;
 
 	void setTileFondo(TilesFondo tile);
 	void setPlayer(Player *player);

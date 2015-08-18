@@ -1,7 +1,7 @@
 #pragma once
 
-#include "TextureMgr.h"
 #include "InputManager.h"
+#include "Event.h"
 #include "Graphics.h"
 #include "GameData.h"
 #include "IGameState.h"
@@ -10,9 +10,13 @@
 #include "Presentacion.h"
 #include "Portada.h"
 #include "Piramide.h"
+#include "EndGame.h"
+#include "GameOver.h"
+#include <string>
 #include <iostream>
 #include <iterator>
 #include <algorithm>
+#include <json/json.h>
 
 class Game
 {
@@ -61,4 +65,6 @@ private:
 	string _currentStatus;
 
 	void loadResources();
+	void handleInput(Event &currentEvent);
+	void updateAttractMode();
 };

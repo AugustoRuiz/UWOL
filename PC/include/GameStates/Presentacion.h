@@ -1,12 +1,10 @@
 #pragma once
 
 #include <fstream>
-#include "TextureMgr.h"
-#include "GLFuncs.h"
+#include "Graphics.h"
 #include "GameData.h"
 #include "Stage.h"
 #include "IGameState.h"
-#include "TextRenderer.h"
 
 class Presentacion : public IGameState
 {
@@ -18,10 +16,11 @@ public:
 	~Presentacion(void);
 
 	// Implementación de IGameState.
-	void Initialize(void);
-	string Update(Uint32 milliSec, IGameState *lastState);
-	void Draw(void);
-	void Dispose(void);
+	void OnEnter(void) override;
+	void OnExit(void) override;
+	string Update(Uint32 milliSec, Event & inputEvent) override;
+	void Draw(void) override;
+	void Dispose(void) override;
 
 private:
 

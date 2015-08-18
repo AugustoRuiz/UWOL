@@ -5,7 +5,7 @@
 #include "GameData.h"
 #include "Stage.h"
 #include "IGameState.h"
-#include "TextRenderer.h"
+#include "../Input/InputManager.h"
 
 #define WAIT_TIME 4000
 
@@ -16,10 +16,11 @@ public:
 	~Portada(void);
 
 	// Implementación de IGameState.
-	void Initialize(void);
-	string Update(Uint32 milliSec, IGameState *lastState);
-	void Draw(void);
-	void Dispose(void);
+	virtual void OnEnter(void) override;
+	virtual void OnExit(void) override;
+	string Update(Uint32 milliSec, Event & inputEvent) override;
+	void Draw(void) override;
+	void Dispose(void) override;
 
 private:
 

@@ -16,6 +16,8 @@ Portada::Portada()
 	this->_sonidos.push_back("sounds/coinPicked.ogg");
 	this->_sonidos.push_back("sounds/coinPicked.ogg");
 	this->_sonidos.push_back("sounds/coinPicked.ogg");
+
+	this->OnEnter();
 }
 
 Portada::~Portada()
@@ -23,7 +25,7 @@ Portada::~Portada()
 	this->Dispose();
 }
 
-void Portada::Initialize()
+void Portada::OnEnter()
 {
 	this->_currentFrame = 0;
 
@@ -33,6 +35,10 @@ void Portada::Initialize()
 	this->_currentTick = 0;
 
 	this->_incrFactor = INCR_FACTOR;
+}
+
+void Portada::OnExit() {
+
 }
 
 void Portada::Dispose()
@@ -57,14 +63,11 @@ void Portada::Draw()
 		false, false);
 }
 
-string Portada::Update(Uint32 milliSec, IGameState *lastState)
+string Portada::Update(Uint32 milliSec, Event & inputEvent)
 {
 	this->_currentAlpha += ((float)this->_incrFactor) *  milliSec * 0.001f;
 
-	InputManager *input = InputManager::GetInstance();
-	Event evt = input->GetLastEvent();
-
-	if (evt.Name == "KEY_DOWN" || evt.Name == "JOY_DOWN") {
+	if (inputEvent.Name == "KEY_DOWN" || inputEvent.Name == "JOY_DOWN") {
 		this->_incrFactor = 0;
 		this->_currentTick = 0;
 		this->_currentAlpha = 1.0f;
@@ -98,7 +101,7 @@ string Portada::Update(Uint32 milliSec, IGameState *lastState)
 		return this->Name;
 	}
 	else {
-		return "";
+		return "Presentacion";
 	}
 }
 

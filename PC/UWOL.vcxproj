@@ -55,7 +55,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>include;ext\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>include;ext\include;include\Animation;include\Entities;include\GameStates;include\Graphics;include\Input;include\Sound%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -79,7 +79,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>include;ext\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>include;ext\include;include\Animation;include\Entities;include\GameStates;include\Graphics;include\Input;include\Sound%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <DisableLanguageExtensions>false</DisableLanguageExtensions>
@@ -103,85 +103,91 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\Animation.cpp" />
-    <ClCompile Include="src\AnimationFrame.cpp" />
-    <ClCompile Include="src\AnimationPlayer.cpp" />
+    <ClCompile Include="src\GameStates\GameOver.cpp" />
+    <ClCompile Include="src\GameStates\EndGame.cpp" />
+    <ClCompile Include="src\Animation\Animation.cpp" />
+    <ClCompile Include="src\Animation\AnimationFrame.cpp" />
+    <ClCompile Include="src\Animation\AnimationPlayer.cpp" />
     <ClCompile Include="src\Background.cpp" />
-    <ClCompile Include="src\Coin.cpp" />
+    <ClCompile Include="src\Entities\Coin.cpp" />
     <ClCompile Include="src\CollisionMap.cpp" />
-    <ClCompile Include="src\EFanty.cpp" />
-    <ClCompile Include="src\EFranky.cpp" />
-    <ClCompile Include="src\Enemigo.cpp" />
-    <ClCompile Include="src\EVampy.cpp" />
-    <ClCompile Include="src\Event.cpp" />
-    <ClCompile Include="src\EWolfy.cpp" />
+    <ClCompile Include="src\Entities\EFanty.cpp" />
+    <ClCompile Include="src\Entities\EFranky.cpp" />
+    <ClCompile Include="src\Entities\Enemigo.cpp" />
+    <ClCompile Include="src\Entities\EVampy.cpp" />
+    <ClCompile Include="src\Input\Event.cpp" />
+    <ClCompile Include="src\Entities\EWolfy.cpp" />
     <ClCompile Include="src\FactoriaEnemigo.cpp" />
-    <ClCompile Include="src\Frame.cpp" />
+    <ClCompile Include="src\Animation\Frame.cpp" />
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\GameData.cpp" />
-    <ClCompile Include="src\GLFuncs.cpp" />
-    <ClCompile Include="src\Graphics.cpp" />
-    <ClCompile Include="src\InputManager.cpp" />
+    <ClCompile Include="src\Graphics\GLFuncs.cpp" />
+    <ClCompile Include="src\Graphics\Graphics.cpp" />
+    <ClCompile Include="src\Input\InputManager.cpp" />
     <ClCompile Include="src\jsoncpp.cpp" />
     <ClCompile Include="src\Log.cpp" />
-    <ClCompile Include="src\MusicManager.cpp" />
+    <ClCompile Include="src\Sound\MusicManager.cpp" />
     <ClCompile Include="src\NileEngine.cpp" />
-    <ClCompile Include="src\Piramide.cpp" />
+    <ClCompile Include="src\GameStates\Piramide.cpp" />
     <ClCompile Include="src\Plataforma.cpp" />
-    <ClCompile Include="src\Player.cpp" />
-    <ClCompile Include="src\Portada.cpp" />
-    <ClCompile Include="src\Presentacion.cpp" />
-    <ClCompile Include="src\Room.cpp" />
-    <ClCompile Include="src\Scanlines.cpp" />
-    <ClCompile Include="src\Stage.cpp" />
+    <ClCompile Include="src\Entities\Player.cpp" />
+    <ClCompile Include="src\GameStates\Portada.cpp" />
+    <ClCompile Include="src\GameStates\Presentacion.cpp" />
+    <ClCompile Include="src\GameStates\Room.cpp" />
+    <ClCompile Include="src\Graphics\Scanlines.cpp" />
+    <ClCompile Include="src\GameStates\Stage.cpp" />
     <ClCompile Include="src\StaticInitalizers.cpp" />
     <ClCompile Include="src\stdafx.cpp" />
-    <ClCompile Include="src\TextRenderer.cpp" />
-    <ClCompile Include="src\TextureMgr.cpp" />
+    <ClCompile Include="src\Graphics\TextRenderer.cpp" />
+    <ClCompile Include="src\Graphics\TextureMgr.cpp" />
     <ClCompile Include="src\TimerFuncs.cpp" />
+    <ClCompile Include="src\StatsDraw.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\Animation.h" />
-    <ClInclude Include="include\AnimationFrame.h" />
-    <ClInclude Include="include\AnimationPlayer.h" />
+    <ClInclude Include="include\GameStates\GameOver.h" />
+    <ClInclude Include="include\GameStates\EndGame.h" />
+    <ClInclude Include="include\Animation\Animation.h" />
+    <ClInclude Include="include\Animation\AnimationFrame.h" />
+    <ClInclude Include="include\Animation\AnimationPlayer.h" />
     <ClInclude Include="include\Background.h" />
-    <ClInclude Include="include\Coin.h" />
+    <ClInclude Include="include\Entities\Coin.h" />
     <ClInclude Include="include\CollisionMap.h" />
-    <ClInclude Include="include\EFanty.h" />
-    <ClInclude Include="include\EFranky.h" />
-    <ClInclude Include="include\Enemigo.h" />
-    <ClInclude Include="include\EVampy.h" />
-    <ClInclude Include="include\Event.h" />
-    <ClInclude Include="include\EWolfy.h" />
+    <ClInclude Include="include\Entities\EFanty.h" />
+    <ClInclude Include="include\Entities\EFranky.h" />
+    <ClInclude Include="include\Entities\Enemigo.h" />
+    <ClInclude Include="include\Entities\EVampy.h" />
+    <ClInclude Include="include\Input\Event.h" />
+    <ClInclude Include="include\Entities\EWolfy.h" />
     <ClInclude Include="include\FactoriaEnemigo.h" />
-    <ClInclude Include="include\Frame.h" />
+    <ClInclude Include="include\Animation\Frame.h" />
     <ClInclude Include="include\Game.h" />
     <ClInclude Include="include\GameData.h" />
-    <ClInclude Include="include\GLFuncs.h" />
-    <ClInclude Include="include\Graphics.h" />
-    <ClInclude Include="include\IDrawable.h" />
-    <ClInclude Include="include\IGameState.h" />
-    <ClInclude Include="include\InputManager.h" />
+    <ClInclude Include="include\Graphics\GLFuncs.h" />
+    <ClInclude Include="include\Graphics\Graphics.h" />
+    <ClInclude Include="include\Graphics\IDrawable.h" />
+    <ClInclude Include="include\GameStates\IGameState.h" />
+    <ClInclude Include="include\Input\InputManager.h" />
     <ClInclude Include="include\IUpdatable.h" />
     <ClInclude Include="include\json\json-forwards.h" />
     <ClInclude Include="include\json\json.h" />
     <ClInclude Include="include\Log.h" />
-    <ClInclude Include="include\MusicManager.h" />
-    <ClInclude Include="include\Piramide.h" />
+    <ClInclude Include="include\Sound\MusicManager.h" />
+    <ClInclude Include="include\GameStates\Piramide.h" />
     <ClInclude Include="include\Plataforma.h" />
-    <ClInclude Include="include\Player.h" />
-    <ClInclude Include="include\Portada.h" />
-    <ClInclude Include="include\Presentacion.h" />
-    <ClInclude Include="include\Room.h" />
-    <ClInclude Include="include\Scanlines.h" />
-    <ClInclude Include="include\Stage.h" />
+    <ClInclude Include="include\Entities\Player.h" />
+    <ClInclude Include="include\GameStates\Portada.h" />
+    <ClInclude Include="include\GameStates\Presentacion.h" />
+    <ClInclude Include="include\GameStates\Room.h" />
+    <ClInclude Include="include\Graphics\Scanlines.h" />
+    <ClInclude Include="include\GameStates\Stage.h" />
     <ClInclude Include="include\stdafx.h" />
-    <ClInclude Include="include\TextRenderer.h" />
-    <ClInclude Include="include\TextureMgr.h" />
+    <ClInclude Include="include\Graphics\TextRenderer.h" />
+    <ClInclude Include="include\Graphics\TextureMgr.h" />
     <ClInclude Include="include\TimerFuncs.h" />
     <ClInclude Include="include\UWOL.h" />
     <ClInclude Include="include\UWOL_private.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="include\StatsDraw.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="UWOL.rc" />

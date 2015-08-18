@@ -3,8 +3,7 @@
 #define NUM_COINS 300
 #define INCR_FACTOR 1
 
-Presentacion::Presentacion()
-{
+Presentacion::Presentacion() {
 	this->Name = "Presentacion";
 	VECTOR2 tileSize;
 
@@ -32,13 +31,11 @@ Presentacion::Presentacion()
 	}
 }
 
-Presentacion::~Presentacion()
-{
+Presentacion::~Presentacion() {
 	this->Dispose();
 }
 
-void Presentacion::Initialize()
-{
+void Presentacion::OnEnter() {
 	this->_currentAlpha = 0.0f;
 	this->_currentTick = 0;
 	this->_totalTicks = 0;
@@ -49,12 +46,14 @@ void Presentacion::Initialize()
 	MusicManager::PlayMusic("music/Money.ogg", true);
 }
 
+void Presentacion::OnExit() {
+	MusicManager::FadeOutMusic(300);
+}
+
 void Presentacion::Dispose()
 {
-	if (!this->_disposed)
-	{
-		for (int i = 0; i < NUM_COINS; i++)
-		{
+	if (!this->_disposed) {
+		for (int i = 0; i < NUM_COINS; i++) {
 			delete this->_coins[i];
 		}
 		delete this->_coins;
@@ -62,8 +61,7 @@ void Presentacion::Dispose()
 	}
 }
 
-void Presentacion::Draw()
-{
+void Presentacion::Draw() {
 	Frame &current = *(this->_currentFrame);
 
 	for (int i = 0; i < NUM_COINS; i++) {
@@ -85,8 +83,7 @@ void Presentacion::Draw()
 	_g->BlitFrameAbs(this->_frameSombra, _g->ScreenWidth - _g->OffsetX, 0, _g->OffsetX, _g->ScreenHeight, false, false);
 }
 
-string Presentacion::Update(Uint32 milliSec, IGameState *lastState)
-{
+string Presentacion::Update(Uint32 milliSec, Event & inputEvent) {
 	float val = (float)(.001 * this->_totalTicks);
 	this->_rTextTop = (float)(sin(val + 0) * .5 + .5);
 	this->_gTextTop = (float)(sin(val + 2) * .5 + .5);
@@ -94,7 +91,7 @@ string Presentacion::Update(Uint32 milliSec, IGameState *lastState)
 
 	this->_totalTicks += milliSec;
 
-	val = (float)(.002 * this->_totalTicks);
+	val = (float)(.0017 * this->_totalTicks);
 	this->_rTextBot = (float)(sin(val + 0) * .5 + .5);
 	this->_gTextBot = (float)(sin(val + 2) * .5 + .5);
 	this->_bTextBot = (float)(sin(val + 4) * .5 + .5);
@@ -103,36 +100,30 @@ string Presentacion::Update(Uint32 milliSec, IGameState *lastState)
 
 	this->_currentAlpha += ((float)this->_incrFactor) *  milliSec * 0.001f;
 
-	if (this->_incrFactor == 0)
-	{
+	if (this->_incrFactor == 0) {
 		this->_currentTick += milliSec;
 
-		if (this->_currentTick >= 60000)
-		{
+		if (this->_currentTick >= 60000) {
 			this->_currentTick = 0;
 			this->_incrFactor = -INCR_FACTOR;
 		}
 	}
 
-	if (this->_currentAlpha > 1.0f)
-	{
+	if (this->_currentAlpha > 1.0f) {
 		this->_incrFactor = 0;
 		this->_currentAlpha = 1.0f;
 	}
 
-	if (this->_currentAlpha < 0.0f && milliSec > 0)
-	{
+	if (this->_currentAlpha < 0.0f && milliSec > 0) {
 		this->_incrFactor = INCR_FACTOR;
 		this->_currentAlpha = 0.0f;
 		this->UpdateCurrentTexture();
 	}
 
-	for (int i = 0; i<NUM_COINS; i++)
-	{
+	for (int i = 0; i<NUM_COINS; i++) {
 		this->_coins[i]->Update(milliSec);
 		this->_coins[i]->_y += (int) this->_coins[i]->_speed.y;
-		if (this->_coins[i]->_y > _g->ScreenHeight)
-		{
+		if (this->_coins[i]->_y > _g->ScreenHeight) {
 			this->_coins[i]->_y = 0;
 			this->_coins[i]->_x = (int)((_g->ScreenWidth)*rand() / (RAND_MAX + 1.0));
 			this->_coins[i]->SetFrame((int)(7 * rand() / (RAND_MAX + 1.0)));
@@ -142,29 +133,25 @@ string Presentacion::Update(Uint32 milliSec, IGameState *lastState)
 	}
 
 	InputManager *input = InputManager::GetInstance();
-	Event evt = input->GetLastEvent();
-	if (evt.Name == "KEY_DOWN") {
-		SDLKey keySym = (SDLKey)evt.Data["key"].asInt();
+	if (inputEvent.Name == "KEY_DOWN") {
+		SDLKey keySym = (SDLKey)inputEvent.Data["key"].asInt();
 		if (keySym == input->DefaultKeyJump) {
 			input->SetControlMode(Keyboard);
-			return "Stage";
+			return "Piramide";
 		}
 	}
-	if (evt.Name == "JOY_DOWN") {
-		int button = evt.Data["button"].asInt();
+	if (inputEvent.Name == "JOY_DOWN") {
+		int button = inputEvent.Data["button"].asInt();
 		if (button == input->DefaultJoyJump) {
 			input->SetControlMode(Joystick);
-			return "Stage";
+			return "Piramide";
 		}
 	}
 
-	if (this->_currentFrame != this->_logos.end())
-	{
+	if (this->_currentFrame != this->_logos.end()) {
 		return this->Name;
 	}
-	else
-	{
-		MusicManager::FadeOutMusic(300);
+	else {
 		return "Portada";
 	}
 }

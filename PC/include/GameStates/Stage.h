@@ -8,6 +8,7 @@
 #include "IGameState.h"
 #include "Graphics.h"
 #include "AnimationPlayer.h"
+#include "StatsDraw.h"
 
 using namespace std;
 
@@ -18,12 +19,20 @@ public:
 	~Stage(void);
 
 	// Implementación de IGameState.
-	void Initialize(void);
-	string Update(Uint32 milliSec, IGameState *lastState);
-	void Draw(void);
-	void Dispose(void);
+	void OnEnter(void) override;
+	void OnExit(void) override;
+	string Update(Uint32 milliSec, Event & inputEvent) override;
+	void Draw(void) override;
+	void Dispose(void) override;
 
 	void GoToRoom(int roomIndex);
+
+	std::vector<Room*> Rooms;
+	Room *CurrentRoom;
+	int RoomIndex;
+
+	StatsDraw *StatsDrawer;
+
 private:
 
 	bool _disposed;
@@ -33,31 +42,17 @@ private:
 
 	Graphics *_g;
 
-	AnimationPlayer _coinAnimPlayer;
-	AnimationPlayer _uwolAnimPlayer;
-
 	Frame _frameSombra;
-
-	bool _rotatingCoin;
-	bool _movingUwol;
 
 	int _ultimoEstadoUwol;
 
 	int _profundidad;
-	int _currentRoomIdx;
 
 	float _fadeLevel;
 	float _fadeInc;
 	bool _fading;
 
-	std::vector<Room*> rooms;
-	Room *_currentRoom;
-
 	Player *_player;
 
-	void DrawLives();
 	void DrawTime();
-	void DrawCoins();
-	void DrawLevel();
-	void DrawScore();
 };

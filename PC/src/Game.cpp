@@ -54,13 +54,17 @@ bool Game::Initialize(int width, int height, bool fullscreen)
 
 	Log::Out << "Game: Preparing Stage..." << endl;
 
+	Stage* stage = new Stage();
+
 	this->AddState(new Portada());
 	this->AddState(new Presentacion());
-	this->AddState(new Piramide());
-	this->AddState(new Stage());
+	this->AddState(new Piramide((*stage)));
+	this->AddState(stage);
+	this->AddState(new EndGame(true));
+	this->AddState(new EndGame(false));
+	this->AddState(new GameOver());
 
-	_statesIt = _states.end();
-	_currentStatus = "";
+	_currentStatus = "Portada";
 
 	Log::Out << "Game: Initializing Scanlines..." << endl;
 
@@ -98,48 +102,7 @@ void Game::Dispose()
 void Game::Update(Uint32 mSecs)
 {
 	Event currentEvent = InputManager::GetInstance()->Update(mSecs);
-
-	if (currentEvent.Name == "KEY_DOWN") {
-		SDLKey keySym = (SDLKey)currentEvent.Data["key"].asInt();
-		switch (keySym) {
-			case SDLK_ESCAPE:
-				_running = false;
-				break;
-			case SDLK_SPACE:
-				aliasing = !aliasing;
-				break;
-			case SDLK_s:
-				scanlines = !scanlines;
-					break;
-			case SDLK_a:
-				this->_scanlines->Mode ^= 1;
-				break;
-			case SDLK_d:
-				debugPaint = !debugPaint;
-				break;
-			case SDLK_r:
-				// Dejamos de guardar después de guardar la pulsación de la tecla de grabar. Así la grabación 
-				// durará hasta el momento en el que se ha pulsado la tecla.
-				this->_savingStatus = false;
-				break;
-		}
-
-		if (this->_savingStatus)
-		{
-			this->_statusSaved = true;
-			this->_eventBuffer.push_back(this->_totalTicks);
-			this->_eventBuffer.push_back((Uint32)(0x3FFF & keySym));
-		}
-	}
-	if (currentEvent.Name == "KEY_UP") {
-		SDLKey keySym = (SDLKey)currentEvent.Data["key"].asInt();
-		if (this->_savingStatus)
-		{
-			this->_statusSaved = true;
-			this->_eventBuffer.push_back(this->_totalTicks);
-			this->_eventBuffer.push_back((Uint32)(0x4000 | (0x3FFF & keySym)));
-		}
-	}
+	this->handleInput(currentEvent);
 
 	if (this->_attractMode || this->_savingStatus)
 	{
@@ -148,41 +111,12 @@ void Game::Update(Uint32 mSecs)
 
 	if (this->_attractMode)
 	{
-		if (this->_evtBufferIterator != this->_eventBuffer.end())
-		{
-			if (this->_totalTicks >= *this->_evtBufferIterator)
-			{
-				++this->_evtBufferIterator;
-				Uint32 keyData = *this->_evtBufferIterator++;
-
-				SDL_KeyboardEvent fakeEvent;
-
-				fakeEvent.keysym.sym = (SDLKey)(keyData & 0x3FFF);
-				fakeEvent.type = ((keyData & 0x4000) == 0x4000) ? SDL_KEYUP : SDL_KEYDOWN;
-
-				_input->SetKeyPressedState(&fakeEvent);
-
-				//this->_running = (keyData & 0x3FFF) != SDLK_ESCAPE;
-			}
-		}
-		else
-		{
-			Log::Out << "Exiting attract mode..." << endl;
-			this->_attractMode = false;
-			_currentStatus = "Portada";
-		}
+		this->updateAttractMode();
 	}
 
 	if (_currentStatus == "")
 	{
-		if (this->_statesIt == _states.end()) {
-			this->_statesIt = this->_states.begin();
-		}
-		else {
-			++this->_statesIt;
-		}
-		_currentStatus = this->_statesIt->first;
-		this->_statesIt->second->Initialize();
+		throw "No next status!";
 	}
 
 	map<string, IGameState*>::iterator it = _states.find(_currentStatus);
@@ -190,14 +124,85 @@ void Game::Update(Uint32 mSecs)
 		this->_statesIt = it;
 		IGameState *state = it->second;
 		string oldStatus = _currentStatus;
-		_currentStatus = state->Update(mSecs, state);
+		_currentStatus = state->Update(mSecs, currentEvent);
 		// Si la ejecución del estado provoca un cambio de estado,
 		// y ese estado tiene un nombre, lo inicializamos.
 		if (oldStatus != _currentStatus) {
+			state->OnExit();
 			if (_states.find(_currentStatus) != _states.end()) {
-				_states[_currentStatus]->Initialize();
+				_states[_currentStatus]->OnEnter();
 			}
 		}
+	}
+	else {
+		stringstream ss;
+		ss << "Status " << _currentStatus << " not found!";
+		throw ss.str();
+	}
+}
+
+void Game::handleInput(Event &currentEvent) {
+	if (currentEvent.Name == "KEY_DOWN") {
+		SDLKey keySym = (SDLKey)(currentEvent.Data["key"].asInt());
+		switch (keySym) {
+		case SDLK_ESCAPE:
+			_running = false;
+			break;
+		case SDLK_SPACE:
+			aliasing = !aliasing;
+			break;
+		case SDLK_s:
+			scanlines = !scanlines;
+			break;
+		case SDLK_a:
+			this->_scanlines->Mode ^= 1;
+			break;
+		case SDLK_d:
+			debugPaint = !debugPaint;
+			break;
+		case SDLK_r:
+			// Dejamos de guardar después de guardar la pulsación de la tecla de grabar. Así la grabación 
+			// durará hasta el momento en el que se ha pulsado la tecla.
+			this->_savingStatus = false;
+			break;
+		}
+
+		if (this->_savingStatus) {
+			this->_statusSaved = true;
+			this->_eventBuffer.push_back(this->_totalTicks);
+			this->_eventBuffer.push_back((Uint32)(0x3FFF & keySym));
+		}
+	}
+	if (currentEvent.Name == "KEY_UP") {
+		SDLKey keySym = (SDLKey)(currentEvent.Data["key"].asInt());
+		if (this->_savingStatus) {
+			this->_statusSaved = true;
+			this->_eventBuffer.push_back(this->_totalTicks);
+			this->_eventBuffer.push_back((Uint32)(0x4000 | (0x3FFF & keySym)));
+		}
+	}
+}
+
+void Game::updateAttractMode() {
+	if (this->_evtBufferIterator != this->_eventBuffer.end()) {
+		if (this->_totalTicks >= *this->_evtBufferIterator) {
+			++this->_evtBufferIterator;
+			Uint32 keyData = *this->_evtBufferIterator++;
+
+			SDL_KeyboardEvent fakeEvent;
+
+			fakeEvent.keysym.sym = (SDLKey)(keyData & 0x3FFF);
+			fakeEvent.type = ((keyData & 0x4000) == 0x4000) ? SDL_KEYUP : SDL_KEYDOWN;
+
+			_input->SetKeyPressedState(&fakeEvent);
+
+			//this->_running = (keyData & 0x3FFF) != SDLK_ESCAPE;
+		}
+	}
+	else {
+		Log::Out << "Exiting attract mode..." << endl;
+		this->_attractMode = false;
+		_currentStatus = "Portada";
 	}
 }
 
@@ -241,7 +246,7 @@ void Game::SetAttractMode(bool attract)
 		map<string, IGameState*>::iterator it = _states.find(_currentStatus);
 		if (it != _states.end())
 		{
-			((Stage*) it->second)->GoToRoom(0);
+			((Stage*)it->second)->GoToRoom(0);
 			this->_totalTicks = 0;
 		}
 	}

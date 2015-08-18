@@ -112,6 +112,8 @@ int main(int argc, char *argv[])
 	catch (exception& e)
 	{
 		cout << e.what() << endl;
+		Log::Dispose();
+		return -1;
 	}
 
 	Log::Dispose();
