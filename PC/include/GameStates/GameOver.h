@@ -6,6 +6,7 @@
 #include "Graphics.h"
 #include "Frame.h"
 #include "MusicManager.h"
+#include "Game.h"
 
 class GameOver : public IGameState
 {

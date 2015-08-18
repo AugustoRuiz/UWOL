@@ -1,17 +1,15 @@
 #include "Stage.h"
 
-Stage::Stage(void)
-{
+Stage::Stage(void) {
 	this->Name = "Stage";
 	_g = Graphics::GetInstance();
 
 	// Cargar los recursos...
 	this->_frameSombra = Frame("data/TileSombra.png");
 
-	this->_player = new Player();
+	this->Player = new TPlayer();
 	this->StatsDrawer = new StatsDraw();
 
-	this->_profundidad = 1;
 	this->RoomIndex = 0;
 	this->CurrentRoom = this->loadRooms();
 
@@ -19,9 +17,17 @@ Stage::Stage(void)
 	this->_disposed = false;
 }
 
-Stage::~Stage(void)
-{
+Stage::~Stage(void) {
 	this->Dispose();
+}
+
+void Stage::Restart() {
+	this->RoomIndex = 0;
+	for (Room* r : this->Rooms) {
+		r->Completada = false;
+		r->Restart();
+	}
+	this->Player->Initialize();
 }
 
 void Stage::OnEnter() {
@@ -50,11 +56,11 @@ void Stage::Draw() {
 	_g->BlitFrameAbs(this->_frameSombra, 0, 0, _g->OffsetX, _g->ScreenHeight, false, false);
 	_g->BlitFrameAbs(this->_frameSombra, _g->ScreenWidth - _g->OffsetX, 0, _g->OffsetX, _g->ScreenHeight, false, false);
 
-	this->StatsDrawer->DrawLives(0, -32, this->_player->_vidas);
+	this->StatsDrawer->DrawLives(0, -32, this->Player->_vidas);
 	this->DrawTime();
-	this->StatsDrawer->DrawCoins(288, -32, this->_player->_coinsTaken);
-	this->StatsDrawer->DrawLevel(0, 320, this->_profundidad);
-	this->StatsDrawer->DrawScore(208, 320, this->_player->_score);
+	this->StatsDrawer->DrawCoins(288, -32, this->Player->_coinsTaken);
+	this->StatsDrawer->DrawLevel(0, 320, this->CurrentRoom->Depth);
+	this->StatsDrawer->DrawScore(208, 320, this->Player->_score);
 
 	if(this->_fading) {
 		_g->BlitFrameAlphaAbs(this->_frameSombra, 0, 0, _g->ScreenWidth, _g->ScreenHeight, this->_fadeLevel, false, false);
@@ -79,15 +85,14 @@ void Stage::DrawTime() {
 string Stage::Update(Uint32 milliSec, Event & inputEvent) {
 	this->StatsDrawer->Update(milliSec);
 
-	int estado;
-	estado = this->_player->getEstado();
+	int estado = this->Player->getEstado();
 
 	if(!this->_fading) {
 		if(estado & SalidaIzq || estado & SalidaDer) {
 			this->_fading = true;
-			this->_player->_score += 100;
+			this->Player->_score += 100;
 			if(this->CurrentRoom->_checkTime) {
-				this->_player->_score += ( ( (this->CurrentRoom->_timeLeft / 1000) + 1) * 5);
+				this->Player->_score += ( ( (this->CurrentRoom->_timeLeft / 1000) + 1) * 5);
 			}
 			this->CurrentRoom->Completada = true;
 
@@ -95,7 +100,17 @@ string Stage::Update(Uint32 milliSec, Event & inputEvent) {
 			this->_fadeInc = 1.0f;
 		}
 		else {
-			this->CurrentRoom->Update(milliSec, inputEvent);
+			if(estado & Muerto) {
+				if (this->Player->_vidas < 0) {
+					return "GameOver";
+				}
+				else {
+					return "Piramide";
+				}
+			}
+			else {
+				this->CurrentRoom->Update(milliSec, inputEvent);
+			}
 		}
 	}
 	else {
@@ -107,23 +122,17 @@ string Stage::Update(Uint32 milliSec, Event & inputEvent) {
 			this->_fadeInc = -1.0f;
 			
 			if(estado & SalidaDer) {
-				this->RoomIndex += this->_profundidad + 1;
+				this->RoomIndex += this->CurrentRoom->Depth + 1;
 			}
 			
 			if(estado & SalidaIzq) {
-				this->RoomIndex += this->_profundidad;
+				this->RoomIndex += this->CurrentRoom->Depth;
 			}			
-		}
-
-		if(this->_fadeLevel <= 0.0f) {
-			this->_fadeLevel = 0.0f;
-			this->_fadeInc = 1.0f;
-			this->_fading = false;
 
 			if (this->RoomIndex >= (int)this->Rooms.size()) {
 				// Comprobar si es el final del juego o no...
 				this->RoomIndex = 0;
-				if (this->_player->_coinsTaken > 255) {
+				if (this->Player->_coinsTaken > 255) {
 					return "FinJuego_OK";
 				}
 				else {
@@ -133,6 +142,12 @@ string Stage::Update(Uint32 milliSec, Event & inputEvent) {
 			else {
 				return "Piramide";
 			}
+		}
+
+		if(this->_fadeLevel <= 0.0f) {
+			this->_fadeLevel = 0.0f;
+			this->_fadeInc = 1.0f;
+			this->_fading = false;
 		}
 	}
 
@@ -144,9 +159,8 @@ void Stage::GoToRoom(int roomIndex)
 	Log::Out << "Current Room: " << this->RoomIndex << " of " << this->Rooms.size() << "." << endl;
 	this->RoomIndex = roomIndex;
 	this->CurrentRoom = this->Rooms[this->RoomIndex];
-	this->CurrentRoom->setPlayer(this->_player);
+	this->CurrentRoom->setPlayer(this->Player);
 	this->CurrentRoom->OnEnter();
-	this->_profundidad = this->Rooms[this->RoomIndex]->Depth;
 }
 
 Room* Stage::loadRooms()

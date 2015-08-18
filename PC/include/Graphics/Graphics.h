@@ -28,7 +28,7 @@ public:
 	VECTOR2 LightPosition;
 	VECTOR2 MaxShadowOffset;
 
-	SDL_Surface* Initialize(int screenWidth, int screenHeight, int worldWidth, int worldHeight, bool fullScreen);
+	bool Initialize(int screenWidth, int screenHeight, int worldWidth, int worldHeight, bool fullScreen);
 
 	void BlitColoredFrameAbs(const Frame& frame, int x, int y, int width, int height, float red, float green, float blue, float alpha, bool additive, bool flipX, bool flipY);
 	void BlitFrameAbs(const Frame& frame, int x, int y, int width, int height, bool flipX, bool flipY);

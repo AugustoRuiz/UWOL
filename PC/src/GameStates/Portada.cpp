@@ -9,10 +9,8 @@ Portada::Portada()
 
 	this->_imagenes.push_back(Frame("data/logoMojon.PNG"));
 	this->_imagenes.push_back(Frame("data/logoRetroworks.PNG"));
-	this->_imagenes.push_back(Frame("data/uwol_portada.PNG"));
 	this->_imagenes.push_back(Frame("data/credits.PNG"));
 
-	this->_sonidos.push_back("sounds/coinPicked.ogg");
 	this->_sonidos.push_back("sounds/coinPicked.ogg");
 	this->_sonidos.push_back("sounds/coinPicked.ogg");
 	this->_sonidos.push_back("sounds/coinPicked.ogg");

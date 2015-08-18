@@ -106,17 +106,27 @@ TEXTUREINFO* TextureMgr::GL_LoadTexture(SDL_Surface *textureSurf)
 	else {
 		//Load the texture
 		glBindTexture(GL_TEXTURE_2D, texNumber);
+		GLenum textureFormat;
 
-		if (textureSurf->format->BitsPerPixel == 24)
-		{
-			//Generate the texture
-			glTexImage2D(GL_TEXTURE_2D, 0, 4, textureSurf->w, textureSurf->h, 0, GL_BGR, GL_UNSIGNED_BYTE, textureSurf->pixels);
+		if (textureSurf->format->BitsPerPixel == 24) {
+			if (textureSurf->format->Rmask == 0xff) {
+				textureFormat = GL_RGB;
+			}
+			else {
+				textureFormat = GL_BGR;
+			}
 		}
-		else
-		{
-			//Generate the texture
-			glTexImage2D(GL_TEXTURE_2D, 0, 4, textureSurf->w, textureSurf->h, 0, GL_BGRA, GL_UNSIGNED_BYTE, textureSurf->pixels);
+		else {
+			if (textureSurf->format->Rmask == 0xff) {
+				textureFormat = GL_RGBA;
+			}
+			else {
+				textureFormat = GL_BGRA;
+			}
 		}
+
+		//Generate the texture
+		glTexImage2D(GL_TEXTURE_2D, 0, textureSurf->format->BytesPerPixel, textureSurf->w, textureSurf->h, 0, textureFormat, GL_UNSIGNED_BYTE, textureSurf->pixels);
 
 		//Use nearest filtering, very good
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);

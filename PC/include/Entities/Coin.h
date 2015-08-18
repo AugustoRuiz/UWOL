@@ -31,6 +31,7 @@ public:
 	int _y;
 
 	VECTOR2F _speed;
+	float _rotationFactor;
 
 	void SetFrame(int frame);
 	void SetTicks(int ticks);

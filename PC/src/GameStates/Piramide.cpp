@@ -10,7 +10,8 @@ Piramide::Piramide(Stage& stage) : _stage(stage) {
 void Piramide::OnEnter() {
 	this->_currentAlpha = 1.0f;
 	this->_incrFactor = 2;
-	MusicManager::PlayMusic("music/Piramide.ogg", true);
+	this->_stage.Player->initializePlayerData();
+	MusicManager::PlayMusic("music/Piramide.wav", true);
 }
 
 void Piramide::OnExit() {
@@ -19,6 +20,8 @@ void Piramide::OnExit() {
 
 string Piramide::Update(Uint32 milliSec, Event & inputEvent)
 {
+	this->_stage.StatsDrawer->Update(milliSec);
+
 	if (this->_currentAlpha < 1.0f) {
 		this->_currentAlpha += ((float)this->_incrFactor) *  milliSec * 0.001f;
 	}
@@ -30,13 +33,18 @@ string Piramide::Update(Uint32 milliSec, Event & inputEvent)
 
 void Piramide::Draw(void)
 {
-	int logoW = 128, logoH = 64;
-	_g->BlitFrame(this->_frameLogo, (_g->WorldWidth - logoW) / 2, 8, logoW, logoH, false, false);
+	int logoW = 512, logoH = 256;
+	_g->BlitFrameAlpha(this->_frameLogo, (_g->WorldWidth - logoW) / 2, -32, logoW, logoH, 0.25, false, false);
+
+	this->_stage.StatsDrawer->DrawLives(0, -32, this->_stage.Player->_vidas);
+	this->_stage.StatsDrawer->DrawCoins(288, -32, this->_stage.Player->_coinsTaken);
+	this->_stage.StatsDrawer->DrawLevel(0, 320, this->_stage.CurrentRoom->Depth);
+	this->_stage.StatsDrawer->DrawScore(208, 320, this->_stage.Player->_score);
 
 	int ladrilloW = 32, ladrilloH = 16;
 
-	int posX = _g->WorldWidth / 2;
-	int posIniX = (_g->WorldWidth - ladrilloW) / 2, posY = 8 + logoH + 8;
+	int posIniX = _g->WorldWidth / 2, posY = logoH / 2;
+	int posX = posIniX;
 	int profundidad = 0;
 
 	float r = 1.0f, g = 1.0f, b = 1.0f;
@@ -52,7 +60,7 @@ void Piramide::Draw(void)
 			r = 1.0f; g = 0.0f; b = 0.0f;
 		}
 		else if (this->_stage.Rooms[i]->Completada) {
-			r = 1.0f; g = 1.0f; b = 0.0f;
+			r = 0.5f; g = 0.5f; b = 1.0f;
 		}
 		else {
 			r = 1.0f; g = 1.0f; b = 1.0f;

@@ -17,14 +17,14 @@ Graphics::~Graphics()
 {
 }
 
-SDL_Surface* Graphics::Initialize(int screenWidth, int screenHeight, int worldWidth, int worldHeight, bool fullscreen) {
+bool Graphics::Initialize(int screenWidth, int screenHeight, int worldWidth, int worldHeight, bool fullscreen) {
 	this->ScreenWidth = screenWidth;
 	this->ScreenHeight = screenHeight;
 	this->WorldWidth = worldWidth;
 	this->WorldHeight = worldHeight;
 	this->OffsetX = (this->ScreenWidth - this->WorldWidth) / 2;
 	this->OffsetY = (this->ScreenHeight - this->WorldHeight) / 2;
-	return _gl->Initialize(this->ScreenWidth, this->ScreenHeight, fullscreen);
+	return (NULL != _gl->Initialize(this->ScreenWidth, this->ScreenHeight, fullscreen));
 }
 
 void Graphics::BlitColoredFrameAbs(const Frame& frame, int x, int y, int width, int height,

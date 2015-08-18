@@ -26,16 +26,13 @@ bool Game::Initialize(int width, int height, bool fullscreen)
 
 	_g = Graphics::GetInstance();
 	_input = InputManager::GetInstance();
-	_texMgr = TextureMgr::GetInstance();
 
 	Log::Out << "Game: Initializing screen (" << width << " x " << height << ")..." << endl;
 
-	_screen = _g->Initialize(width, height, 384, 320, fullscreen);
+	_running = _g->Initialize(width, height, 384, 320, fullscreen);
 
 	_g->LightPosition.x = _g->WorldWidth / 2;
 	_g->LightPosition.y = 0;
-
-	_running = (NULL != _screen);
 
 	if (_running)
 	{
@@ -54,12 +51,12 @@ bool Game::Initialize(int width, int height, bool fullscreen)
 
 	Log::Out << "Game: Preparing Stage..." << endl;
 
-	Stage* stage = new Stage();
+	this->_stage = new Stage();
 
 	this->AddState(new Portada());
 	this->AddState(new Presentacion());
-	this->AddState(new Piramide((*stage)));
-	this->AddState(stage);
+	this->AddState(new Piramide((*(this->_stage))));
+	this->AddState(this->_stage);
 	this->AddState(new EndGame(true));
 	this->AddState(new EndGame(false));
 	this->AddState(new GameOver());
@@ -96,7 +93,7 @@ void Game::Dispose()
 
 	delete _scanlines;
 
-	_texMgr->DeleteTextures();
+	TextureMgr::GetInstance()->DeleteTextures();
 }
 
 void Game::Update(Uint32 mSecs)
@@ -225,6 +222,10 @@ void Game::Render()
 	}
 
 	SDL_GL_SwapBuffers();
+}
+
+void Game::Restart() {
+	this->_stage->Restart();
 }
 
 void Game::SetAttractMode(bool attract)

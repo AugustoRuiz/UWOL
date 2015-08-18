@@ -21,6 +21,8 @@ Room::Room(void) {
 	this->_textureCamiseta = Frame("data/Camiseta.png");
 	this->_textureSombra = Frame("data/pixBlanco.png");
 
+	this->_player = NULL;
+
 	this->_disposed = false;
 
 	this->Completada = false;
@@ -30,8 +32,10 @@ Room::~Room(void) {
 	this->Dispose();
 }
 
-void Room::OnEnter(void) {
-	this->_camisetaVisible = false;
+void Room::Restart() {
+	if (this->_player != NULL) {
+		this->_player->initializePlayerData();
+	}
 
 	if (!this->Completada) {
 		vector<Coin*>::iterator iter;
@@ -44,27 +48,68 @@ void Room::OnEnter(void) {
 		}
 		this->_monedasRecogidas.clear();
 	}
+	vector<Enemigo*>::iterator enemIter;
+	vector<IDrawable*>::iterator iterDraw;
+	Enemigo *enem;
 
-	this->restartLevel();
+	// Posición del foco!
+	_g->LightPosition.x = _g->WorldWidth / 2;
+	_g->LightPosition.y = 0;
+	_valorOscuro = 0.0001f;
+
+	this->_timeLeft = this->Completada ? 0 : this->_initialTime;
+	this->_checkTime = true;
+
+	this->quitarCamiseta();
+
+	for (enemIter = this->_enemigos.begin(); enemIter != this->_enemigos.end(); enemIter++) {
+		enem = *enemIter;
+		if (enem->getTipoEnemigo() == Fanty) {
+			// Borro el enemigo...
+			this->_enemigos.erase(enemIter);
+
+			// Lo elimino de la lista de updatables y drawables.
+			std::vector<IDrawable*>::iterator drwIter;
+			std::vector<IUpdatable*>::iterator updIter;
+			for (updIter = this->_updatables.begin(); updIter != this->_updatables.end(); updIter++) {
+				if (*updIter == enem) {
+					this->_updatables.erase(updIter);
+					break;
+				}
+			}
+			for (drwIter = this->_drawables.begin(); drwIter != this->_drawables.end(); drwIter++) {
+				if (*drwIter == enem) {
+					this->_drawables.erase(drwIter);
+					break;
+				}
+			}
+			break;
+		}
+	}
+}
+
+void Room::OnEnter(void) {
+	this->Restart();
 
 	string song;
 	if (this->Depth < 4)
-		song = "music/Zona1.ogg";
+		song = "music/Zona1.wav";
 	else if (this->Depth < 7)
-		song = "music/Zona2.ogg";
+		song = "music/Zona2.wav";
 	else if (this->Depth < 9)
-		song = "music/Zona3.ogg";
+		song = "music/Zona3.wav";
 	else
-		song = "music/Zona4.ogg";
+		song = "music/Zona4.wav";
 
 	MusicManager::PlayMusic(song, true);
 }
 
 void Room::OnExit() {
+	this->_player = NULL;
 	MusicManager::FadeOutMusic(300);
 }
 
-void Room::setPlayer(Player *player) {
+void Room::setPlayer(TPlayer *player) {
 	if(player != NULL) {
 		VECTOR2 vect;
 		vect.x = 32;
@@ -74,30 +119,29 @@ void Room::setPlayer(Player *player) {
 		player->setMap(this->_map);
 	}
 
-	if(player != _player) {
+	if (find(this->_updatables.begin(), this->_updatables.end(), player) == this->_updatables.end()) {
 		this->_updatables.push_back(player);
-		_player = player;
 	}
+	_player = player;
 }
 
 string Room::Update(Uint32 milliSec, Event & inputEvent) {
 	bool playerWasKilled = false;
 
-	if(this->_player->getEstado() & Muriendo) {
+	if(this->_player->getEstado() & (Muriendo | Muerto)) {
 		playerWasKilled = true;
 		this->_checkTime = false;
 	}
 
 	for (vector<IUpdatable*>::iterator it = _updatables.begin(); it != _updatables.end();++it) {
 		IUpdatable* current = *it;
-		if(!(this->_player->getEstado() & (TodasMonedasCogidas | Muriendo)) || (current->UpdateWhenNoCoins())) {
+		if(!(this->_player->getEstado() & (TodasMonedasCogidas | Muriendo | Muerto)) || (current->UpdateWhenNoCoins())) {
 			current->Update(milliSec);
 		}
 	}
 
-	if(!(this->_player->getEstado() & Muriendo) && playerWasKilled) {
-		this->OnExit();
-		return "Piramide";
+	if(this->_player->getEstado() & Muerto) {
+		return "";
 	}
 
 	int tileX1, tileX2, tileY1, tileY2;
@@ -141,48 +185,6 @@ string Room::Update(Uint32 milliSec, Event & inputEvent) {
 
 int Room::getEstado() {
 	return this->_estado;
-}
-
-void Room::restartLevel() {
-	vector<Enemigo*>::iterator enemIter;
-	vector<IDrawable*>::iterator iterDraw;	
-	Enemigo *enem;
-
-	// Posición del foco!
-	_g->LightPosition.x = _g->WorldWidth / 2;
-	_g->LightPosition.y = 0;
-	_valorOscuro = 0.0001f;
-
-	this->_timeLeft = this->Completada ? 0 : this->_initialTime;
-	this->_checkTime = true;
-
-	this->_player->initializePlayerData();
-	this->quitarCamiseta();
-
-	for(enemIter = this->_enemigos.begin(); enemIter != this->_enemigos.end(); enemIter++) {
-		enem = *enemIter;
-		if(enem->getTipoEnemigo() == Fanty) {
-			// Borro el enemigo...
-			this->_enemigos.erase(enemIter);
-
-			// Lo elimino de la lista de updatables y drawables.
-			std::vector<IDrawable*>::iterator drwIter;
-			std::vector<IUpdatable*>::iterator updIter;
-			for(updIter = this->_updatables.begin(); updIter != this->_updatables.end(); updIter++) {
-				if(*updIter == enem) {
-					this->_updatables.erase(updIter);
-					break;
-				}
-			}
-			for(drwIter = this->_drawables.begin(); drwIter != this->_drawables.end(); drwIter++) {
-				if(*drwIter == enem) {
-					this->_drawables.erase(drwIter);
-					break;
-				}
-			}
-			break;
-		}
-	}
 }
 
 void Room::checkEnemies(RECTANGLEF rect) {
@@ -309,77 +311,84 @@ void Room::pickCoins(int tileX1, int tileX2, int tileY1, int tileY2) {
 }
 
 void Room::Draw(void) {
-	int count = (int) this->_drawables.size();
+	if (this->_player != NULL) {
 
-	_back->Draw();
+		int estadoUwol = this->_player->getEstado();
 
-	for(int ii=0; ii < count; ii++) {
-		IDrawable* current = _drawables[ii];
-		if(!(this->_player->getEstado() & (TodasMonedasCogidas | Muriendo)) || (current->DrawWhenNoCoins())) {
-			current->DrawShadow();
+		if (estadoUwol != Muerto) {
+			int count = (int) this->_drawables.size();
+
+			_back->Draw();
+
+			for (int ii = 0; ii < count; ii++) {
+				IDrawable* current = _drawables[ii];
+				if (!(estadoUwol & (TodasMonedasCogidas | Muriendo)) || (current->DrawWhenNoCoins())) {
+					current->DrawShadow();
+				}
+			}
+			if (this->_camisetaVisible) {
+				this->drawSombraCamiseta();
+			}
+
+			_player->DrawShadow();
+
+			for (int ii = 0; ii < count; ii++) {
+				IDrawable* current = _drawables[ii];
+				if (!(estadoUwol & (TodasMonedasCogidas | Muriendo)) || (current->DrawWhenNoCoins())) {
+					current->Draw();
+				}
+			}
+
+			count = (int) this->_plataformas.size();
+
+			for (int i = 0; i < count; i++) {
+				Plataforma *plat = this->_plataformas[i];
+				plat->Draw();
+			}
+
+			if (estadoUwol & TodasMonedasCogidas) {
+				int posMap1, posMap2, posMap3, posMap4;
+
+				posMap1 = this->_map->cols * 9 + 1;
+				posMap2 = this->_map->cols * 8 + 1;
+				posMap3 = this->_map->cols * 9 + 10;
+				posMap4 = this->_map->cols * 8 + 10;
+				if (this->_map->map[posMap1] == COLLISION_BLOCK && this->_map->map[posMap2] != COLLISION_BLOCK) {
+					_g->BlitFrame(this->_textureFlechaIzq, 32, 288, 32, 32, false, false);
+				}
+				if (this->_map->map[posMap3] == COLLISION_BLOCK && this->_map->map[posMap4] != COLLISION_BLOCK) {
+					_g->BlitFrame(this->_textureFlechaDer, 320, 288, 32, 32, false, false);
+				}
+			}
+
+			if (this->_camisetaVisible) {
+				this->drawCamiseta();
+			}
+
+			_player->Draw();
+
+			// Si está el fantasma por ahí, oscurecemos la escena...
+			if (this->_timeLeft <= 0) {
+				_g->BlitColoredFrame(this->_textureSombra,
+					0, 0,
+					_g->WorldWidth, _g->WorldHeight,
+					0.0f, 0.0f, 0.03125f, _valorOscuro, false, false, false);
+			}
+
+			count = (int) this->_enemigos.size();
+			for (int i = 0; i < count; i++) {
+				Enemigo *enem = this->_enemigos[i];
+				if (enem->getTipoEnemigo() == Fanty) {
+					// enem->DrawShadow();
+					enem->Draw();
+				}
+			}
+
+			if (debugPaint) {
+				this->_map->DebugPaint();
+				this->_player->DebugPaint();
+			}
 		}
-	}
-	if(this->_camisetaVisible) {
-		this->drawSombraCamiseta();
-	}
-
-	_player->DrawShadow();
-
-	for(int ii=0; ii < count; ii++) {
-		IDrawable* current = _drawables[ii];
-		if(!(this->_player->getEstado() & (TodasMonedasCogidas | Muriendo)) || (current->DrawWhenNoCoins())) {
-			current->Draw();
-		}
-	}
-
-	count = (int) this->_plataformas.size();
-	
-	for(int i=0; i < count; i++) {
-		Plataforma *plat = this->_plataformas[i];
-		plat->Draw();
-	}
-
-	if(this->_player->getEstado() & TodasMonedasCogidas) {
-		int posMap1, posMap2, posMap3, posMap4;
-
-		posMap1 = this->_map->cols * 9 + 1;
-		posMap2 = this->_map->cols * 8 + 1;
-		posMap3 = this->_map->cols * 9 + 10;
-		posMap4 = this->_map->cols * 8 + 10;
-		if(this->_map->map[posMap1] == COLLISION_BLOCK && this->_map->map[posMap2] != COLLISION_BLOCK) {
-			_g->BlitFrame(this->_textureFlechaIzq, 32, 288, 32, 32, false, false);
-		}
-		if(this->_map->map[posMap3] == COLLISION_BLOCK && this->_map->map[posMap4] != COLLISION_BLOCK) {
-			_g->BlitFrame(this->_textureFlechaDer, 320, 288, 32, 32, false, false);
-		}
-	}
-
-	if(this->_camisetaVisible) {
-		this->drawCamiseta();
-	}
-
-	_player->Draw();
-
-		// Si está el fantasma por ahí, oscurecemos la escena...
-	if(this->_timeLeft <= 0) {
-		_g->BlitColoredFrame(this->_textureSombra, 
-							 0, 0, 
-							 _g->WorldWidth, _g->WorldHeight, 
-							 0.0f, 0.0f, 0.03125f, _valorOscuro, false, false, false);
-	}
-
-	count = (int) this->_enemigos.size();
-	for(int i=0; i < count; i++) {
-		Enemigo *enem = this->_enemigos[i];
-		if(enem->getTipoEnemigo() == Fanty) {
-			// enem->DrawShadow();
-			enem->Draw();
-		}
-	}
-
-	if(debugPaint) {
-		this->_map->DebugPaint();
-		this->_player->DebugPaint();
 	}
 }
 
@@ -476,6 +485,8 @@ void Room::AddFanty() {
 
 Coin* Room::AddCoin(char tileX, char tileY, VECTOR2 tileSize) {
 	Coin *coin = new Coin();
+	coin->_rotationFactor = (float)((2 * rand() / (RAND_MAX + 1.0)) + 0.5f);
+
 	coin->setTileSize(tileSize);
 	coin->setPos(tileX, tileY);
 

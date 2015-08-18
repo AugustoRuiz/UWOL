@@ -30,8 +30,10 @@ public:
 	void Draw(void) override;
 	void Dispose(void) override;
 
+	void Restart();
+
 	void setTileFondo(TilesFondo tile);
-	void setPlayer(Player *player);
+	void setPlayer(TPlayer *player);
 
 	int _timeLeft;
 	bool _checkTime;
@@ -42,7 +44,7 @@ public:
     Enemigo* AddEnemy(TipoEnemigo tipo, Velocidad velocidad, char tileIni, char tileFin, char tileVert, VECTOR2 tileSize);
     Coin* AddCoin(char tileX, char tileY, VECTOR2 tileSize);
         
-	Player *_player;
+	TPlayer *_player;
 
 	bool loadRoom(ifstream &roomsFile);
 
@@ -71,8 +73,6 @@ private:
 	Enemigo* _fanty;
 
 	void AddFanty();
-
-	void restartLevel();
 
 	void pickCoins(int tileX1, int tileX2, int tileY1, int tileY2);
 	void checkEnemies(RECTANGLEF rect);

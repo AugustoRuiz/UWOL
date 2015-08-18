@@ -38,6 +38,7 @@ public:
 	void SaveAttractModeData();
 
 	void AddState(IGameState* state);
+	void Restart();
 protected:
 	Game(void);
 	~Game(void);
@@ -56,8 +57,6 @@ private:
 
 	Graphics *_g;
 	InputManager *_input;
-	TextureMgr *_texMgr;
-	SDL_Surface *_screen;
 	Scanlines *_scanlines;
 
 	map<string, IGameState*> _states;
@@ -67,4 +66,6 @@ private:
 	void loadResources();
 	void handleInput(Event &currentEvent);
 	void updateAttractMode();
+
+	Stage* _stage;
 };

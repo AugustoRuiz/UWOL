@@ -9,11 +9,11 @@
 #include "InputManager.h"
 #include "MusicManager.h"
 
-class Player : public IDrawable, public IUpdatable
+class TPlayer : public IDrawable, public IUpdatable
 {
 public:
-	Player(void);
-	~Player(void);
+	TPlayer(void);
+	~TPlayer(void);
 
 	void setTileSize(VECTOR2 tileSize);
 

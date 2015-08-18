@@ -1,27 +1,10 @@
 #include "Player.h"
 
-Player::Player()
-{
-	this->Initialize();
-}
-
-Player::~Player()
-{
-	this->Dispose();
-}
-
-void Player::Initialize()
+TPlayer::TPlayer()
 {
 	this->_graphics = Graphics::GetInstance();
-
-	this->initializePlayerData();
-
-	this->_vidas = 3;
-
-	_animPlayer.setAnimation(Animation::Get("uwol_stand_right"));
-
+	this->_animPlayer.setAnimation(Animation::Get("uwol_stand_right"));
 	this->_input = InputManager::GetInstance();
-
 	this->_map = NULL;
 
 	this->_colRect.x = 4;
@@ -34,13 +17,25 @@ void Player::Initialize()
 	this->_posRect.width = 32;
 	this->_posRect.height = 32;
 
-	this->_score = 0;
-	this->_coinsTaken = 0;
+	this->Initialize();
 
 	this->_disposed = false;
 }
 
-void Player::initializePlayerData()
+TPlayer::~TPlayer()
+{
+	this->Dispose();
+}
+
+void TPlayer::Initialize()
+{
+	this->initializePlayerData();
+	this->_vidas = 3;
+	this->_score = 0;
+	this->_coinsTaken = 0;
+}
+
+void TPlayer::initializePlayerData()
 {
 	this->_x = 32;
 	this->_y = 256;
@@ -58,7 +53,7 @@ void Player::initializePlayerData()
 	this->_alpha = 1.0f;
 }
 
-void Player::Dispose()
+void TPlayer::Dispose()
 {
 	if (!this->_disposed)
 	{
@@ -66,22 +61,22 @@ void Player::Dispose()
 	}
 }
 
-void Player::setMap(CollisionMap *map)
+void TPlayer::setMap(CollisionMap *map)
 {
 	this->_map = map;
 }
 
-bool Player::DrawWhenNoCoins()
+bool TPlayer::DrawWhenNoCoins()
 {
 	return true;
 }
 
-bool Player::UpdateWhenNoCoins()
+bool TPlayer::UpdateWhenNoCoins()
 {
 	return true;
 }
 
-void Player::Draw()
+void TPlayer::Draw()
 {
 	if (!(this->_estado & Parpadeo) || this->_visibleParpadeo) {
 		_graphics->BlitFrameAlpha(_animPlayer.GetCurrentFrame(),
@@ -90,7 +85,7 @@ void Player::Draw()
 	}
 }
 
-void Player::DrawShadow()
+void TPlayer::DrawShadow()
 {
 	if (!(this->_estado & Parpadeo) || this->_visibleParpadeo) {
 		_graphics->BlitShadow(_animPlayer.GetCurrentFrame(),
@@ -99,7 +94,7 @@ void Player::DrawShadow()
 	}
 }
 
-void Player::Update(Uint32 milliSec)
+void TPlayer::Update(Uint32 milliSec)
 {
 	if (!(this->_estado & Muriendo))
 	{
@@ -139,7 +134,7 @@ void Player::Update(Uint32 milliSec)
 		if (this->_y > 320.0f && !musMgr->IsPlayingMusic())
 		{
 			this->_vidas--;
-			this->initializePlayerData();
+			this->setEstado(Muerto);
 		}
 	}
 
@@ -161,7 +156,7 @@ void Player::Update(Uint32 milliSec)
 	}
 }
 
-bool Player::Collides(int tileX, int tileY)
+bool TPlayer::Collides(int tileX, int tileY)
 {
 	if (tileX > this->_map->cols - 1)
 	{
@@ -175,10 +170,14 @@ bool Player::Collides(int tileX, int tileY)
 	if (tileY < 0)
 		return false;
 
+	if (tileY > this->_map->rows) {
+		return false;
+	}
+
 	return (this->_map->map[tileX + (tileY * this->_map->cols)] == COLLISION_BLOCK);
 }
 
-void Player::getTiles(int &tileX, int &tileY, int &tileX2, int &tileY2)
+void TPlayer::getTiles(int &tileX, int &tileY, int &tileX2, int &tileY2)
 {
 	if ((this->_x + this->_colRect.x) / this->_map->cellWidth >= 0.0f)
 	{
@@ -217,7 +216,7 @@ void Player::getTiles(int &tileX, int &tileY, int &tileX2, int &tileY2)
 	}
 }
 
-void Player::checkMapCollisions(Uint32 milliSec)
+void TPlayer::checkMapCollisions(Uint32 milliSec)
 {
 	int tileX, tileY, tileX2, tileY2;
 	float dx, dy;
@@ -280,7 +279,7 @@ void Player::checkMapCollisions(Uint32 milliSec)
 	}
 }
 
-void Player::DebugPaint()
+void TPlayer::DebugPaint()
 {
 	vector<VECTOR2> vertexes;
 
@@ -298,7 +297,7 @@ void Player::DebugPaint()
 	_graphics->DrawPolyLines(vertexes, 1.0f, 1.0f, 1.0f, 1.0f);
 }
 
-void Player::checkInput(Uint32 milliSec)
+void TPlayer::checkInput(Uint32 milliSec)
 {
 	bool horizKeyPressed = false;
 
@@ -418,7 +417,7 @@ void Player::checkInput(Uint32 milliSec)
 	}
 }
 
-void Player::setEstado(int estado)
+void TPlayer::setEstado(int estado)
 {
 	this->_estado = estado;
 
@@ -449,28 +448,28 @@ void Player::setEstado(int estado)
 	}
 }
 
-int Player::getEstado()
+int TPlayer::getEstado()
 {
 	return this->_estado;
 }
 
-void Player::setAlpha(float alpha)
+void TPlayer::setAlpha(float alpha)
 {
 	this->_alpha = alpha;
 }
 
-void Player::setPosition(char tileX, char tileY)
+void TPlayer::setPosition(char tileX, char tileY)
 {
 	this->_x = (float)(tileX * this->_tileSize.x);
 	this->_y = (float)(tileY * this->_tileSize.y);
 }
 
-void Player::setTileSize(VECTOR2 tileSize)
+void TPlayer::setTileSize(VECTOR2 tileSize)
 {
 	this->_tileSize = tileSize;
 }
 
-void Player::setAnimation(string name) {
+void TPlayer::setAnimation(string name) {
 	stringstream ss;
 	ss << name;
 	if (this->_estado & Desnudo) {

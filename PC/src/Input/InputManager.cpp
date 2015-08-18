@@ -16,6 +16,7 @@ InputManager::InputManager()
 	for (int i = 0; i<1024; i++) this->_keyStates[i] = false;
 
 	this->Enabled = true;
+	this->_previousHatStatus = SDL_HAT_CENTERED;
 }
 
 InputManager *InputManager::GetInstance(void)
@@ -111,11 +112,16 @@ Event InputManager::Update(int milliSecs)
 
 	if (this->_joystick != NULL) {
 		Uint8 hatStatus = SDL_JoystickGetHat(this->_joystick, 0);
-		result.Name = "JOY_HAT";
-		result.Data["hat"] = hatStatus;
-		this->setKeyFromHat(hatStatus, SDL_HAT_LEFT, ActionKeysLeft);
-		this->setKeyFromHat(hatStatus, SDL_HAT_RIGHT, ActionKeysRight);
-		this->setKeyFromHat(hatStatus, SDL_HAT_DOWN, ActionKeysDown);
+		if (hatStatus != _previousHatStatus) {
+			result.Name = "JOY_HAT";
+			result.Data["hat"] = hatStatus;
+		}
+		if (this->_controlMode == Joystick) {
+			this->setKeyFromHat(hatStatus, SDL_HAT_LEFT, ActionKeysLeft);
+			this->setKeyFromHat(hatStatus, SDL_HAT_RIGHT, ActionKeysRight);
+			this->setKeyFromHat(hatStatus, SDL_HAT_DOWN, ActionKeysDown);
+		}
+		_previousHatStatus = hatStatus;
 	}
 
 	_lastEvent = result;
@@ -126,14 +132,14 @@ void InputManager::setKeyFromHat(int hatStatus, int hatDirection, ActionKeys key
 	if ((hatStatus & hatDirection) == hatDirection) {
 		SDL_KeyboardEvent ev;
 		ev.type = SDL_KEYDOWN;
-		ev.keysym.sym = Keys[ActionKeysRight];
+		ev.keysym.sym = Keys[key];
 		this->SetKeyPressedState(&ev);
 	}
 	else {
-		if (!this->IsKeyPressed(ActionKeysRight)) {
+		if (this->IsKeyPressed(key)) {
 			SDL_KeyboardEvent ev;
 			ev.type = SDL_KEYUP;
-			ev.keysym.sym = Keys[ActionKeysRight];
+			ev.keysym.sym = Keys[key];
 			this->SetKeyPressedState(&ev);
 		}
 	}

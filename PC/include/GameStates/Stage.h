@@ -26,12 +26,14 @@ public:
 	void Dispose(void) override;
 
 	void GoToRoom(int roomIndex);
+	void Restart();
 
 	std::vector<Room*> Rooms;
 	Room *CurrentRoom;
 	int RoomIndex;
 
 	StatsDraw *StatsDrawer;
+	TPlayer *Player;
 
 private:
 
@@ -46,13 +48,9 @@ private:
 
 	int _ultimoEstadoUwol;
 
-	int _profundidad;
-
 	float _fadeLevel;
 	float _fadeInc;
 	bool _fading;
-
-	Player *_player;
 
 	void DrawTime();
 };

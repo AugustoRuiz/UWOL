@@ -20,6 +20,8 @@ private:
 	ControlMode _controlMode;
 	SDL_Joystick *_joystick;
 
+	int _previousHatStatus;
+
 	void setKeyFromHat(int hatStatus, int hatDirection, ActionKeys key);
 
 public:

@@ -13,12 +13,13 @@ GameOver::~GameOver()
 
 void GameOver::OnEnter()
 {
-	MusicManager::PlayMusic("GameOver.ogg", false);
+	MusicManager::PlayMusic("music/GameOver.wav", false);
 }
 
 void GameOver::OnExit()
 {
 	MusicManager::FadeOutMusic(300);
+	Game::GetInstance()->Restart();
 }
 
 string GameOver::Update(Uint32 milliSec, Event & inputEvent)
@@ -31,7 +32,10 @@ string GameOver::Update(Uint32 milliSec, Event & inputEvent)
 
 void GameOver::Draw(void)
 {
-	_g->BlitFrame(this->_currentFrame, 0, 0, this->_currentFrame.Texture->width, this->_currentFrame.Texture->height, false, false);
+	int width = this->_currentFrame.Texture->width * 2;
+	int height = this->_currentFrame.Texture->height * 2;
+	
+	_g->BlitCenteredFrameAlpha(this->_currentFrame, width, height, 1.0f, false, false);
 }
 
 void GameOver::Dispose(void)

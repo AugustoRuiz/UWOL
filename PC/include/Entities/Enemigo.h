@@ -14,7 +14,7 @@ public:
 
 	void setTipoEnemigo(TipoEnemigo tipo);
 	void setTileSize(VECTOR2 tileSize);
-	void setPlayer(Player *player);
+	void setPlayer(TPlayer *player);
 
 	void Draw();
 	void DrawShadow(void);
@@ -46,7 +46,7 @@ protected:
 
 	AnimationPlayer _animPlayer;
 
-	Player* _player;
+	TPlayer* _player;
 
 	VECTOR2 _tileSize;
 

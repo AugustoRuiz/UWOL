@@ -48,7 +48,8 @@ enum Estados
 	Muriendo = 8,
 	TodasMonedasCogidas = 16,
 	SalidaIzq = 32,
-	SalidaDer = 64
+	SalidaDer = 64,
+	Muerto = 128
 };
 
 enum Facing

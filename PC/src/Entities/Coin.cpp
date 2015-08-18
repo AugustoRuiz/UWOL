@@ -15,6 +15,7 @@ void Coin::Initialize()
 	this->_animPlayer.setAnimation(Animation::Get("coin_flip"));
 	this->_disposed = false;
 	this->_g = Graphics::GetInstance();
+	this->_rotationFactor = 1.0f;
 }
 
 void Coin::Dispose()
@@ -77,7 +78,7 @@ void Coin::DrawInPos(int pX, int pY, float alpha)
 
 void Coin::Update(Uint32 milliSec)
 {
-	this->_animPlayer.Update(milliSec);
+	this->_animPlayer.Update((Uint32)(milliSec * this->_rotationFactor));
 }
 
 void Coin::SetFrame(int frame) {

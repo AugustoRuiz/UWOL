@@ -28,6 +28,7 @@ Presentacion::Presentacion() {
 		this->_coins[i]->SetFrame((int)(7 * rand() / (RAND_MAX + 1.0)));
 		this->_coins[i]->_speed.y = (i/100) + 1 + (float)(2 * rand() / (RAND_MAX + 1.0));
 		this->_coins[i]->SetTicks((int)(TICKS_ANIM_COIN * rand() / (RAND_MAX + 1.0)));
+		this->_coins[i]->_rotationFactor = (float)((3 * rand() / (RAND_MAX + 1.0)) + 0.5f);
 	}
 }
 
@@ -84,19 +85,19 @@ void Presentacion::Draw() {
 }
 
 string Presentacion::Update(Uint32 milliSec, Event & inputEvent) {
-	float val = (float)(.001 * this->_totalTicks);
+	float val = (float)(.01 * this->_totalTicks);
 	this->_rTextTop = (float)(sin(val + 0) * .5 + .5);
 	this->_gTextTop = (float)(sin(val + 2) * .5 + .5);
 	this->_bTextTop = (float)(sin(val + 4) * .5 + .5);
 
 	this->_totalTicks += milliSec;
 
-	val = (float)(.0017 * this->_totalTicks);
+	val = (float)(.017 * this->_totalTicks);
 	this->_rTextBot = (float)(sin(val + 0) * .5 + .5);
 	this->_gTextBot = (float)(sin(val + 2) * .5 + .5);
 	this->_bTextBot = (float)(sin(val + 4) * .5 + .5);
 
-	_textAlpha = (float) (sin(.05 * (this->_totalTicks/milliSec)) * .5 + .5);
+	this->_textAlpha = 1.0f; //(float) (sin(.05 * (this->_totalTicks/milliSec)) * .5 + .5);
 
 	this->_currentAlpha += ((float)this->_incrFactor) *  milliSec * 0.001f;
 

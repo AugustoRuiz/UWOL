@@ -80,7 +80,7 @@ void Enemigo::setAlpha(float alpha)
     this->_alpha = alpha;
 }
 
-void Enemigo::setPlayer(Player *player)
+void Enemigo::setPlayer(TPlayer *player)
 {
 	this->_player = player;
 }
