@@ -140,24 +140,24 @@ void Game::Update(Uint32 mSecs)
 
 void Game::handleInput(Event &currentEvent) {
 	if (currentEvent.Name == "KEY_DOWN") {
-		SDLKey keySym = (SDLKey)(currentEvent.Data["key"].asInt());
-		switch (keySym) {
-			case SDLK_ESCAPE:
+		ActionKeys key = (ActionKeys)(currentEvent.Data["key"].asInt());
+		switch (key) {
+			case ActionKeysExit:
 				_running = false;
 				break;
-			case SDLK_SPACE:
+			case ActionKeysAliasing:
 				aliasing = !aliasing;
 				break;
-			case SDLK_s:
+			case ActionKeysScanlines:
 				scanlines = !scanlines;
 					break;
-			case SDLK_a:
+			case ActionKeysAltScanlines:
 				this->_scanlines->Mode ^= 1;
 				break;
-			case SDLK_d:
+			case ActionKeysDebug:
 				debugPaint = !debugPaint;
 				break;
-			case SDLK_r:
+			case ActionKeysStopRecording:
 				// Dejamos de guardar después de guardar la pulsación de la tecla de grabar. Así la grabación 
 				// durará hasta el momento en el que se ha pulsado la tecla.
 				this->_savingStatus = false;
@@ -169,15 +169,15 @@ void Game::handleInput(Event &currentEvent) {
 		if (this->_savingStatus) {
 			this->_statusSaved = true;
 			this->_eventBuffer.push_back(this->_totalTicks);
-			this->_eventBuffer.push_back((Uint32)(0x3FFF & keySym));
+			this->_eventBuffer.push_back((Uint32)(0x3FFF & key));
 		}
 	}
 	if (currentEvent.Name == "KEY_UP") {
-		SDLKey keySym = (SDLKey)(currentEvent.Data["key"].asInt());
+		ActionKeys key = (ActionKeys)(currentEvent.Data["key"].asInt());
 		if (this->_savingStatus) {
 			this->_statusSaved = true;
 			this->_eventBuffer.push_back(this->_totalTicks);
-			this->_eventBuffer.push_back((Uint32)(0x4000 | (0x3FFF & keySym)));
+			this->_eventBuffer.push_back((Uint32)(0x4000 | (0x3FFF & key)));
 		}
 	}
 	}
@@ -188,14 +188,12 @@ void Game::updateAttractMode() {
 				++this->_evtBufferIterator;
 				Uint32 keyData = *this->_evtBufferIterator++;
 
-				SDL_KeyboardEvent fakeEvent;
+				Event fakeEvent;
 
-				fakeEvent.keysym.sym = (SDLKey)(keyData & 0x3FFF);
-				fakeEvent.type = ((keyData & 0x4000) == 0x4000) ? SDL_KEYUP : SDL_KEYDOWN;
+				fakeEvent.Data["key"] = (ActionKeys)(keyData & 0x3FFF);
+				fakeEvent.Name = ((keyData & 0x4000) == 0x4000) ? "KEY_UP" : "KEY_DOWN";
 
-				_input->SetKeyPressedState(&fakeEvent);
-
-				//this->_running = (keyData & 0x3FFF) != SDLK_ESCAPE;
+				_input->SetKeyPressedState(fakeEvent);
 			}
 		}
 	else {

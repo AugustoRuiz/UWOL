@@ -76,6 +76,20 @@ bool TPlayer::UpdateWhenNoCoins()
 	return true;
 }
 
+int TPlayer::GetScore() {
+	return this->_score;
+}
+
+void TPlayer::AddScore(int amount) {
+	int oldScore = this->_score;
+	this->_score += amount;
+
+	if ((oldScore < 1000 && this->_score >= 1000) ||
+	    (oldScore < 2500 && this->_score >= 2500)) {
+		this->_vidas++;
+	}
+}
+
 void TPlayer::Draw()
 {
 	if (!(this->_estado & Parpadeo) || this->_visibleParpadeo) {

@@ -93,13 +93,13 @@ void Room::OnEnter(void) {
 
 	string song;
 	if (this->Depth < 4)
-		song = "music/Zona1.wav";
+		song = "music/Zona1.ogg";
 	else if (this->Depth < 7)
-		song = "music/Zona2.wav";
+		song = "music/Zona2.ogg";
 	else if (this->Depth < 9)
-		song = "music/Zona3.wav";
+		song = "music/Zona3.ogg";
 	else
-		song = "music/Zona4.wav";
+		song = "music/Zona4.ogg";
 
 	MusicManager::PlayMusic(song, true);
 }
@@ -223,7 +223,7 @@ void Room::pickCamiseta(int tileX1, int tileX2, int tileY1, int tileY2) {
 	   (this->_player->getEstado() & Desnudo)
 	  ) {
 		this->quitarCamiseta();
-		this->_player->_score += 5;
+		this->_player->AddScore(15);
 		this->_player->setEstado((this->_player->getEstado() & 0xFFFFFFF0) | Normal);
 	}
 }
@@ -298,7 +298,7 @@ void Room::pickCoins(int tileX1, int tileX2, int tileY1, int tileY2) {
 			this->_monedasRecogidas.push_back(coin);
 
 			this->_player->_coinsTaken ++;
-			this->_player->_score ++;
+			this->_player->AddScore(1);
 			
 			MusicManager::PlayFx("sounds/coinPicked.ogg", false);
 			break;
@@ -576,7 +576,7 @@ bool Room::loadRoom(ifstream &roomsFile) {
 		roomsFile.read(reinterpret_cast<char*>(&tileY), sizeof(unsigned char));
 		this->AddCoin(tileX, tileY, vect);
 		
-		this->_initialTime += 3000;
+		this->_initialTime += 2000;
 
 		moreData = (unsigned char)roomsFile.peek();
 		// Log::Out << "Adding coin..." << endl;

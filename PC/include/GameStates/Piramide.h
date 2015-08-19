@@ -6,16 +6,20 @@
 #include "InputManager.h"
 #include "MusicManager.h"
 #include "Stage.h"
+#include <math.h>
 
 using namespace std;
 
 class Piramide : public IGameState
 {
+	float _sinValue;
+	float _ticks;
 	float _currentAlpha;
 	int _incrFactor;
 
 	Frame _frameLadrillo;
 	Frame _frameLogo;
+	Frame _frameFlecha;
 
 	Graphics* _g;
 	Stage& _stage;

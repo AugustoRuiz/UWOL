@@ -42,11 +42,14 @@ public:
 	float _x, _y;
 
 	int _vidas;
-	int _score;
 	int _coinsTaken;
 
 	RECTANGLEF _posRect;
+
+	void AddScore(int amount);
+	int GetScore();
 private:
+	int _score;
 
 	AnimationPlayer _animPlayer;
 	InputManager *_input;

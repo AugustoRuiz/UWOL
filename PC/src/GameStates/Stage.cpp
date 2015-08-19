@@ -35,13 +35,13 @@ void Stage::OnEnter() {
 }
 
 void Stage::OnExit() {
-	if(this->CurrentRoom != NULL) {
+	if (this->CurrentRoom != NULL) {
 		this->CurrentRoom->OnExit();
 	}
 }
 
 void Stage::Dispose() {
-	if(!this->_disposed) {
+	if (!this->_disposed) {
 		this->disposeRooms();
 		this->_disposed = true;
 	}
@@ -60,9 +60,9 @@ void Stage::Draw() {
 	this->DrawTime();
 	this->StatsDrawer->DrawCoins(288, -32, this->Player->_coinsTaken);
 	this->StatsDrawer->DrawLevel(0, 320, this->CurrentRoom->Depth);
-	this->StatsDrawer->DrawScore(208, 320, this->Player->_score);
+	this->StatsDrawer->DrawScore(208, 320, this->Player->GetScore());
 
-	if(this->_fading) {
+	if (this->_fading) {
 		_g->BlitFrameAlphaAbs(this->_frameSombra, 0, 0, _g->ScreenWidth, _g->ScreenHeight, this->_fadeLevel, false, false);
 	}
 }
@@ -71,14 +71,14 @@ void Stage::DrawTime() {
 	stringstream ss;
 	ss << setfill('0') << setw(3) << (this->CurrentRoom->_timeLeft > 0 ? (this->CurrentRoom->_timeLeft / 1000) + 1 : 0);
 
-	_g->DrawString(128, - 16, "TIME", 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f);
-	_g->DrawString(192, - 16, "*", 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f);
-	
-	if(this->CurrentRoom->_timeLeft < 10000) {
-		_g->DrawString(208, - 16, ss.str(), 1.0f, 0.0f, 0.0f,  1.0f, 0.0f, 0.0f);
+	_g->DrawString(128, -16, "TIME", 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+	_g->DrawString(192, -16, "*", 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f);
+
+	if (this->CurrentRoom->_timeLeft < 10000) {
+		_g->DrawString(208, -16, ss.str(), 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f);
 	}
 	else {
-		_g->DrawString(208, - 16, ss.str(), 1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f);
+		_g->DrawString(208, -16, ss.str(), 1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f);
 	}
 }
 
@@ -87,12 +87,12 @@ string Stage::Update(Uint32 milliSec, Event & inputEvent) {
 
 	int estado = this->Player->getEstado();
 
-	if(!this->_fading) {
-		if(estado & SalidaIzq || estado & SalidaDer) {
+	if (!this->_fading) {
+		if (estado & SalidaIzq || estado & SalidaDer) {
 			this->_fading = true;
-			this->Player->_score += 100;
-			if(this->CurrentRoom->_checkTime) {
-				this->Player->_score += ( ( (this->CurrentRoom->_timeLeft / 1000) + 1) * 5);
+			this->Player->AddScore(100);
+			if (this->CurrentRoom->_checkTime) {
+				this->Player->AddScore(((this->CurrentRoom->_timeLeft / 1000) + 1) * 5);
 			}
 			this->CurrentRoom->Completada = true;
 
@@ -100,7 +100,7 @@ string Stage::Update(Uint32 milliSec, Event & inputEvent) {
 			this->_fadeInc = 1.0f;
 		}
 		else {
-			if(estado & Muerto) {
+			if (estado & Muerto) {
 				if (this->Player->_vidas < 0) {
 					return "GameOver";
 				}
@@ -115,23 +115,26 @@ string Stage::Update(Uint32 milliSec, Event & inputEvent) {
 	}
 	else {
 		this->_fadeLevel += this->_fadeInc * FADE_STEP * milliSec;
-		
-		if(this->_fadeLevel >= 1.0f) {
+
+		if (this->_fadeLevel >= 1.0f) {
 			// Está en negro, pasamos a la siguiente fase...
 			this->_fadeLevel = 1.0f;
 			this->_fadeInc = -1.0f;
-			
-			if(estado & SalidaDer) {
+
+			if (estado & SalidaDer) {
 				this->RoomIndex += this->CurrentRoom->Depth + 1;
 			}
-			
-			if(estado & SalidaIzq) {
+
+			if (estado & SalidaIzq) {
 				this->RoomIndex += this->CurrentRoom->Depth;
-			}			
+			}
 
 			if (this->RoomIndex >= (int)this->Rooms.size()) {
 				// Comprobar si es el final del juego o no...
 				this->RoomIndex = 0;
+				// Fix guarro para la pirámide...
+				this->CurrentRoom = this->Rooms[this->RoomIndex];
+
 				if (this->Player->_coinsTaken > 255) {
 					return "FinJuego_OK";
 				}
@@ -140,11 +143,13 @@ string Stage::Update(Uint32 milliSec, Event & inputEvent) {
 				}
 			}
 			else {
+				// Fix guarro para la pirámide...
+				this->CurrentRoom = this->Rooms[this->RoomIndex];
 				return "Piramide";
 			}
 		}
 
-		if(this->_fadeLevel <= 0.0f) {
+		if (this->_fadeLevel <= 0.0f) {
 			this->_fadeLevel = 0.0f;
 			this->_fadeInc = 1.0f;
 			this->_fading = false;
@@ -171,18 +176,18 @@ Room* Stage::loadRooms()
 
 	ifstream roomsFile("data/rooms.dat", ifstream::binary);
 	VECTOR2 vect;
-	
+
 	vect.x = 32;
 	vect.y = 32;
 
 	int roomDepth = 1;
 	int roomCount = 0;
 
-	if(roomsFile)
+	if (roomsFile)
 	{
 		bool more = true;
-		while(more)
-		{	
+		while (more)
+		{
 			Room* room = new Room();
 			more = room->loadRoom(roomsFile);
 			room->Depth = roomDepth;
@@ -201,7 +206,7 @@ Room* Stage::loadRooms()
 		Log::Out << "Couldn't open file data/rooms.dat" << endl;
 	}
 
-	if(this->Rooms.size() == 0)
+	if (this->Rooms.size() == 0)
 	{
 		// Sacar los datos de una habitación.
 		tmpRoom = new Room();
@@ -243,9 +248,9 @@ Room* Stage::loadRooms()
 void Stage::disposeRooms()
 {
 	size_t count = this->Rooms.size();
-    for(size_t ii=0; ii < count; ii++)
-    {
-       this->Rooms[ii]->Dispose();
-    }
+	for (size_t ii = 0; ii < count; ii++)
+	{
+		this->Rooms[ii]->Dispose();
+	}
 	this->Rooms.clear();
 }

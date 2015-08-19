@@ -9,6 +9,9 @@
 #include "UWOL.h"
 #include "Log.h"
 
+#define PI 3.14159265358979323846
+#define TAU 2 * PI
+
 #define COLLISION_TYPE_NONE 0
 #define COLLISION_TYPE_UP 1
 #define COLLISION_TYPE_DOWN 2

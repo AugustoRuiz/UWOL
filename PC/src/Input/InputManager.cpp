@@ -2,21 +2,55 @@
 
 InputManager::InputManager()
 {
-	this->Keys[ActionKeysLeft] = SDLK_LEFT;
-	this->Keys[ActionKeysRight] = SDLK_RIGHT;
-	this->Keys[ActionKeysUp] = SDLK_LCTRL;
-	this->Keys[ActionKeysDown] = SDLK_DOWN;
+	//this->ActionMap.insert(ACTIONMAP_ITEM(ActionKeysLeft, SDLK_LEFT));
+	//this->ActionMap.insert(ACTIONMAP_ITEM(ActionKeysLeft, SDLK_o));
+
+	//this->ActionMap.insert(ACTIONMAP_ITEM(ActionKeysRight, SDLK_RIGHT));
+	//this->ActionMap.insert(ACTIONMAP_ITEM(ActionKeysRight, SDLK_p));
+
+	//this->ActionMap.insert(ACTIONMAP_ITEM(ActionKeysUp, SDLK_LCTRL));
+	//this->ActionMap.insert(ACTIONMAP_ITEM(ActionKeysUp, SDLK_RCTRL));
+	//this->ActionMap.insert(ACTIONMAP_ITEM(ActionKeysUp, SDLK_q));
+
+	//this->ActionMap.insert(ACTIONMAP_ITEM(ActionKeysDown, SDLK_DOWN));
+	//this->ActionMap.insert(ACTIONMAP_ITEM(ActionKeysDown, SDLK_a));
+
+	//this->ActionMap.insert(ACTIONMAP_ITEM(ActionKeysExit, SDLK_ESCAPE));
+	//this->ActionMap.insert(ACTIONMAP_ITEM(ActionKeysStopRecording, SDLK_r));
+	//this->ActionMap.insert(ACTIONMAP_ITEM(ActionKeysPause, SDLK_h));
+	//this->ActionMap.insert(ACTIONMAP_ITEM(ActionKeysScanlines, SDLK_F1));
+	//this->ActionMap.insert(ACTIONMAP_ITEM(ActionKeysAltScanlines, SDLK_F2));
+	//this->ActionMap.insert(ACTIONMAP_ITEM(ActionKeysDebug, SDLK_d));
+
+	this->KeyMap[SDLK_LEFT] = ActionKeysLeft;
+	this->KeyMap[SDLK_o] = ActionKeysLeft;
+
+	this->KeyMap[SDLK_RIGHT] = ActionKeysRight;
+	this->KeyMap[SDLK_p] = ActionKeysRight;
+
+	this->KeyMap[SDLK_LCTRL] = ActionKeysUp;
+	this->KeyMap[SDLK_RCTRL] = ActionKeysUp;
+	this->KeyMap[SDLK_q] = ActionKeysUp;
+	
+	this->KeyMap[SDLK_DOWN] = ActionKeysDown;
+	this->KeyMap[SDLK_a] = ActionKeysDown;
+
+	this->KeyMap[SDLK_ESCAPE] = ActionKeysExit;
+	this->KeyMap[SDLK_r] = ActionKeysStopRecording;
+	this->KeyMap[SDLK_h] = ActionKeysPause;
+	this->KeyMap[SDLK_F1] = ActionKeysScanlines;
+	this->KeyMap[SDLK_F2] = ActionKeysAltScanlines;
+	this->KeyMap[SDLK_F3] = ActionKeysAliasing;
+	this->KeyMap[SDLK_d] = ActionKeysDebug;
 
 	this->SetControlMode(Keyboard);
 	this->_joystick = NULL;
-	this->DefaultKeyJump = SDLK_LCTRL;
-	this->DefaultJoyJump = 0; // Button A on Wii
 
-	this->_keyStates = new bool[1024];
-	for (int i = 0; i<1024; i++) this->_keyStates[i] = false;
+	this->_keyStates = new bool[ACTION_KEYS_COUNT];
+	for (int i = 0; i < ACTION_KEYS_COUNT; i++) this->_keyStates[i] = false;
 
 	this->Enabled = true;
-	this->_previousHatStatus = SDL_HAT_CENTERED;
+	this->_previousHatStatus = HAT_CENTER;
 }
 
 InputManager *InputManager::GetInstance(void)
@@ -26,17 +60,27 @@ InputManager *InputManager::GetInstance(void)
 
 bool InputManager::IsKeyPressed(ActionKeys key)
 {
-	return _keyStates[Keys[key]];
+	return _keyStates[key];
 }
 
-void InputManager::SetKeyPressedState(SDL_KeyboardEvent *key)
+void InputManager::SetKeyPressedState(Event &ev)
 {
-     bool pressed = ( key->type == SDL_KEYDOWN );
-	_keyStates[key->keysym.sym] = pressed;
+	bool pressed = (ev.Name == "KEY_DOWN");
+	_keyStates[ev.Data["key"].asInt()] = pressed;
 }
 
-void InputManager::RedefineKey(ActionKeys which, SDLKey value) {
-	Keys[which] = value;
+void InputManager::RedefineKey(ActionKeys which, int value, bool replace) {
+	if (replace) {
+		// Buscamos todas las entradas del KeyMap que tienen la actionkey which.
+		KEYMAP::iterator it = KeyMap.begin();
+		do {
+			if (it->second == which) {
+				KeyMap.erase(it->first);
+			}
+			if (it != KeyMap.end()) { ++it; }
+		} while (it != KeyMap.end());
+	}
+	KeyMap.insert(KEYMAP_ITEM(value, which));
 }
 
 void InputManager::SetControlMode(ControlMode mode) {
@@ -54,60 +98,59 @@ Event InputManager::Update(int milliSecs)
 	}
 
 	switch (event.type) {
-			// Look for a keypress 
-		case SDL_KEYDOWN:
-			if (this->Enabled) {
-				if (this->_controlMode == Keyboard) {
-					this->SetKeyPressedState(&(event.key));
-				}
+		// Look for a keypress 
+	case SDL_KEYDOWN:
+		if (this->Enabled) {
+			int key = event.key.keysym.sym;
+			if (this->KeyMap.find(key) != this->KeyMap.end()) {
 				result.Name = "KEY_DOWN";
-				result.Data["key"] = event.key.keysym.sym;
-				result.Data["modifiers"] = event.key.keysym.mod;
-			}
-			break;
-		case SDL_KEYUP:
-			if (this->Enabled) {
+				result.Data["key"] = this->KeyMap[key];
 				if (this->_controlMode == Keyboard) {
-					this->SetKeyPressedState(&(event.key));
+					this->SetKeyPressedState(result);
 				}
+			}
+		}
+		break;
+	case SDL_KEYUP:
+		if (this->Enabled) {
+			int key = event.key.keysym.sym;
+			if (this->KeyMap.find(key) != this->KeyMap.end()) {
 				result.Name = "KEY_UP";
-				result.Data["key"] = event.key.keysym.sym;
-			}
-			break;
-		case SDL_JOYBUTTONDOWN:
-			if (this->Enabled) {
-				if (event.jbutton.which == 0 && event.jbutton.button == JOY_BUTTON_0) {
-					if (this->_controlMode == Joystick) {
-						SDL_KeyboardEvent ev;
-						ev.type = SDL_KEYDOWN;
-						ev.keysym.sym = Keys[ActionKeysUp];
-						this->SetKeyPressedState(&ev);
-					}
-					result.Name = "JOY_DOWN";
-					result.Data["button"] = event.jbutton.button;
+				result.Data["key"] = this->KeyMap[key];
+				if (this->_controlMode == Keyboard) {
+					this->SetKeyPressedState(result);
 				}
 			}
-			break;
-		case SDL_JOYBUTTONUP:
-			if (this->Enabled) {
-				if (event.jbutton.which == 0 && event.jbutton.button == JOY_BUTTON_0) {
-					if (this->_controlMode == Joystick) {
-						SDL_KeyboardEvent ev;
-						ev.type = SDL_KEYUP;
-						ev.keysym.sym = Keys[ActionKeysUp];
-						this->SetKeyPressedState(&ev);
-					}
-					result.Name = "JOY_UP";
-					result.Data["button"] = event.jbutton.button;
+		}
+		break;
+	case SDL_JOYBUTTONDOWN:
+		if (this->Enabled) {
+			if (event.jbutton.which == 0 && event.jbutton.button >= 0 && event.jbutton.button <= 4) {
+				if (this->_controlMode == Joystick) {
+					this->setKeyFromJoyEvent(1, 1, ActionKeysUp);
 				}
+				result.Name = "JOY_DOWN";
+				result.Data["button"] = event.jbutton.button;
 			}
-			break;
-		case SDL_QUIT:
-			//Log::WriteLog("Received SDL_QUIT... Ignoring...\n");
-			// _running = false;
-			break;
-		default:
-			break;
+		}
+		break;
+	case SDL_JOYBUTTONUP:
+		if (this->Enabled) {
+			if (event.jbutton.which == 0 && event.jbutton.button >= 0 && event.jbutton.button <= 4) {
+				if (this->_controlMode == Joystick) {
+					this->setKeyFromJoyEvent(0, 0, ActionKeysUp);
+				}
+				result.Name = "JOY_UP";
+				result.Data["button"] = event.jbutton.button;
+			}
+		}
+		break;
+	case SDL_QUIT:
+		//Log::WriteLog("Received SDL_QUIT... Ignoring...\n");
+		// _running = false;
+		break;
+	default:
+		break;
 	}
 
 	if (this->_joystick != NULL) {
@@ -117,9 +160,9 @@ Event InputManager::Update(int milliSecs)
 			result.Data["hat"] = hatStatus;
 		}
 		if (this->_controlMode == Joystick) {
-			this->setKeyFromHat(hatStatus, SDL_HAT_LEFT, ActionKeysLeft);
-			this->setKeyFromHat(hatStatus, SDL_HAT_RIGHT, ActionKeysRight);
-			this->setKeyFromHat(hatStatus, SDL_HAT_DOWN, ActionKeysDown);
+			this->setKeyFromJoyEvent(hatStatus, HAT_LEFT, ActionKeysLeft);
+			this->setKeyFromJoyEvent(hatStatus, HAT_RIGHT, ActionKeysRight);
+			this->setKeyFromJoyEvent(hatStatus, HAT_DOWN, ActionKeysDown);
 		}
 		_previousHatStatus = hatStatus;
 	}
@@ -128,19 +171,19 @@ Event InputManager::Update(int milliSecs)
 	return result;
 }
 
-void InputManager::setKeyFromHat(int hatStatus, int hatDirection, ActionKeys key) {
-	if ((hatStatus & hatDirection) == hatDirection) {
-		SDL_KeyboardEvent ev;
-		ev.type = SDL_KEYDOWN;
-		ev.keysym.sym = Keys[key];
-		this->SetKeyPressedState(&ev);
+void InputManager::setKeyFromJoyEvent(int status, int mask, ActionKeys key) {
+	if ((status & mask) == mask) {
+		Event ev;
+		ev.Name = "KEY_DOWN";
+		ev.Data["key"] = key;
+		this->SetKeyPressedState(ev);
 	}
 	else {
 		if (this->IsKeyPressed(key)) {
-			SDL_KeyboardEvent ev;
-			ev.type = SDL_KEYUP;
-			ev.keysym.sym = Keys[key];
-			this->SetKeyPressedState(&ev);
+			Event ev;
+			ev.Name = "KEY_UP";
+			ev.Data["key"] = key;
+			this->SetKeyPressedState(ev);
 		}
 	}
 }

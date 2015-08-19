@@ -3,12 +3,12 @@
 EndGame::EndGame(bool ok): _ok(ok) {
 	_g = Graphics::GetInstance();
 	if (ok) {
-		this->_tuneName = "music/EndOK.wav";
+		this->_tuneName = "music/EndOK.ogg";
 		this->Name = "FinJuego_OK";
 		this->_currentFrame = Frame("data/fin-good.png");
 	}
 	else {
-		this->_tuneName = "music/EndKO.wav";
+		this->_tuneName = "music/EndKO.ogg";
 		this->Name = "FinJuego_KO";
 		this->_currentFrame = Frame("data/fin-bad.png");
 	}

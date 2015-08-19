@@ -13,7 +13,7 @@ GameOver::~GameOver()
 
 void GameOver::OnEnter()
 {
-	MusicManager::PlayMusic("music/GameOver.wav", false);
+	MusicManager::PlayMusic("music/GameOver.ogg", false);
 }
 
 void GameOver::OnExit()
