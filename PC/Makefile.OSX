@@ -15,8 +15,9 @@ vpath %.cpp $(SRCDIR)
 vpath %.cc $(SRCDIR)
 vpath %.o $(OBJDIR)
 
-HEADERS = $(wildcard $(INCDIR)/*)
-SRCS = $(wildcard $(SRCDIR)/*.cc) $(wildcard $(SRCDIR)/*.cpp)
+HEADERS = $(shell find $(INCDIR))
+INCLUDES = $(sort $(addprefix -I,$(dir $(HEADERS))))
+SRCS = $(shell find $(SRCDIR) -name *.cc) $(shell find $(SRCDIR) -name *.cpp)
 OBJS = $(patsubst $(SRCDIR)%,$(OBJDIR)%,$(patsubst %.cc,%.o,$(patsubst %.cpp,%.o,$(SRCS))))
 APPNAME = $(BINDIR)/uwol
 
@@ -26,23 +27,24 @@ $(APPNAME): $(OBJS)
 	$(CXX) $(LDFLAGS) -o $@ $(OBJS) $(LDLIBS) `sdl-config --cflags --libs`
 
 $(OBJDIR)/%.o: %.cc
-	$(CXX) $(CXXFLAGS) -o $@ -c -I$(INCDIR) $<
+	$(MKDIR) -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -o $@ -c $(INCLUDES) $<
 
 $(OBJDIR)/%.o: %.cpp
-	$(CXX) $(CXXFLAGS) -o $@ -c -I$(INCDIR) $<
+	$(MKDIR) -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -o $@ -c $(INCLUDES) $<
 
 showVars:
-	$(info %.o)
 	$(info $(HEADERS))
+	$(info $(INCLUDES))
 	$(info $(SRCS))
 	$(info $(OBJS))
 
 createFolders:
-	$(MKDIR) -p $(OBJDIR)
 	$(MKDIR) -p $(BINDIR)
 	
 clean:
-	$(RM) $(OBJDIR)/*
+	$(RM) -rf $(OBJDIR)
 
 cleanall: clean
-	$(RM) $(BINDIR)/*
+	$(RM) $(APPNAME)
