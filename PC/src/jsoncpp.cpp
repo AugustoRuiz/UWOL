@@ -73,7 +73,11 @@ license you like.
 
 
 
-#include "json/json.h"
+#ifdef __APPLE__
+#include "json.h"
+#else
+#include <json/json.h>
+#endif
 
 #ifndef JSON_IS_AMALGAMATION
 #error "Compile with -I PATH_TO_JSON_DIRECTORY"

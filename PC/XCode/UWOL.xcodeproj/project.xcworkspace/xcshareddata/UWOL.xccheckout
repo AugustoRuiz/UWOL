@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>0B48DA21-1D5D-492A-8D3B-01B91F21656D</string>
+	<key>IDESourceControlProjectName</key>
+	<string>project</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>7ADE62C8B32A01E7FECA134CE3ABAD582D45A46C</key>
+		<string>https://github.com/AugustoRuiz/UWOL.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>PC/XCode/UWOL.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>7ADE62C8B32A01E7FECA134CE3ABAD582D45A46C</key>
+		<string>../../../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/AugustoRuiz/UWOL.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>7ADE62C8B32A01E7FECA134CE3ABAD582D45A46C</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>7ADE62C8B32A01E7FECA134CE3ABAD582D45A46C</string>
+			<key>IDESourceControlWCCName</key>
+			<string>UWOL</string>
+		</dict>
+	</array>
+</dict>
+</plist>

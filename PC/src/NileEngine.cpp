@@ -9,7 +9,26 @@
 
 int main(int argc, char *argv[])
 {
-	Log::Initialize();
+    Log::Initialize();
+
+    // ----------------------------------------------------------------------------
+    // This makes relative paths work in C++ in Xcode by changing directory to the Resources folder inside the .app bundle
+#ifdef __APPLE__
+    CFBundleRef mainBundle = CFBundleGetMainBundle();
+    CFURLRef resourcesURL = CFBundleCopyResourcesDirectoryURL(mainBundle);
+    char path[PATH_MAX];
+    if (!CFURLGetFileSystemRepresentation(resourcesURL, TRUE, (UInt8 *)path, PATH_MAX))
+    {
+        // error!
+        Log::Out << "Couldn't get file system representation! " << std::endl;
+    }
+    CFRelease(resourcesURL);
+    
+    chdir(path);
+    Log::Out << "Current Path: " << path << endl;
+#endif
+    // ----------------------------------------------------------------------------
+    
 	try {
 		Game *game = Game::GetInstance();
 		MusicManager *musicMgr = MusicManager::GetInstance();
@@ -20,7 +39,7 @@ int main(int argc, char *argv[])
 		bool attract = false;
 		bool saveState = false;
 		bool fullScreen = true;
-
+        
 		Log::Out << "main: Initializing Engine..." << endl;
 
 		Log::Out << "Parsing parameters..." << endl;

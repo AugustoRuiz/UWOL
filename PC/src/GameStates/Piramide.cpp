@@ -66,7 +66,7 @@ void Piramide::Draw(void)
 
 	int arrowX = 0, arrowY = 0;
 
-	for (int i = 0, li = this->_stage.Rooms.size(); i < li; ++i) {
+	for (int i = 0, li = (int)this->_stage.Rooms.size(); i < li; ++i) {
 		if (i == profundidad * (profundidad + 1) / 2) {
 			++profundidad;
 			posIniX -= ladrilloW / 2;

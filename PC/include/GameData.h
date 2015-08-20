@@ -3,9 +3,16 @@
 #include <vector>
 
 #include <SDL/SDL.h>
-#include <SDL/SDL_mixer.h>
 #include <SDL/SDL_opengl.h>
+
+#ifdef __APPLE__
+#include <SDL_image/SDL_image.h>
+#include <SDL_mixer/SDL_mixer.h>
+#include "CoreFoundation/CoreFoundation.h"
+#else
 #include <SDL/SDL_image.h>
+#include <SDL/SDL_mixer.h>
+#endif
 #include "UWOL.h"
 #include "Log.h"
 

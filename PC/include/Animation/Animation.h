@@ -3,8 +3,13 @@
 #include "GameData.h"
 #include "IDrawable.h"
 #include "IUpdatable.h"
-#include <json/json.h>
 #include "AnimationFrame.h"
+
+#ifdef __APPLE__
+#include "json.h"
+#else
+#include <json/json.h>
+#endif
 
 using namespace std;
 

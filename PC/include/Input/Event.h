@@ -2,7 +2,12 @@
 
 #include <string>
 #include <map>
+
+#ifdef __APPLE__
+#include "json.h"
+#else
 #include <json/json.h>
+#endif
 
 using namespace std;
 

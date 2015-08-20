@@ -3,7 +3,12 @@
 #include "GameData.h"
 #include "Frame.h"
 #include "Event.h"
+
+#ifdef __APPLE__
+#include "json.h"
+#else
 #include <json/json.h>
+#endif
 
 using namespace std;
 

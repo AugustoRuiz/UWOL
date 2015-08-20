@@ -232,8 +232,8 @@ void Room::colocarCamiseta() {
 	bool posCorrecta = false;
 	
 	do {
-		this->_camisetaX = (int)(((double) rand() / (double) RAND_MAX) * 11 + 0);
-		this->_camisetaY = (int)(((double) rand() / (double) RAND_MAX) * 9 + 0);
+        this->_camisetaX = rand() % 11;
+        this->_camisetaY = rand() % 9;
 
 		posCorrecta = (this->_map->map[this->_camisetaY * this->_map->cols + this->_camisetaX] != COLLISION_BLOCK);
 		
@@ -485,8 +485,7 @@ void Room::AddFanty() {
 
 Coin* Room::AddCoin(char tileX, char tileY, VECTOR2 tileSize) {
 	Coin *coin = new Coin();
-	coin->_rotationFactor = (float)((2 * rand() / (RAND_MAX + 1.0)) + 0.5f);
-
+    coin->_rotationFactor = ((rand() % 30) / 10.0f) + 0.5f;
 	coin->setTileSize(tileSize);
 	coin->setPos(tileX, tileY);
 
@@ -505,8 +504,8 @@ bool Room::loadRoom(ifstream &roomsFile) {
 	vect.x = 32;
 	vect.y = 32;
 
-	//Log::Out << "Loading room..." << endl;
-	//Log::Out << "Creating Fanty..." << endl;
+	Log::Out << "Loading room..." << endl;
+	Log::Out << "Creating Fanty..." << endl;
 
 	this->_fanty = FactoriaEnemigo::Create(Fanty);
 
@@ -515,7 +514,7 @@ bool Room::loadRoom(ifstream &roomsFile) {
 	this->_back = new Background();
 	this->_back->setTileFondo((TilesFondo) tileFondo);
 
-	//Log::Out << "   - Background: " << tileFondo << endl;
+	Log::Out << "   - Background: " << tileFondo << endl;
 
 	// Leemos las plataformas:
 	moreData = (unsigned char)roomsFile.peek();
@@ -534,7 +533,7 @@ bool Room::loadRoom(ifstream &roomsFile) {
 		this->AddPlatform((TilePlataforma)tipo, (Direccion)dir, lon, tileX, tileY, vect);
 
 		moreData = (unsigned char)roomsFile.peek();
-		// Log::Out << "Adding platform..." << endl;
+		Log::Out << "Adding platform..." << endl;
 	}
 	// Saltamos el siguiente caracter...
 	roomsFile.seekg(1, ios_base::cur);
@@ -557,7 +556,7 @@ bool Room::loadRoom(ifstream &roomsFile) {
 		this->AddEnemy((TipoEnemigo) tipoEnemigo, (Velocidad) velocidad, tileIzq, tileDer, tileVert, vect);
 
 		moreData = (unsigned char)roomsFile.peek();
-		// Log::Out << "Adding Enemy: " << tipoEnemigo << endl;
+		Log::Out << "Adding Enemy: " << tipoEnemigo << endl;
 	}
 
 	// Saltamos el siguiente caracter...
@@ -579,7 +578,7 @@ bool Room::loadRoom(ifstream &roomsFile) {
 		this->_initialTime += 2000;
 
 		moreData = (unsigned char)roomsFile.peek();
-		// Log::Out << "Adding coin..." << endl;
+		Log::Out << "Adding coin..." << endl;
 	}
 
 	this->_timeLeft = this->_initialTime;

@@ -8,12 +8,10 @@ Log::~Log()
 {
 }
 
-fstream Log::Out;
+ostream Log::Out(cout.rdbuf());
 
 void Log::Initialize() {
-	Log::Out.open("UWOL.log", ios::out);
 }
 
 void Log::Dispose() {
-	Log::Out.close();
 }

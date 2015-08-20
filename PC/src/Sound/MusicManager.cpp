@@ -12,11 +12,11 @@ Mix_Chunk* MusicManager::loadMusic(const string &sFileName)
 {
 	Mix_Chunk* result = NULL;
 
-//	Log::Out << "MusicManager: Loading sound " << sFileName << "s... " << endl;
+	Log::Out << "MusicManager: Loading sound " << sFileName << "s... " << endl;
 
 	if(cache.find(sFileName) != cache.end())
 	{
-//		Log::Out << "IN CACHE!" << endl;
+		Log::Out << "IN CACHE!" << endl;
 		result = cache[sFileName];
 	}
 	else
@@ -30,7 +30,7 @@ Mix_Chunk* MusicManager::loadMusic(const string &sFileName)
 		else
 		{
 			cache[sFileName] = result;
-//			Log::OUt << endl;
+			Log::Out << "loaded!" << endl;
 		}
 	}
 
@@ -41,10 +41,10 @@ void MusicManager::DeleteMusic()
 {
 	MUSICMAP::iterator iter;
 
+    Log::Out << "MusicMgr: Deleting sound." << endl;
 	iter = cache.begin();
 	while(iter != cache.end())
 	{
-		//Log::WriteLog("MusicMgr: Deleting sound.\n");
 		Mix_FreeChunk(iter->second);
 		iter++;
 	}

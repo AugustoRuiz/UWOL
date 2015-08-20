@@ -8,7 +8,8 @@ class AnimationPlayer {
 	unsigned int _ticksSinceLastFrame;
 	Animation *_animation;
 	vector<AnimationFrame>::iterator _current;
-
+    vector<AnimationFrame>::iterator _begin;
+    vector<AnimationFrame>::iterator _end;
 public:
 	AnimationPlayer();
 	~AnimationPlayer();

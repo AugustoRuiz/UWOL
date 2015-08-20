@@ -46,8 +46,6 @@ private:
 
 	Frame _frameSombra;
 
-	int _ultimoEstadoUwol;
-
 	float _fadeLevel;
 	float _fadeInc;
 	bool _fading;

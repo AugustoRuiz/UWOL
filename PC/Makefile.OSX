@@ -25,6 +25,8 @@ all: createFolders $(APPNAME)
 
 $(APPNAME): $(OBJS)
 	$(CXX) $(LDFLAGS) -o $@ $(OBJS) $(LDLIBS) `sdl-config --cflags --libs`
+	$(MKDIR) -p dmg
+	hdiutil create -volname "UWOL, The Quest for Money" -srcfolder $(BINDIR) -ov -format UDZO dmg/uwol.dmg
 
 $(OBJDIR)/%.o: %.cc
 	$(MKDIR) -p $(dir $@)

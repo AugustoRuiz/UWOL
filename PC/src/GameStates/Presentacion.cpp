@@ -23,12 +23,12 @@ Presentacion::Presentacion() {
 	{
 		this->_coins[i] = new Coin();
 		this->_coins[i]->setTileSize(tileSize);
-		this->_coins[i]->_x = (int)((_g->ScreenWidth)*rand() / (RAND_MAX + 1.0));
-		this->_coins[i]->_y = (int)((_g->ScreenHeight)*rand() / (RAND_MAX + 1.0));
-		this->_coins[i]->SetFrame((int)(7 * rand() / (RAND_MAX + 1.0)));
-		this->_coins[i]->_speed.y = (i/100) + 1 + (float)(2 * rand() / (RAND_MAX + 1.0));
-		this->_coins[i]->SetTicks((int)(TICKS_ANIM_COIN * rand() / (RAND_MAX + 1.0)));
-		this->_coins[i]->_rotationFactor = (float)((3 * rand() / (RAND_MAX + 1.0)) + 0.5f);
+		this->_coins[i]->_x = rand() % _g->ScreenWidth;
+		this->_coins[i]->_y = rand() % _g->ScreenHeight;
+		this->_coins[i]->SetFrame(rand() % 7);
+		this->_coins[i]->_speed.y = (i/100) + 1 + (rand() % 2);
+		this->_coins[i]->SetTicks(rand() % TICKS_ANIM_COIN);
+		this->_coins[i]->_rotationFactor = ((rand() % 30) / 10.0f) + 0.5f;
 	}
 }
 
@@ -72,7 +72,7 @@ void Presentacion::Draw() {
 	_g->BlitCenteredFrameAlpha(current, current.Texture->width * 2, current.Texture->height * 2, this->_currentAlpha, false, false);
 
 	string text = "PUSH JUMP TO START";
-	int posX = (_g->WorldWidth - (text.size() * 16)) / 2;
+	int posX = (int)((_g->WorldWidth - (text.size() * 16)) / 2);
 	int posY = _g->WorldHeight - 32;
 
 	_g->DrawStringAlpha(posX + 1, posY + 1, text, 0, 0, 0, 0, 0, 0, _textAlpha);
@@ -126,10 +126,10 @@ string Presentacion::Update(Uint32 milliSec, Event & inputEvent) {
 		this->_coins[i]->_y += (int) this->_coins[i]->_speed.y;
 		if (this->_coins[i]->_y > _g->ScreenHeight) {
 			this->_coins[i]->_y = 0;
-			this->_coins[i]->_x = (int)((_g->ScreenWidth)*rand() / (RAND_MAX + 1.0));
-			this->_coins[i]->SetFrame((int)(7 * rand() / (RAND_MAX + 1.0)));
-			this->_coins[i]->_speed.y = (i / 100) + 1 + (float)(2 * rand() / (RAND_MAX + 1.0));
-			this->_coins[i]->SetTicks((int)(TICKS_ANIM_COIN * rand() / (RAND_MAX + 1.0)));
+            this->_coins[i]->_x = rand() % _g->ScreenWidth;
+            this->_coins[i]->SetFrame(rand() % 7);
+            this->_coins[i]->_speed.y = (i/100) + 1 + (rand() % 2);
+            this->_coins[i]->SetTicks(rand() % TICKS_ANIM_COIN);
 		}
 	}
 

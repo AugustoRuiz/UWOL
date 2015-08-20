@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #include <fstream>
 
 using namespace std;
@@ -10,6 +11,6 @@ public:
     Log();
     ~Log();
 	static void Initialize();
-	static fstream Out;
+	static ostream Out;
 	static void Dispose();
 };
