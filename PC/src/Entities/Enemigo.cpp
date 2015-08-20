@@ -110,9 +110,12 @@ void Enemigo::setPosition(char tileIni, char tileFin, char tileVert)
 	this->_tileIni = tileIni;
 	this->_tileFin = tileFin;
 	this->_tileVert = tileVert;
+    this->resetPosition();
+}
 
-	this->_x = (float)(this->_tileIni * this->_tileSize.x) + 1;
-	this->_y = (float)(this->_tileVert * this->_tileSize.y);
+void Enemigo::resetPosition() {
+    this->_x = (float)(this->_tileIni * this->_tileSize.x) + 1;
+    this->_y = (float)(this->_tileVert * this->_tileSize.y);
 }
 
 void Enemigo::setVelocidad(Velocidad vel)

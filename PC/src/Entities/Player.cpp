@@ -37,7 +37,7 @@ void TPlayer::Initialize()
 
 void TPlayer::initializePlayerData()
 {
-	this->_x = 32;
+	this->_x = 0;
 	this->_y = 256;
 	this->_vy = 0;
 	this->_g = 0.3f;

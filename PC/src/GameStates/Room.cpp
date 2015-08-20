@@ -52,7 +52,7 @@ void Room::Restart() {
 	vector<IDrawable*>::iterator iterDraw;
 	Enemigo *enem;
 
-	// Posición del foco!
+	// Posicion del foco!
 	_g->LightPosition.x = _g->WorldWidth / 2;
 	_g->LightPosition.y = 0;
 	_valorOscuro = 0.0001f;
@@ -85,6 +85,9 @@ void Room::Restart() {
 			}
 			break;
 		}
+        else {
+            enem->resetPosition();
+        }
 	}
 }
 

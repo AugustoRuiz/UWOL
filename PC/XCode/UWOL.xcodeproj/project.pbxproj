@@ -136,17 +136,17 @@
 		99FD8CDF1B85D9CD00B94DA9 /* VidaExtra.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 99FD8BA61B85D80800B94DA9 /* VidaExtra.png */; };
 		99FD8CE01B85D9CD00B94DA9 /* Wolfy0.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 99FD8BA71B85D80800B94DA9 /* Wolfy0.png */; };
 		99FD8CE11B85D9CD00B94DA9 /* Wolfy1.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 99FD8BA81B85D80800B94DA9 /* Wolfy1.png */; };
-		99FD8CE31B85D9E500B94DA9 /* Death.ogg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 99FD8BB31B85D80800B94DA9 /* Death.ogg */; };
-		99FD8CE41B85D9E500B94DA9 /* EndKO.ogg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 99FD8BB41B85D80800B94DA9 /* EndKO.ogg */; };
-		99FD8CE51B85D9E500B94DA9 /* EndOK.ogg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 99FD8BB51B85D80800B94DA9 /* EndOK.ogg */; };
-		99FD8CE61B85D9E500B94DA9 /* GameOver.ogg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 99FD8BB61B85D80800B94DA9 /* GameOver.ogg */; };
-		99FD8CE71B85D9E500B94DA9 /* Ghosts3.ogg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 99FD8BB71B85D80800B94DA9 /* Ghosts3.ogg */; };
-		99FD8CE81B85D9E500B94DA9 /* Money.ogg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 99FD8BB81B85D80800B94DA9 /* Money.ogg */; };
-		99FD8CE91B85D9E500B94DA9 /* Piramide.ogg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 99FD8BB91B85D80800B94DA9 /* Piramide.ogg */; };
-		99FD8CEA1B85D9E500B94DA9 /* Zona1.ogg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 99FD8BBA1B85D80800B94DA9 /* Zona1.ogg */; };
-		99FD8CEB1B85D9E500B94DA9 /* Zona2.ogg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 99FD8BBB1B85D80800B94DA9 /* Zona2.ogg */; };
-		99FD8CEC1B85D9E500B94DA9 /* Zona3.ogg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 99FD8BBC1B85D80800B94DA9 /* Zona3.ogg */; };
-		99FD8CED1B85D9E500B94DA9 /* Zona4.ogg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 99FD8BBD1B85D80800B94DA9 /* Zona4.ogg */; };
+		99FD8CE31B85D9E500B94DA9 /* Death.ogg in Copy Files */ = {isa = PBXBuildFile; fileRef = 99FD8BB31B85D80800B94DA9 /* Death.ogg */; };
+		99FD8CE41B85D9E500B94DA9 /* EndKO.ogg in Copy Files */ = {isa = PBXBuildFile; fileRef = 99FD8BB41B85D80800B94DA9 /* EndKO.ogg */; };
+		99FD8CE51B85D9E500B94DA9 /* EndOK.ogg in Copy Files */ = {isa = PBXBuildFile; fileRef = 99FD8BB51B85D80800B94DA9 /* EndOK.ogg */; };
+		99FD8CE61B85D9E500B94DA9 /* GameOver.ogg in Copy Files */ = {isa = PBXBuildFile; fileRef = 99FD8BB61B85D80800B94DA9 /* GameOver.ogg */; };
+		99FD8CE71B85D9E500B94DA9 /* Ghosts3.ogg in Copy Files */ = {isa = PBXBuildFile; fileRef = 99FD8BB71B85D80800B94DA9 /* Ghosts3.ogg */; };
+		99FD8CE81B85D9E500B94DA9 /* Money.ogg in Copy Files */ = {isa = PBXBuildFile; fileRef = 99FD8BB81B85D80800B94DA9 /* Money.ogg */; };
+		99FD8CE91B85D9E500B94DA9 /* Piramide.ogg in Copy Files */ = {isa = PBXBuildFile; fileRef = 99FD8BB91B85D80800B94DA9 /* Piramide.ogg */; };
+		99FD8CEA1B85D9E500B94DA9 /* Zona1.ogg in Copy Files */ = {isa = PBXBuildFile; fileRef = 99FD8BBA1B85D80800B94DA9 /* Zona1.ogg */; };
+		99FD8CEB1B85D9E500B94DA9 /* Zona2.ogg in Copy Files */ = {isa = PBXBuildFile; fileRef = 99FD8BBB1B85D80800B94DA9 /* Zona2.ogg */; };
+		99FD8CEC1B85D9E500B94DA9 /* Zona3.ogg in Copy Files */ = {isa = PBXBuildFile; fileRef = 99FD8BBC1B85D80800B94DA9 /* Zona3.ogg */; };
+		99FD8CED1B85D9E500B94DA9 /* Zona4.ogg in Copy Files */ = {isa = PBXBuildFile; fileRef = 99FD8BBD1B85D80800B94DA9 /* Zona4.ogg */; };
 		99FD8CEF1B85DA0700B94DA9 /* Bells.ogg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 99FD8BC01B85D80800B94DA9 /* Bells.ogg */; };
 		99FD8CF01B85DA0700B94DA9 /* boing.ogg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 99FD8BC11B85D80800B94DA9 /* boing.ogg */; };
 		99FD8CF11B85DA0700B94DA9 /* coinPicked.ogg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 99FD8BC21B85D80800B94DA9 /* coinPicked.ogg */; };
@@ -163,8 +163,8 @@
 		99FD8ABA1B85CB5600B94DA9 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 12;
-			dstPath = "";
-			dstSubfolderSpec = 16;
+			dstPath = /Users/agus/Documents/Proyectos/UWOL/PC/XCode/DerivedData/UWOL/Build;
+			dstSubfolderSpec = 0;
 			files = (
 				99FD8C8E1B85D9B700B94DA9 /* animations.json in CopyFiles */,
 				99FD8C8F1B85D9B700B94DA9 /* LICENSE.ogg-vorbis.txt in CopyFiles */,
@@ -177,8 +177,8 @@
 		99FD8C8D1B85D99600B94DA9 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = data;
-			dstSubfolderSpec = 16;
+			dstPath = /Users/agus/Documents/Proyectos/UWOL/PC/XCode/DerivedData/UWOL/Build/data;
+			dstSubfolderSpec = 0;
 			files = (
 				99FD8C931B85D9CD00B94DA9 /* Camiseta.png in CopyFiles */,
 				99FD8C941B85D9CD00B94DA9 /* credits.png in CopyFiles */,
@@ -262,31 +262,32 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		99FD8CE21B85D9D400B94DA9 /* CopyFiles */ = {
+		99FD8CE21B85D9D400B94DA9 /* Copy Files */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = music;
-			dstSubfolderSpec = 16;
+			dstPath = /Users/agus/Documents/Proyectos/UWOL/PC/XCode/DerivedData/UWOL/Build/music;
+			dstSubfolderSpec = 0;
 			files = (
-				99FD8CE31B85D9E500B94DA9 /* Death.ogg in CopyFiles */,
-				99FD8CE41B85D9E500B94DA9 /* EndKO.ogg in CopyFiles */,
-				99FD8CE51B85D9E500B94DA9 /* EndOK.ogg in CopyFiles */,
-				99FD8CE61B85D9E500B94DA9 /* GameOver.ogg in CopyFiles */,
-				99FD8CE71B85D9E500B94DA9 /* Ghosts3.ogg in CopyFiles */,
-				99FD8CE81B85D9E500B94DA9 /* Money.ogg in CopyFiles */,
-				99FD8CE91B85D9E500B94DA9 /* Piramide.ogg in CopyFiles */,
-				99FD8CEA1B85D9E500B94DA9 /* Zona1.ogg in CopyFiles */,
-				99FD8CEB1B85D9E500B94DA9 /* Zona2.ogg in CopyFiles */,
-				99FD8CEC1B85D9E500B94DA9 /* Zona3.ogg in CopyFiles */,
-				99FD8CED1B85D9E500B94DA9 /* Zona4.ogg in CopyFiles */,
+				99FD8CE31B85D9E500B94DA9 /* Death.ogg in Copy Files */,
+				99FD8CE41B85D9E500B94DA9 /* EndKO.ogg in Copy Files */,
+				99FD8CE51B85D9E500B94DA9 /* EndOK.ogg in Copy Files */,
+				99FD8CE61B85D9E500B94DA9 /* GameOver.ogg in Copy Files */,
+				99FD8CE71B85D9E500B94DA9 /* Ghosts3.ogg in Copy Files */,
+				99FD8CE81B85D9E500B94DA9 /* Money.ogg in Copy Files */,
+				99FD8CE91B85D9E500B94DA9 /* Piramide.ogg in Copy Files */,
+				99FD8CEA1B85D9E500B94DA9 /* Zona1.ogg in Copy Files */,
+				99FD8CEB1B85D9E500B94DA9 /* Zona2.ogg in Copy Files */,
+				99FD8CEC1B85D9E500B94DA9 /* Zona3.ogg in Copy Files */,
+				99FD8CED1B85D9E500B94DA9 /* Zona4.ogg in Copy Files */,
 			);
+			name = "Copy Files";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		99FD8CEE1B85D9F400B94DA9 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = sounds;
-			dstSubfolderSpec = 16;
+			dstPath = /Users/agus/Documents/Proyectos/UWOL/PC/XCode/DerivedData/UWOL/Build/sounds;
+			dstSubfolderSpec = 0;
 			files = (
 				99FD8CEF1B85DA0700B94DA9 /* Bells.ogg in CopyFiles */,
 				99FD8CF01B85DA0700B94DA9 /* boing.ogg in CopyFiles */,
@@ -841,7 +842,7 @@
 				99FD8AB91B85CB5600B94DA9 /* Frameworks */,
 				99FD8ABA1B85CB5600B94DA9 /* CopyFiles */,
 				99FD8C8D1B85D99600B94DA9 /* CopyFiles */,
-				99FD8CE21B85D9D400B94DA9 /* CopyFiles */,
+				99FD8CE21B85D9D400B94DA9 /* Copy Files */,
 				99FD8CEE1B85D9F400B94DA9 /* CopyFiles */,
 			);
 			buildRules = (
@@ -963,6 +964,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CONFIGURATION_BUILD_DIR = ../bin;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -1010,6 +1012,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CONFIGURATION_BUILD_DIR = ../bin;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;

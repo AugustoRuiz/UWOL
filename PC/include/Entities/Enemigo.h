@@ -23,6 +23,7 @@ public:
 	virtual bool UpdateWhenNoCoins(void);
 
 	void setPosition(char tileIni, char tileFin, char tileVert);
+    void resetPosition();
 	void setVelocidad(Velocidad vel);
 	void setAlpha(float alpha);
 
