@@ -32,7 +32,7 @@ private:
 	vector<Frame> _imagenes;
 	Sound _sonido;
 
-	int _currentFrame;
+	unsigned int _currentFrame;
 
 
 	float _currentAlpha;

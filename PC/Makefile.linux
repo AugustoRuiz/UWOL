@@ -1,0 +1,50 @@
+INCDIR=include
+SRCDIR=src
+OBJDIR=obj
+BINDIR=bin
+LIBDIR=lib
+MKDIR=mkdir
+
+CC=gcc
+CXX=g++
+CXXFLAGS=-std=c++11 -I/usr/local/include/SDL -D_GNU_SOURCE=1 -D_THREAD_SAFE -g -Werror -Wall -fsigned-char
+LDLIBS=-L/usr/local/lib -lSDLmain -lSDL -lSDL_image -lSDL_mixer -logg -lvorbis -lGL
+
+vpath %.h $(INCDIR)
+vpath %.cpp $(SRCDIR)
+vpath %.cc $(SRCDIR)
+vpath %.o $(OBJDIR)
+
+HEADERS = $(shell find $(INCDIR))
+INCLUDES = $(sort $(addprefix -I,$(dir $(HEADERS))))
+SRCS = $(shell find $(SRCDIR) -name *.cc) $(shell find $(SRCDIR) -name *.cpp)
+OBJS = $(patsubst $(SRCDIR)%,$(OBJDIR)%,$(patsubst %.cc,%.o,$(patsubst %.cpp,%.o,$(SRCS))))
+APPNAME = $(BINDIR)/uwol
+
+all: createFolders $(APPNAME)
+
+$(APPNAME): $(OBJS)
+	$(CXX) $(LDFLAGS) -o $@ $(OBJS) $(LDLIBS) `sdl-config --cflags --libs`
+
+$(OBJDIR)/%.o: %.cc
+	$(MKDIR) -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -o $@ -c $(INCLUDES) $<
+
+$(OBJDIR)/%.o: %.cpp
+	$(MKDIR) -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -o $@ -c $(INCLUDES) $<
+
+showVars:
+	$(info $(HEADERS))
+	$(info $(INCLUDES))
+	$(info $(SRCS))
+	$(info $(OBJS))
+
+createFolders:
+	$(MKDIR) -p $(BINDIR)
+	
+clean:
+	$(RM) -rf $(OBJDIR)
+
+cleanall: clean
+	$(RM) $(APPNAME)

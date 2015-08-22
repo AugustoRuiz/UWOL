@@ -14,7 +14,7 @@
 #include "FactoriaEnemigo.h"
 #include "Coin.h"
 #include "Player.h"
-#include "Math.h"
+#include <cmath>
 #include "MusicManager.h"
 
 class Room : public IGameState
