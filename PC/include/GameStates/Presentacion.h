@@ -29,6 +29,7 @@ private:
 	Graphics *_g;
 
 	Frame _frameSombra;
+	Sound _music;
 
 	vector<Frame>::iterator _currentFrame;
 	vector<Frame> _logos;

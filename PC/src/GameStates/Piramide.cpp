@@ -6,6 +6,7 @@ Piramide::Piramide(Stage& stage) : _stage(stage) {
 	this->_frameLadrillo = Frame("data/set-piramide.png");
 	this->_frameLogo = Frame("data/texturaUWOL.png");
 	this->_frameFlecha = Frame("data/Flecha.png");
+	this->_tune = Sound("music/Piramide.ogg");
 }
 
 void Piramide::OnEnter() {
@@ -14,7 +15,7 @@ void Piramide::OnEnter() {
 	this->_stage.Player->initializePlayerData();
 	this->_ticks = 0;
 	this->_sinValue = 0.0f;
-	MusicManager::PlayMusic("music/Piramide.ogg", true);
+	this->_tune.PlayAsMusic(true);
 }
 
 void Piramide::OnExit() {
@@ -49,7 +50,7 @@ void Piramide::Draw(void)
 
 	this->_stage.StatsDrawer->DrawLives(0, -32, this->_stage.Player->_vidas);
 	this->_stage.StatsDrawer->DrawCoins(288, -32, this->_stage.Player->_coinsTaken);
-	this->_stage.StatsDrawer->DrawLevel(0, 320, this->_stage.CurrentRoom->Depth);
+	this->_stage.StatsDrawer->DrawLevel(0, 320, this->_stage.CurrentRoom->GetDepth());
 	this->_stage.StatsDrawer->DrawScore(208, 320, this->_stage.Player->GetScore());
 
 	int ladrilloW = 32, ladrilloH = 16;

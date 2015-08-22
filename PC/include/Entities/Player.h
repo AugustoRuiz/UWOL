@@ -8,6 +8,7 @@
 #include "AnimationPlayer.h"
 #include "InputManager.h"
 #include "MusicManager.h"
+#include "Sound.h"
 
 class TPlayer : public IDrawable, public IUpdatable
 {
@@ -53,6 +54,8 @@ private:
 
 	AnimationPlayer _animPlayer;
 	InputManager *_input;
+
+	Sound _fxStep, _fxStep2, _fxJump, _fxDie, _musicDie;
 
 	VECTOR2 _tileSize;
 	RECTANGLEF _colRect;

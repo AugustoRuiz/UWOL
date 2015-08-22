@@ -14,12 +14,17 @@ Room::Room(void) {
 	this->_map = new CollisionMap();
 	this->_map->Initialize(MAP_COLS, MAP_ROWS, vect.x, vect.y);
 
-	this->_checkTime = true;
+	this->CheckTime = true;
 
 	this->_textureFlechaDer = Frame("data/FlechaDer.png");
 	this->_textureFlechaIzq = Frame("data/FlechaIzq.png");
 	this->_textureCamiseta = Frame("data/Camiseta.png");
 	this->_textureSombra = Frame("data/pixBlanco.png");
+
+	this->_fxGhost = Sound("sounds/Bells.ogg");
+	this->_musicGhost = Sound("music/Ghosts3.ogg");
+	this->_fxHit = Sound("sounds/Hu.ogg");
+	this->_fxCoin = Sound("sounds/coinPicked.ogg");
 
 	this->_player = NULL;
 
@@ -57,8 +62,8 @@ void Room::Restart() {
 	_g->LightPosition.y = 0;
 	_valorOscuro = 0.0001f;
 
-	this->_timeLeft = this->Completada ? 0 : this->_initialTime;
-	this->_checkTime = true;
+	this->TimeLeft = this->Completada ? 0 : this->_initialTime;
+	this->CheckTime = true;
 
 	this->quitarCamiseta();
 
@@ -91,20 +96,27 @@ void Room::Restart() {
 	}
 }
 
+void Room::SetDepth(int depth) {
+	this->_depth = depth;
+
+	if (this->_depth < 4)
+		this->_tune = Sound("music/Zona1.ogg");
+	else if (this->_depth < 7)
+		this->_tune = Sound("music/Zona2.ogg");
+	else if (this->_depth < 9)
+		this->_tune = Sound("music/Zona3.ogg");
+	else
+		this->_tune = Sound("music/Zona4.ogg");
+}
+
+int Room::GetDepth() {
+	return this->_depth;
+}
+
 void Room::OnEnter(void) {
 	this->Restart();
 
-	string song;
-	if (this->Depth < 4)
-		song = "music/Zona1.ogg";
-	else if (this->Depth < 7)
-		song = "music/Zona2.ogg";
-	else if (this->Depth < 9)
-		song = "music/Zona3.ogg";
-	else
-		song = "music/Zona4.ogg";
-
-	MusicManager::PlayMusic(song, true);
+	this->_tune.PlayAsMusic(true);
 }
 
 void Room::OnExit() {
@@ -133,7 +145,7 @@ string Room::Update(Uint32 milliSec, Event & inputEvent) {
 
 	if(this->_player->getEstado() & (Muriendo | Muerto)) {
 		playerWasKilled = true;
-		this->_checkTime = false;
+		this->CheckTime = false;
 	}
 
 	for (vector<IUpdatable*>::iterator it = _updatables.begin(); it != _updatables.end();++it) {
@@ -159,25 +171,25 @@ string Room::Update(Uint32 milliSec, Event & inputEvent) {
 		}
 	}
 
-	if(this->_checkTime) {
-		this->_timeLeft -= milliSec;
-		if(this->_timeLeft <= 0) {
-			this->_timeLeft = 0;
-			this->_checkTime = false;
+	if(this->CheckTime) {
+		this->TimeLeft -= milliSec;
+		if(this->TimeLeft <= 0) {
+			this->TimeLeft = 0;
+			this->CheckTime = false;
 			this->AddFanty();
 			
 			MusicManager::FadeOutMusic(500);
-			MusicManager::PlayFx("sounds/Bells.ogg", false);
+			this->_fxGhost.PlayAsFx(false);
 		}
 	}
 	else
 	{
 		if(!MusicManager::IsPlayingMusic()) {
-			MusicManager::PlayMusic("music/Ghosts3.ogg", true);
+			this->_musicGhost.PlayAsMusic(true);
 		}
 	}
 
-	if(this->_timeLeft <= 0 && _valorOscuro < 0.5f) {
+	if(this->TimeLeft <= 0 && _valorOscuro < 0.5f) {
 		_valorOscuro += milliSec * 0.001f * 0.4f;
 	}
 
@@ -209,7 +221,7 @@ void Room::checkEnemies(RECTANGLEF rect) {
 				if(this->_player->getEstado() & Normal)	{
 					this->_player->setEstado((this->_player->getEstado() & 0xFFFFFFF0) | Parpadeo | Desnudo);
 					this->colocarCamiseta();
-					MusicManager::PlayFx("sounds/Hu.ogg", false);
+					this->_fxHit.PlayAsFx(false);
 				}
 				enem->_direccion *= -1;
 			}
@@ -303,7 +315,7 @@ void Room::pickCoins(int tileX1, int tileX2, int tileY1, int tileY2) {
 			this->_player->_coinsTaken ++;
 			this->_player->AddScore(1);
 			
-			MusicManager::PlayFx("sounds/coinPicked.ogg", false);
+			this->_fxCoin.PlayAsFx(false);
 			break;
 		}
 	}
@@ -371,7 +383,7 @@ void Room::Draw(void) {
 			_player->Draw();
 
 			// Si está el fantasma por ahí, oscurecemos la escena...
-			if (this->_timeLeft <= 0) {
+			if (this->TimeLeft <= 0) {
 				_g->BlitColoredFrame(this->_textureSombra,
 					0, 0,
 					_g->WorldWidth, _g->WorldHeight,
@@ -584,7 +596,7 @@ bool Room::loadRoom(ifstream &roomsFile) {
 		Log::Out << "Adding coin..." << endl;
 	}
 
-	this->_timeLeft = this->_initialTime;
+	this->TimeLeft = this->_initialTime;
 
 	// Saltamos el siguiente caracter...
 	roomsFile.seekg(1, ios_base::cur);

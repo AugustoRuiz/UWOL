@@ -59,7 +59,7 @@ void Stage::Draw() {
 	this->StatsDrawer->DrawLives(0, -32, this->Player->_vidas);
 	this->DrawTime();
 	this->StatsDrawer->DrawCoins(288, -32, this->Player->_coinsTaken);
-	this->StatsDrawer->DrawLevel(0, 320, this->CurrentRoom->Depth);
+	this->StatsDrawer->DrawLevel(0, 320, this->CurrentRoom->GetDepth());
 	this->StatsDrawer->DrawScore(208, 320, this->Player->GetScore());
 
 	if (this->_fading) {
@@ -69,12 +69,12 @@ void Stage::Draw() {
 
 void Stage::DrawTime() {
 	stringstream ss;
-	ss << setfill('0') << setw(3) << (this->CurrentRoom->_timeLeft > 0 ? (this->CurrentRoom->_timeLeft / 1000) + 1 : 0);
+	ss << setfill('0') << setw(3) << (this->CurrentRoom->TimeLeft > 0 ? (this->CurrentRoom->TimeLeft / 1000) + 1 : 0);
 
 	_g->DrawString(128, -16, "TIME", 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f);
 	_g->DrawString(192, -16, "*", 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f);
 
-	if (this->CurrentRoom->_timeLeft < 10000) {
+	if (this->CurrentRoom->TimeLeft < 10000) {
 		_g->DrawString(208, -16, ss.str(), 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f);
 	}
 	else {
@@ -91,8 +91,8 @@ string Stage::Update(Uint32 milliSec, Event & inputEvent) {
 		if (estado & SalidaIzq || estado & SalidaDer) {
 			this->_fading = true;
 			this->Player->AddScore(100);
-			if (this->CurrentRoom->_checkTime) {
-				this->Player->AddScore(((this->CurrentRoom->_timeLeft / 1000) + 1) * 5);
+			if (this->CurrentRoom->CheckTime) {
+				this->Player->AddScore(((this->CurrentRoom->TimeLeft / 1000) + 1) * 5);
 			}
 			this->CurrentRoom->Completada = true;
 
@@ -122,11 +122,11 @@ string Stage::Update(Uint32 milliSec, Event & inputEvent) {
 			this->_fadeInc = -1.0f;
 
 			if (estado & SalidaDer) {
-				this->RoomIndex += this->CurrentRoom->Depth + 1;
+				this->RoomIndex += this->CurrentRoom->GetDepth() + 1;
 			}
 
 			if (estado & SalidaIzq) {
-				this->RoomIndex += this->CurrentRoom->Depth;
+				this->RoomIndex += this->CurrentRoom->GetDepth();
 			}
 
 			if (this->RoomIndex >= (int)this->Rooms.size()) {
@@ -190,7 +190,7 @@ Room* Stage::loadRooms()
 		{
 			Room* room = new Room();
 			more = room->loadRoom(roomsFile);
-			room->Depth = roomDepth;
+			room->SetDepth(roomDepth);
 
 			if (++roomCount >= roomDepth) {
 				++roomDepth;

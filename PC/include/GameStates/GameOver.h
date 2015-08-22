@@ -6,11 +6,13 @@
 #include "Graphics.h"
 #include "Frame.h"
 #include "MusicManager.h"
+#include "Sound.h"
 #include "Game.h"
 
 class GameOver : public IGameState
 {
 	Frame _currentFrame;
+	Sound _music;
 	Graphics *_g;
 
 public:

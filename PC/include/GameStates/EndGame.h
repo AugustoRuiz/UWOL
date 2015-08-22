@@ -5,12 +5,13 @@
 #include "Graphics.h"
 #include "InputManager.h"
 #include "MusicManager.h"
+#include "Sound.h"
 
 class EndGame : public IGameState
 {
 	bool _ok;
 	Frame _currentFrame;
-	string _tuneName;
+	Sound _tune;
 	Graphics *_g;
 public:
 	EndGame(bool ok);

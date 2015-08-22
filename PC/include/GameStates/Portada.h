@@ -5,7 +5,8 @@
 #include "GameData.h"
 #include "Stage.h"
 #include "IGameState.h"
-#include "../Input/InputManager.h"
+#include "InputManager.h"
+#include "Sound.h"
 
 #define WAIT_TIME 4000
 
@@ -29,7 +30,7 @@ private:
 	Graphics *_g;
 
 	vector<Frame> _imagenes;
-	vector<string> _sonidos;
+	Sound _sonido;
 
 	int _currentFrame;
 

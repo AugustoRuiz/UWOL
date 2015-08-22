@@ -3,12 +3,12 @@
 EndGame::EndGame(bool ok): _ok(ok) {
 	_g = Graphics::GetInstance();
 	if (ok) {
-		this->_tuneName = "music/EndOK.ogg";
+		this->_tune = Sound("music/EndOK.ogg");
 		this->Name = "FinJuego_OK";
 		this->_currentFrame = Frame("data/fin-good.png");
 	}
 	else {
-		this->_tuneName = "music/EndKO.ogg";
+		this->_tune = Sound("music/EndKO.ogg");
 		this->Name = "FinJuego_KO";
 		this->_currentFrame = Frame("data/fin-bad.png");
 	}
@@ -20,9 +20,7 @@ EndGame::~EndGame()
 
 void EndGame::OnEnter()
 {
-	if (this->_tuneName != "") {
-		MusicManager::PlayMusic(this->_tuneName, true);
-	}
+	this->_tune.PlayAsMusic(true);
 }
 
 void EndGame::OnExit()

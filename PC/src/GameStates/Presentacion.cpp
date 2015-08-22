@@ -26,10 +26,11 @@ Presentacion::Presentacion() {
 		this->_coins[i]->_x = rand() % _g->ScreenWidth;
 		this->_coins[i]->_y = rand() % _g->ScreenHeight;
 		this->_coins[i]->SetFrame(rand() % 7);
-		this->_coins[i]->_speed.y = (i/100) + 1 + (rand() % 2);
+		this->_coins[i]->_speed.y = (float) ((i/100) + 1 + (rand() % 2));
 		this->_coins[i]->SetTicks(rand() % TICKS_ANIM_COIN);
 		this->_coins[i]->_rotationFactor = ((rand() % 30) / 10.0f) + 0.5f;
 	}
+	this->_music = Sound("music/Money.ogg");
 }
 
 Presentacion::~Presentacion() {
@@ -44,7 +45,7 @@ void Presentacion::OnEnter() {
 
 	this->_incrFactor = INCR_FACTOR;
 
-	MusicManager::PlayMusic("music/Money.ogg", true);
+	this->_music.PlayAsMusic(true);
 }
 
 void Presentacion::OnExit() {
@@ -128,7 +129,7 @@ string Presentacion::Update(Uint32 milliSec, Event & inputEvent) {
 			this->_coins[i]->_y = 0;
             this->_coins[i]->_x = rand() % _g->ScreenWidth;
             this->_coins[i]->SetFrame(rand() % 7);
-            this->_coins[i]->_speed.y = (i/100) + 1 + (rand() % 2);
+            this->_coins[i]->_speed.y = (float)((i/100) + 1 + (rand() % 2));
             this->_coins[i]->SetTicks(rand() % TICKS_ANIM_COIN);
 		}
 	}

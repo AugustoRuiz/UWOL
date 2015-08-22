@@ -5,6 +5,7 @@ GameOver::GameOver()
 	_g = Graphics::GetInstance();
 	this->Name = "GameOver";
 	this->_currentFrame = Frame("data/game-over.png");
+	this->_music = Sound("music/GameOver.ogg");
 }
 
 GameOver::~GameOver()
@@ -13,7 +14,7 @@ GameOver::~GameOver()
 
 void GameOver::OnEnter()
 {
-	MusicManager::PlayMusic("music/GameOver.ogg", false);
+	this->_music.PlayAsMusic(false);
 }
 
 void GameOver::OnExit()

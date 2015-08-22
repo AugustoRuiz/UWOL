@@ -17,6 +17,12 @@ TPlayer::TPlayer()
 	this->_posRect.width = 32;
 	this->_posRect.height = 32;
 
+	this->_fxStep = Sound("sounds/StepStone1.ogg");
+	this->_fxStep2 = Sound("sounds/StepStone2.ogg");
+	this->_fxJump = Sound("sounds/boing.ogg");
+	this->_fxDie = Sound("sounds/DeathCry.ogg");
+	this->_musicDie = Sound("music/Death.ogg");
+
 	this->Initialize();
 
 	this->_disposed = false;
@@ -161,10 +167,10 @@ void TPlayer::Update(Uint32 milliSec)
 	for (Event e : evts) {
 		if (e.Name == "uwol_step" && this->_vy != 0) {
 			if (this->_lastStep == 0) {
-				MusicManager::PlayFx("sounds/StepStone1.ogg", false);
+				this->_fxStep.PlayAsFx(false);
 			}
 			else {
-				MusicManager::PlayFx("sounds/StepStone2.ogg", false);
+				this->_fxStep2.PlayAsFx(false);
 			}
 		}
 	}
@@ -347,7 +353,7 @@ void TPlayer::checkInput(Uint32 milliSec)
 		{
 			this->_saltando = true;
 			this->_contSalto = 0;
-			MusicManager::PlayFx("sounds/boing.ogg", false);
+			this->_fxJump.PlayAsFx(false);
 		}
 
 		if (this->_saltando && this->_contSalto < TICKS_SALTO)
@@ -456,8 +462,8 @@ void TPlayer::setEstado(int estado)
 	if (estado & Muriendo)
 	{
 		this->setAnimation("uwol_die");
-		MusicManager::PlayFx("sounds/DeathCry.ogg", false);
-		MusicManager::PlayMusic("music/Death.ogg", false);
+		this->_fxDie.PlayAsFx(false);
+		this->_musicDie.PlayAsMusic(false);
 		this->_vy = -10.0f;
 	}
 }

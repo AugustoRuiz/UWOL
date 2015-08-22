@@ -35,10 +35,11 @@ public:
 	void setTileFondo(TilesFondo tile);
 	void setPlayer(TPlayer *player);
 
-	int _timeLeft;
-	bool _checkTime;
-	int Depth;
+	int TimeLeft;
+	bool CheckTime;
 	bool Completada;
+	void SetDepth(int value);
+	int GetDepth();
 
 	Plataforma* AddPlatform(TilePlataforma tipo, Direccion dir, char longitud, char tileX, char tileY, VECTOR2 tileSize);
     Enemigo* AddEnemy(TipoEnemigo tipo, Velocidad velocidad, char tileIni, char tileFin, char tileVert, VECTOR2 tileSize);
@@ -51,6 +52,7 @@ public:
 	int getEstado();
 
 private:
+	int _depth;
 
 	bool _disposed;
 
@@ -63,6 +65,7 @@ private:
 	Frame _textureFlechaIzq;
 	Frame _textureFlechaDer;
 	Frame _textureSombra;
+	Sound _tune, _fxCoin, _fxHit, _fxGhost, _musicGhost;
 
 	Background *_back;
 

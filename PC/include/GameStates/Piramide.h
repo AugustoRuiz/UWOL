@@ -21,6 +21,8 @@ class Piramide : public IGameState
 	Frame _frameLogo;
 	Frame _frameFlecha;
 
+	Sound _tune;
+
 	Graphics* _g;
 	Stage& _stage;
 

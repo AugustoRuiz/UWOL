@@ -136,6 +136,7 @@
     <ClCompile Include="src\GameStates\Room.cpp" />
     <ClCompile Include="src\Graphics\Scanlines.cpp" />
     <ClCompile Include="src\GameStates\Stage.cpp" />
+    <ClCompile Include="src\Sound\Sound.cpp" />
     <ClCompile Include="src\StaticInitalizers.cpp" />
     <ClCompile Include="src\stdafx.cpp" />
     <ClCompile Include="src\Graphics\TextRenderer.cpp" />
@@ -180,6 +181,7 @@
     <ClInclude Include="include\GameStates\Room.h" />
     <ClInclude Include="include\Graphics\Scanlines.h" />
     <ClInclude Include="include\GameStates\Stage.h" />
+    <ClInclude Include="include\Sound\Sound.h" />
     <ClInclude Include="include\stdafx.h" />
     <ClInclude Include="include\Graphics\TextRenderer.h" />
     <ClInclude Include="include\Graphics\TextureMgr.h" />

@@ -11,9 +11,7 @@ Portada::Portada()
 	this->_imagenes.push_back(Frame("data/logoRetroworks.PNG"));
 	this->_imagenes.push_back(Frame("data/credits.PNG"));
 
-	this->_sonidos.push_back("sounds/coinPicked.ogg");
-	this->_sonidos.push_back("sounds/coinPicked.ogg");
-	this->_sonidos.push_back("sounds/coinPicked.ogg");
+	this->_sonido = Sound("sounds/coinPicked.ogg");
 
 	this->OnEnter();
 }
@@ -74,7 +72,7 @@ string Portada::Update(Uint32 milliSec, Event & inputEvent)
 	else {
 		if (this->_incrFactor == 0) {
 			if (this->_currentTick == 0) {
-				MusicManager::PlayFx(this->_sonidos[this->_currentFrame], false);
+				this->_sonido.PlayAsFx(false);
 			}
 			this->_currentTick += milliSec;
 			if (this->_currentTick >= WAIT_TIME) {
