@@ -12,7 +12,7 @@ Presentacion::Presentacion() {
 
 	this->_g = Graphics::GetInstance();
 
-	this->_frameSombra = Frame("data/TileSombra.PNG");
+	this->_frameSombra = Frame("data/TileSombra.png");
 	this->_logos.push_back(Frame("data/texturaUWOL.png"));
 
 	this->_disposed = false;
@@ -79,10 +79,10 @@ void Presentacion::Draw() {
 	_g->DrawStringAlpha(posX + 1, posY + 1, text, 0, 0, 0, 0, 0, 0, _textAlpha);
 	_g->DrawStringAlpha(posX, posY, text, _rTextTop, _gTextTop, _bTextTop, _rTextBot, _gTextBot, _bTextBot, _textAlpha);
 
-	_g->BlitFrameAbs(this->_frameSombra, 0, 0, _g->ScreenWidth, _g->OffsetY - 1, false, false);
-	_g->BlitFrameAbs(this->_frameSombra, 0, _g->ScreenHeight - _g->OffsetY, _g->ScreenWidth, _g->OffsetY, false, false);
-	_g->BlitFrameAbs(this->_frameSombra, 0, 0, _g->OffsetX, _g->ScreenHeight, false, false);
-	_g->BlitFrameAbs(this->_frameSombra, _g->ScreenWidth - _g->OffsetX, 0, _g->OffsetX, _g->ScreenHeight, false, false);
+	//_g->BlitFrameAbs(this->_frameSombra, 0, 0, _g->ScreenWidth, _g->OffsetY - 1, false, false);
+	//_g->BlitFrameAbs(this->_frameSombra, 0, _g->ScreenHeight - _g->OffsetY, _g->ScreenWidth, _g->OffsetY, false, false);
+	//_g->BlitFrameAbs(this->_frameSombra, 0, 0, _g->OffsetX, _g->ScreenHeight, false, false);
+	//_g->BlitFrameAbs(this->_frameSombra, _g->ScreenWidth - _g->OffsetX, 0, _g->OffsetX, _g->ScreenHeight, false, false);
 }
 
 string Presentacion::Update(Uint32 milliSec, Event & inputEvent) {
@@ -126,7 +126,7 @@ string Presentacion::Update(Uint32 milliSec, Event & inputEvent) {
 		this->_coins[i]->Update(milliSec);
 		this->_coins[i]->_y += (int) this->_coins[i]->_speed.y;
 		if (this->_coins[i]->_y > _g->ScreenHeight) {
-			this->_coins[i]->_y = 0;
+			this->_coins[i]->_y = -32;
             this->_coins[i]->_x = rand() % _g->ScreenWidth;
             this->_coins[i]->SetFrame(rand() % 7);
             this->_coins[i]->_speed.y = (float)((i/100) + 1 + (rand() % 2));

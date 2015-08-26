@@ -116,7 +116,11 @@ int Room::GetDepth() {
 void Room::OnEnter(void) {
 	this->Restart();
 
-	this->_tune.PlayAsMusic(true);
+	if(!this->Completada) {
+		this->_tune.PlayAsMusic(true);
+	} else {
+		this->_player->setEstado(this->_player->getEstado() | TodasMonedasCogidas);
+	}
 }
 
 void Room::OnExit() {
@@ -141,10 +145,7 @@ void Room::setPlayer(TPlayer *player) {
 }
 
 string Room::Update(Uint32 milliSec, Event & inputEvent) {
-	bool playerWasKilled = false;
-
 	if(this->_player->getEstado() & (Muriendo | Muerto)) {
-		playerWasKilled = true;
 		this->CheckTime = false;
 	}
 
@@ -177,13 +178,11 @@ string Room::Update(Uint32 milliSec, Event & inputEvent) {
 			this->TimeLeft = 0;
 			this->CheckTime = false;
 			this->AddFanty();
-			
 			MusicManager::FadeOutMusic(500);
 			this->_fxGhost.PlayAsFx(false);
 		}
 	}
-	else
-	{
+	else {
 		if(!MusicManager::IsPlayingMusic()) {
 			this->_musicGhost.PlayAsMusic(true);
 		}
