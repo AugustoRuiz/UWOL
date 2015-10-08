@@ -172,7 +172,7 @@ Event InputManager::Update(int milliSecs)
 }
 
 void InputManager::setKeyFromJoyEvent(int status, int mask, ActionKeys key) {
-	if ((status & mask) == mask) {
+	if ((mask) && ((status & mask) == mask)) {
 		Event ev;
 		ev.Name = "KEY_DOWN";
 		ev.Data["key"] = key;
