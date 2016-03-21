@@ -82,7 +82,8 @@ int main(int argc, char *argv[])
 		if (game->Initialize(640, 480, fullScreen))
 		{
 			game->ShowCursor(false);
-			game->SetWindowName("Retroworks - UWOL: Quest for money");
+			//game->SetWindowName("Retroworks - UWOL: Quest for money");
+			game->SetWindowName("UWOL: Quest for money");
 
 			game->SetAttractMode(attract);
 			game->SetSaveAttract(saveState);
