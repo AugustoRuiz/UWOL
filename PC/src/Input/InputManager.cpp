@@ -93,7 +93,7 @@ Event InputManager::Update(int milliSecs)
 	SDL_Event event;
 	SDL_PollEvent(&event);
 
-	if (SDL_NumJoysticks() > 0 && !SDL_JoystickOpened(0)) {
+	if (SDL_NumJoysticks() > 0 && (this->_joystick == NULL)) {
 		this->_joystick = SDL_JoystickOpen(0);
 	}
 

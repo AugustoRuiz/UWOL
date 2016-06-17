@@ -2,12 +2,13 @@
 
 Frame::Frame()
 {
+	this->Program = NULL;
 }
 
 Frame::Frame(const string &path) : Frame(path, 0, 1, 0, 1) {
 };
 
-Frame::Frame(const string &path, float tx1, float tx2, float ty1, float ty2) {
+Frame::Frame(const string &path, float tx1, float tx2, float ty1, float ty2) : Frame() {
 	this->Texture = TextureMgr::GetInstance()->LoadTexture(path);
 	this->Coords.tx1 = tx1;
 	this->Coords.tx2 = tx2;
@@ -19,7 +20,7 @@ Frame::~Frame()
 {
 }
 
-void Frame::Init(Json::Value frame)
+void Frame::Init(const Json::Value& frame)
 {
 	if (frame != Json::Value::null) {
 		string path = frame.get("img", "").asString();

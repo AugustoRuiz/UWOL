@@ -16,7 +16,6 @@ void Enemigo::Initialize()
 
     _alpha = 1.0f;
 	_direccion = 1;
-	_player = NULL;
 
 	_vx = 0.0f;
 	_vy = 0.0f;
@@ -78,11 +77,6 @@ int Enemigo::getTileVert()
 void Enemigo::setAlpha(float alpha)
 {
     this->_alpha = alpha;
-}
-
-void Enemigo::setPlayer(TPlayer *player)
-{
-	this->_player = player;
 }
 
 void Enemigo::Update(Uint32 milliSec)

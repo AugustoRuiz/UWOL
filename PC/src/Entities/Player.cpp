@@ -429,3 +429,13 @@ void TPlayer::setAnimation(string name) {
 	}
 	this->_animPlayer.setAnimation(Animation::Get(ss.str()));
 }
+
+bool TPlayer::ShouldChase()
+{
+	return !(this->getEstado() & Muriendo);
+}
+
+VECTOR2F TPlayer::GetPosition()
+{
+	return VECTOR2F(this->_x, this->_y);
+}

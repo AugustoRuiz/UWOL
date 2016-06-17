@@ -1,6 +1,6 @@
 #include "Presentacion.h"
 
-#define NUM_COINS 300
+#define NUM_COINS 100
 #define INCR_FACTOR 1
 
 Presentacion::Presentacion() {
@@ -12,8 +12,19 @@ Presentacion::Presentacion() {
 
 	this->_g = Graphics::GetInstance();
 
-	this->_frameSombra = Frame("data/TileSombra.png");
-	this->_logos.push_back(Frame("data/texturaUWOL.png"));
+	this->_portada = Frame("data/uwol_portada.png");
+	this->_bg = Frame("data/warp.png");
+	
+	vector<string> vertexShaders = { "data/shaders/Default.vertex" };
+	vector<string> fragmentShaders = { "data/shaders/ColorCycle.fragment" };
+
+	Frame colorCycle("data/warpCycle.png");
+
+	this->_bg.Program = new Program(vertexShaders, fragmentShaders);
+	this->_bg.Program->Textures.push_back(this->_bg.Texture);
+	this->_bg.Program->Textures.push_back(colorCycle.Texture);
+
+	this->_shadow = Frame("data/TileSombra.png");;
 
 	this->_disposed = false;
 
@@ -23,10 +34,10 @@ Presentacion::Presentacion() {
 	{
 		this->_coins[i] = new Coin();
 		this->_coins[i]->setTileSize(tileSize);
-		this->_coins[i]->_x = rand() % _g->ScreenWidth;
-		this->_coins[i]->_y = rand() % _g->ScreenHeight;
+		this->_coins[i]->_x = (int)_g->OffsetX + (rand() % _g->WorldWidth);
+		this->_coins[i]->_y = (float) (rand() % _g->WorldHeight);
 		this->_coins[i]->SetFrame(rand() % 7);
-		this->_coins[i]->_speed.y = (float) ((i/100) + 1 + (rand() % 2));
+		this->_coins[i]->_speed.y = (float) ((i/100.0f) + 2 + (rand() % 200)/100.0f);
 		this->_coins[i]->SetTicks(rand() % TICKS_ANIM_COIN);
 		this->_coins[i]->_rotationFactor = ((rand() % 30) / 10.0f) + 0.5f;
 	}
@@ -41,8 +52,7 @@ void Presentacion::OnEnter() {
 	this->_currentAlpha = 0.0f;
 	this->_currentTick = 0;
 	this->_totalTicks = 0;
-	this->_currentFrame = this->_logos.begin();
-
+	this->_goNext = false;
 	this->_incrFactor = INCR_FACTOR;
 
 	this->_music.PlayAsMusic(true);
@@ -64,25 +74,30 @@ void Presentacion::Dispose()
 }
 
 void Presentacion::Draw() {
-	Frame &current = *(this->_currentFrame);
-
-	for (int i = 0; i < NUM_COINS; i++) {
-		this->_coins[i]->DrawInPos(this->_coins[i]->_x, this->_coins[i]->_y, 1.0f);
+	for (int i = 0; i < NUM_COINS/2; i++) {
+		this->_coins[i]->DrawInPos(this->_coins[i]->_x, (int) round(this->_coins[i]->_y), 0.5f);
 	}
 
-	_g->BlitCenteredFrameAlpha(current, current.Texture->width * 2, current.Texture->height * 2, this->_currentAlpha, false, false);
+	this->_bg.Program->SetUniform("iGlobalTime", -(float)this->_totalTicks);
+	_g->BlitFrameAlpha(_bg, _g->WorldWidth/2 - _bg.Texture->width, _g->WorldHeight/2 - _bg.Texture->height + 48, _bg.Texture->width * 2, _bg.Texture->height * 2, this->_currentAlpha, false, false);
+	_g->BlitCenteredFrameAlpha(_portada, _portada.Texture->width * 2, _portada.Texture->height * 2, this->_currentAlpha, false, false);
 
 	string text = "PUSH JUMP TO START";
 	int posX = (int)((_g->WorldWidth - (text.size() * 16)) / 2);
-	int posY = _g->WorldHeight - 32;
+	int posY = _g->WorldHeight + 14;
 
 	_g->DrawStringAlpha(posX + 1, posY + 1, text, 0, 0, 0, 0, 0, 0, _textAlpha);
 	_g->DrawStringAlpha(posX, posY, text, _rTextTop, _gTextTop, _bTextTop, _rTextBot, _gTextBot, _bTextBot, _textAlpha);
 
-	//_g->BlitFrameAbs(this->_frameSombra, 0, 0, _g->ScreenWidth, _g->OffsetY - 1, false, false);
-	//_g->BlitFrameAbs(this->_frameSombra, 0, _g->ScreenHeight - _g->OffsetY, _g->ScreenWidth, _g->OffsetY, false, false);
-	//_g->BlitFrameAbs(this->_frameSombra, 0, 0, _g->OffsetX, _g->ScreenHeight, false, false);
-	//_g->BlitFrameAbs(this->_frameSombra, _g->ScreenWidth - _g->OffsetX, 0, _g->OffsetX, _g->ScreenHeight, false, false);
+	for (int i = NUM_COINS/2; i < NUM_COINS; i++) {
+		this->_coins[i]->DrawInPos(this->_coins[i]->_x, (int)round(this->_coins[i]->_y), 1.0f);
+	}
+
+	// Cortamos por las bravas...
+	_g->BlitFrameAbs(this->_shadow, 0, 0, _g->ScreenWidth, (int)_g->OffsetY - 33, false, false);
+	_g->BlitFrameAbs(this->_shadow, 0, _g->ScreenHeight - (int)_g->OffsetY + 33, _g->ScreenWidth, (int)_g->OffsetY - 33, false, false);
+	_g->BlitFrameAbs(this->_shadow, 0, 0, (int)_g->OffsetX - 33, _g->ScreenHeight, false, false);
+	_g->BlitFrameAbs(this->_shadow, _g->ScreenWidth - (int)_g->OffsetX + 33, 0, (int)_g->OffsetX, _g->ScreenHeight, false, false);
 }
 
 string Presentacion::Update(Uint32 milliSec, Event & inputEvent) {
@@ -105,7 +120,7 @@ string Presentacion::Update(Uint32 milliSec, Event & inputEvent) {
 	if (this->_incrFactor == 0) {
 		this->_currentTick += milliSec;
 
-		if (this->_currentTick >= 60000) {
+		if (this->_currentTick >= 30000) {
 			this->_currentTick = 0;
 			this->_incrFactor = -INCR_FACTOR;
 		}
@@ -119,7 +134,7 @@ string Presentacion::Update(Uint32 milliSec, Event & inputEvent) {
 	if (this->_currentAlpha < 0.0f && milliSec > 0) {
 		this->_incrFactor = INCR_FACTOR;
 		this->_currentAlpha = 0.0f;
-		this->UpdateCurrentTexture();
+		this->_goNext = true;
 	}
 
 	for (int i = 0; i<NUM_COINS; i++) {
@@ -127,10 +142,10 @@ string Presentacion::Update(Uint32 milliSec, Event & inputEvent) {
 		this->_coins[i]->_y += (int) this->_coins[i]->_speed.y;
 		if (this->_coins[i]->_y > _g->ScreenHeight) {
 			this->_coins[i]->_y = -32;
-            this->_coins[i]->_x = rand() % _g->ScreenWidth;
-            this->_coins[i]->SetFrame(rand() % 7);
-            this->_coins[i]->_speed.y = (float)((i/100) + 1 + (rand() % 2));
-            this->_coins[i]->SetTicks(rand() % TICKS_ANIM_COIN);
+			this->_coins[i]->_x = (int)_g->OffsetX + (rand() % _g->WorldWidth);
+			this->_coins[i]->SetFrame(rand() % 7);
+			this->_coins[i]->_speed.y = (float)((i / 100.0f) + 2 + (rand() % 200) / 100.0f);
+			this->_coins[i]->SetTicks(rand() % TICKS_ANIM_COIN);
 		}
 	}
 
@@ -141,6 +156,9 @@ string Presentacion::Update(Uint32 milliSec, Event & inputEvent) {
 			input->SetControlMode(Keyboard);
 			return "Piramide";
 		}
+		//else {
+		//	this->_goNext = true;
+		//}
 	}
 	if (inputEvent.Name == "JOY_DOWN") {
 		int button = inputEvent.Data["button"].asInt();
@@ -148,17 +166,14 @@ string Presentacion::Update(Uint32 milliSec, Event & inputEvent) {
 			input->SetControlMode(Joystick);
 			return "Piramide";
 		}
+		//else {
+		//	this->_goNext = true;
+		//}
 	}
 
-	if (this->_currentFrame != this->_logos.end()) {
-		return this->Name;
+	if (this->_goNext) {
+		return "Credits";
 	}
-	else {
-		return "Portada";
-	}
-}
 
-void Presentacion::UpdateCurrentTexture()
-{
-	this->_currentFrame++;
+	return this->Name;
 }

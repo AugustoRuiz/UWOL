@@ -12,7 +12,7 @@ Mix_Chunk* MusicManager::LoadMusic(const string &sFileName)
 {
 	Mix_Chunk* result = NULL;
 
-	Log::Out << "MusicManager: Loading sound " << sFileName << "s... " << endl;
+	Log::Out << "MusicManager: Loading sound '" << sFileName << "'..." ;
 
 	if(cache.find(sFileName) != cache.end())
 	{
@@ -22,7 +22,6 @@ Mix_Chunk* MusicManager::LoadMusic(const string &sFileName)
 	else
 	{
 		result = Mix_LoadWAV(sFileName.c_str());
-
 		if(result == NULL)
 		{
 			Log::Out << "SDL couldn't load sound " << sFileName << endl;

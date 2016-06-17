@@ -4,13 +4,14 @@
 #include "CollisionMap.h"
 #include "IDrawable.h"
 #include "IUpdatable.h"
+#include "IChaseable.h"
 #include "Graphics.h"
 #include "AnimationPlayer.h"
 #include "InputManager.h"
 #include "MusicManager.h"
 #include "Sound.h"
 
-class TPlayer : public IDrawable, public IUpdatable
+class TPlayer : public IDrawable, public IUpdatable, public IChaseable
 {
 public:
 	TPlayer(void);
@@ -84,4 +85,8 @@ private:
 	void checkMapCollisions(Uint32 milliSec);
 
 	void setAnimation(string name);
+
+	// Inherited via IChaseable
+	virtual bool ShouldChase() override;
+	virtual VECTOR2F GetPosition() override;
 };

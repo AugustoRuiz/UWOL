@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Frame.h"
+#include "Shader.h"
 #include "GLFuncs.h"
 #include "TextRenderer.h"
 
@@ -18,8 +19,8 @@ protected:
 public:
 	static Graphics* GetInstance();
 
-	int OffsetX;
-	int OffsetY;
+	float OffsetX;
+	float OffsetY;
 	int ScreenWidth;
 	int ScreenHeight;
 	int WorldWidth;
@@ -28,7 +29,12 @@ public:
 	VECTOR2 LightPosition;
 	VECTOR2 MaxShadowOffset;
 
-	bool Initialize(int screenWidth, int screenHeight, int worldWidth, int worldHeight, bool fullScreen);
+	Program* DefaultProgram;
+
+	void ResetMVP();
+	void OffsetMVP(float offsetX, float offsetY);
+
+	bool Initialize(int screenWidth, int screenHeight, int worldWidth, int worldHeight, bool fullScreen, const char* name);
 
 	void BlitColoredFrameAbs(const Frame& frame, int x, int y, int width, int height, float red, float green, float blue, float alpha, bool additive, bool flipX, bool flipY);
 	void BlitFrameAbs(const Frame& frame, int x, int y, int width, int height, bool flipX, bool flipY);
@@ -40,6 +46,8 @@ public:
 	void BlitFrameAlpha(const Frame& frame, int x, int y, int width, int height, float alpha, bool flipX, bool flipY);
 	void BlitCenteredFrameAlpha(const Frame& frame, int width, int height, float alpha, bool filpX, bool flipY);
 	void BlitShadow(const Frame& frame, int x, int y, int width, int height, bool flipX, bool flipY);
+
+	void Clear();
 
 	void DrawString(int x, int y, const string &text, float rTop, float gTop, float bTop, float rBot, float gBot, float bBot);
 	void DrawString(int x, int y, int textSize, const string &text, float rTop, float gTop, float bTop, float rBot, float gBot, float bBot);
@@ -53,5 +61,8 @@ public:
 
 	void DrawPolyLines(const vector<VECTOR2> &vertexes, float red, float green, float blue, float alpha);
 	void DrawPolyLinesAbs(const vector<VECTOR2> &vertexes, float red, float green, float blue, float alpha);
+
+	void SwapBuffers();
+	GLuint CreateProgram(const vector<Shader*> shaders);
 };
 

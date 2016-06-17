@@ -20,7 +20,7 @@ bool Game::Running()
 	return _running;
 }
 
-bool Game::Initialize(int width, int height, bool fullscreen)
+bool Game::Initialize(int width, int height, bool fullscreen, const char* name)
 {
 	Log::Out << "Game: Initializing..." << endl;
 
@@ -29,7 +29,7 @@ bool Game::Initialize(int width, int height, bool fullscreen)
 
 	Log::Out << "Game: Initializing screen (" << width << " x " << height << ")..." << endl;
 
-	_running = _g->Initialize(width, height, 384, 320, fullscreen);
+	_running = _g->Initialize(width, height, 384, 320, fullscreen, name);
 
 	_g->LightPosition.x = _g->WorldWidth / 2;
 	_g->LightPosition.y = 0;
@@ -55,6 +55,7 @@ bool Game::Initialize(int width, int height, bool fullscreen)
 
 	this->AddState(new Portada());
 	this->AddState(new Presentacion());
+	this->AddState(new Credits());
 	this->AddState(new Piramide((*(this->_stage))));
 	this->AddState(this->_stage);
 	this->AddState(new EndGame(true));
@@ -75,11 +76,6 @@ bool Game::Initialize(int width, int height, bool fullscreen)
 	this->_totalTicks = 0;
 
 	return _running;
-}
-
-void Game::SetWindowName(const char *name)
-{
-	SDL_WM_SetCaption(name, NULL);
 }
 
 void Game::Dispose()
@@ -205,7 +201,7 @@ void Game::updateAttractMode() {
 
 void Game::Render()
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	_g->Clear();
 
 	map<string, IGameState*>::iterator it = _states.find(_currentStatus);
 	if (it != _states.end())
@@ -219,7 +215,7 @@ void Game::Render()
 		this->_scanlines->Draw();
 	}
 
-	SDL_GL_SwapBuffers();
+	_g->SwapBuffers();
 }
 
 void Game::Restart() {
@@ -290,8 +286,8 @@ void Game::ShowCursor(bool show)
 
 void Game::loadResources() {
 	// Barra de progreso?
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	SDL_GL_SwapBuffers();
+	_g->Clear();
+	_g->SwapBuffers();
 
 	Log::Out << "Game: Loading resources..." << endl;
 	ifstream resourcesFile("resources.json", ios::binary);

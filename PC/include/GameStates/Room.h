@@ -51,6 +51,8 @@ public:
 
 	int getEstado();
 
+	static void StaticInit();
+
 private:
 	int _depth;
 
@@ -61,11 +63,13 @@ private:
 
 	float _valorOscuro;
 
-	Frame _textureCamiseta;
-	Frame _textureFlechaIzq;
-	Frame _textureFlechaDer;
-	Frame _textureSombra;
-	Sound _tune, _fxCoin, _fxHit, _fxGhost, _musicGhost;
+	static Frame _textureCamiseta;
+	static Frame _textureFlechaIzq;
+	static Frame _textureFlechaDer;
+	static Frame _textureSombra;
+	static Sound _fxCoin, _fxHit, _fxGhost, _musicGhost;
+	static vector<Sound> _tunes;
+	Sound _tune;
 
 	Background *_back;
 

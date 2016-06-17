@@ -79,11 +79,9 @@ int main(int argc, char *argv[])
 
 		musicMgr->Initialize();
 		// 512 x 384
-		if (game->Initialize(640, 480, fullScreen))
+		if (game->Initialize(640, 480, fullScreen, "UWOL, The Quest for Money"))
 		{
 			game->ShowCursor(false);
-			//game->SetWindowName("Retroworks - UWOL: Quest for money");
-			game->SetWindowName("UWOL: Quest for money");
 
 			game->SetAttractMode(attract);
 			game->SetSaveAttract(saveState);

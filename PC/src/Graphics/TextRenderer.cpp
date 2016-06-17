@@ -2,6 +2,8 @@
 
 TextRenderer::TextRenderer()
 {
+	this->_texture = NULL;
+	this->_program = NULL;
 }
 
 TextRenderer::~TextRenderer()
@@ -10,76 +12,73 @@ TextRenderer::~TextRenderer()
 
 void TextRenderer::DrawStringAlpha(int x, int y, int textSize, const string &text, float rTop, float gTop, float bTop, float rBot, float gBot, float bBot, float alpha)
 {
-	float tx1, tx2, ty1, ty2;
+	GLFuncs* g = GLFuncs::GetInstance();
     int xPos;
     int charPos;
 	char currentChar;
 
-	if (this->texture == NULL) {
-		TextureMgr *texMgr = TextureMgr::GetInstance();
-		this->texture = texMgr->LoadTexture("data/font.png");
+	charPos = 0;
+	xPos = x;
+
+	if (this->_texture == NULL) {
+		this->_texture = TextureMgr::GetInstance()->LoadTexture("data/font.png");
 	}
 
-	glEnable(GL_TEXTURE_2D);
-	//Load the texture
-	glBindTexture(GL_TEXTURE_2D, this->texture->texture);
-	
-	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
-    glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+	if (this->_program == NULL) {
+		vector<string> vertexShaders = { "data/shaders/Default.vertex" };
+		vector<string> fragmentShaders = { "data/shaders/TexturedColored.fragment" };
+		this->_program = new Program(vertexShaders, fragmentShaders);
+	}
 
-    if(aliasing)
-    {
-    	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-    }
-    else
-    {
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-    	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-    }
+	Program* program = this->_program;
+	if (program->Textures.size() > 0) {
+		program->Textures[0] = this->_texture;
+	}
+	else {
+		program->Textures.push_back(this->_texture);
+	}
 
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	program->Use();
+	program->BindTextures();
 
-	glBegin(GL_QUADS);
+	glUniformMatrix4fv(glGetUniformLocation(program->ProgramId, "MVP"), 1, GL_FALSE, &(g->MVP[0][0]));
 
-	charPos = 0;
-
-	xPos = x;
+	GLfloat color_buffer_data[] = {
+		rTop, gTop, bTop, alpha,
+		rTop, gTop, bTop, alpha,
+		rBot, gBot, bBot, alpha,
+		rBot, gBot, bBot, alpha
+	};
 
 	while(text[charPos] != 0)
 	{
+		float tx1, tx2, ty1, ty2;
+
 		currentChar = text[charPos++];
 
-		updateTexCoords(currentChar, &tx1, &tx2, &ty1, &ty2);
+		updateTexCoords(currentChar, &tx1, &ty1, &tx2, &ty2);
 
-		//Top-left vertex (corner)
-		glColor4f(rTop, gTop, bTop, alpha);	
-		glTexCoord2f(tx1, ty1);
-		glVertex2i(xPos, y);
+		GLfloat vertex_buffer_data[] = {
+			(float)xPos, (float)y, 0.0f,
+			(float)xPos + textSize, (float)y, 0.0f,
+			(float)xPos + textSize, (float)y + textSize, 0.0f,
+			(float)xPos, (float)y + textSize, 0.0f
+		};
 
-		//Top-right vertex (corner)
-		glColor4f(rTop, gTop, bTop, alpha);
-		glTexCoord2f(tx2, ty1);
-		glVertex2i(xPos + textSize, y);
+		GLfloat uv_buffer_data[] = {
+			tx1, ty1,
+			tx2, ty1,
+			tx2, ty2,
+			tx1, ty2
+		};
 
-		//Bottom-right vertex (corner)
-		glColor4f(rBot, gBot, bBot, alpha);
-		glTexCoord2f(tx2, ty2);
-		glVertex2i(xPos + textSize, y + textSize);
-
-		//Bottom-left vertex (corner)
-		glColor4f(rBot, gBot, bBot, alpha);
-		glTexCoord2f(tx1, ty2);
-		glVertex2i(xPos, y + textSize);
-
+		g->BlitVerts(vertex_buffer_data, sizeof(vertex_buffer_data), uv_buffer_data, sizeof(uv_buffer_data), color_buffer_data, sizeof(color_buffer_data));
+		
 		xPos += textSize;
 	}
-
-	glEnd();
 }
 
-void TextRenderer::updateTexCoords(char currentChar, float *tx1, float *tx2, float *ty1, float *ty2)
+void TextRenderer::updateTexCoords(char currentChar, float* tx1, float* ty1, float* tx2, float* ty2)
 {
 	const float factor = 0.0625f;
 	char diff;
@@ -178,9 +177,21 @@ void TextRenderer::updateTexCoords(char currentChar, float *tx1, float *tx2, flo
 								*tx1 = 10 * factor;
 								*tx2 = 11 * factor;
 								break;
-							default:
+							case '&':
 								*tx1 = 11 * factor;
 								*tx2 = 12 * factor;
+								break;
+							case '-':
+								*tx1 = 12 * factor;
+								*tx2 = 13 * factor;
+								break;
+							case '@':
+								*tx1 = 13 * factor;
+								*tx2 = 14 * factor;
+								break;
+							default:
+								*tx1 = 15 * factor;
+								*tx2 = 16 * factor;
 								break;
 						}
 					}

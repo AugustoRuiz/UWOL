@@ -1,5 +1,37 @@
 #include "Room.h"
 
+Frame Room::_textureFlechaDer;
+Frame Room::_textureFlechaIzq;
+Frame Room::_textureCamiseta;
+Frame Room::_textureSombra;
+
+Sound Room::_fxGhost;
+Sound Room::_musicGhost;
+Sound Room::_fxHit;
+Sound Room::_fxCoin;
+
+vector<Sound> Room::_tunes;
+
+void Room::StaticInit() {
+	Background::StaticInit();
+	Plataforma::StaticInit();
+
+	_textureFlechaDer = Frame("data/FlechaDer.png");
+	_textureFlechaIzq = Frame("data/FlechaIzq.png");
+	_textureCamiseta = Frame("data/Camiseta.png");
+	_textureSombra = Frame("data/pixBlanco.png");
+
+	_fxGhost = Sound("sounds/Bells.ogg");
+	_musicGhost = Sound("music/Ghosts3.ogg");
+	_fxHit = Sound("sounds/Hu.ogg");
+	_fxCoin = Sound("sounds/coinPicked.ogg");
+
+	_tunes.push_back(Sound("music/Zona1.ogg"));
+	_tunes.push_back(Sound("music/Zona2.ogg"));
+	_tunes.push_back(Sound("music/Zona3.ogg"));
+	_tunes.push_back(Sound("music/Zona4.ogg"));
+}
+
 Room::Room(void) {
 	this->Name = "Room";
 	_g = Graphics::GetInstance();
@@ -15,21 +47,8 @@ Room::Room(void) {
 	this->_map->Initialize(MAP_COLS, MAP_ROWS, vect.x, vect.y);
 
 	this->CheckTime = true;
-
-	this->_textureFlechaDer = Frame("data/FlechaDer.png");
-	this->_textureFlechaIzq = Frame("data/FlechaIzq.png");
-	this->_textureCamiseta = Frame("data/Camiseta.png");
-	this->_textureSombra = Frame("data/pixBlanco.png");
-
-	this->_fxGhost = Sound("sounds/Bells.ogg");
-	this->_musicGhost = Sound("music/Ghosts3.ogg");
-	this->_fxHit = Sound("sounds/Hu.ogg");
-	this->_fxCoin = Sound("sounds/coinPicked.ogg");
-
 	this->_player = NULL;
-
 	this->_disposed = false;
-
 	this->Completada = false;
 }
 
@@ -90,9 +109,9 @@ void Room::Restart() {
 			}
 			break;
 		}
-        else {
-            enem->resetPosition();
-        }
+		else {
+			enem->resetPosition();
+		}
 	}
 }
 
@@ -100,13 +119,13 @@ void Room::SetDepth(int depth) {
 	this->_depth = depth;
 
 	if (this->_depth < 4)
-		this->_tune = Sound("music/Zona1.ogg");
+		this->_tune = _tunes[0];
 	else if (this->_depth < 7)
-		this->_tune = Sound("music/Zona2.ogg");
+		this->_tune = _tunes[1];
 	else if (this->_depth < 9)
-		this->_tune = Sound("music/Zona3.ogg");
+		this->_tune = _tunes[2];
 	else
-		this->_tune = Sound("music/Zona4.ogg");
+		this->_tune = _tunes[3];
 }
 
 int Room::GetDepth() {
@@ -116,9 +135,10 @@ int Room::GetDepth() {
 void Room::OnEnter(void) {
 	this->Restart();
 
-	if(!this->Completada) {
+	if (!this->Completada) {
 		this->_tune.PlayAsMusic(true);
-	} else {
+	}
+	else {
 		this->_player->setEstado(this->_player->getEstado() | TodasMonedasCogidas);
 	}
 }
@@ -129,7 +149,7 @@ void Room::OnExit() {
 }
 
 void Room::setPlayer(TPlayer *player) {
-	if(player != NULL) {
+	if (player != NULL) {
 		VECTOR2 vect;
 		vect.x = 32;
 		vect.y = 32;
@@ -145,25 +165,25 @@ void Room::setPlayer(TPlayer *player) {
 }
 
 string Room::Update(Uint32 milliSec, Event & inputEvent) {
-	if(this->_player->getEstado() & (Muriendo | Muerto)) {
+	if (this->_player->getEstado() & (Muriendo | Muerto)) {
 		this->CheckTime = false;
 	}
 
-	for (vector<IUpdatable*>::iterator it = _updatables.begin(); it != _updatables.end();++it) {
+	for (vector<IUpdatable*>::iterator it = _updatables.begin(); it != _updatables.end(); ++it) {
 		IUpdatable* current = *it;
-		if(!(this->_player->getEstado() & (TodasMonedasCogidas | Muriendo | Muerto)) || (current->UpdateWhenNoCoins())) {
+		if (!(this->_player->getEstado() & (TodasMonedasCogidas | Muriendo | Muerto)) || (current->UpdateWhenNoCoins())) {
 			current->Update(milliSec);
 		}
 	}
 
-	if(this->_player->getEstado() & Muerto) {
+	if (this->_player->getEstado() & Muerto) {
 		return "";
 	}
 
 	int tileX1, tileX2, tileY1, tileY2;
 	this->_player->getTiles(tileX1, tileY1, tileX2, tileY2);
 
-	if(!(this->_player->getEstado() & Muriendo)) {
+	if (!(this->_player->getEstado() & Muriendo)) {
 		this->pickCoins(tileX1, tileX2, tileY1, tileY2);
 		this->pickCamiseta(tileX1, tileX2, tileY1, tileY2);
 
@@ -172,9 +192,9 @@ string Room::Update(Uint32 milliSec, Event & inputEvent) {
 		}
 	}
 
-	if(this->CheckTime) {
+	if (this->CheckTime) {
 		this->TimeLeft -= milliSec;
-		if(this->TimeLeft <= 0) {
+		if (this->TimeLeft <= 0) {
 			this->TimeLeft = 0;
 			this->CheckTime = false;
 			this->AddFanty();
@@ -183,12 +203,12 @@ string Room::Update(Uint32 milliSec, Event & inputEvent) {
 		}
 	}
 	else {
-		if(!MusicManager::IsPlayingMusic()) {
+		if (!MusicManager::IsPlayingMusic()) {
 			this->_musicGhost.PlayAsMusic(true);
 		}
 	}
 
-	if(this->TimeLeft <= 0 && _valorOscuro < 0.5f) {
+	if (this->TimeLeft <= 0 && _valorOscuro < 0.5f) {
 		_valorOscuro += milliSec * 0.001f * 0.4f;
 	}
 
@@ -205,19 +225,19 @@ void Room::checkEnemies(RECTANGLEF rect) {
 	vector<Enemigo*>::iterator iter;
 	Enemigo* enem;
 
-	for(iter = this->_enemigos.begin() ; iter != this->_enemigos.end(); iter++) {
+	for (iter = this->_enemigos.begin(); iter != this->_enemigos.end(); iter++) {
 		enem = *iter;
 
-		if(enem->getTipoEnemigo() == Fanty || !(this->_player->getEstado() & (TodasMonedasCogidas | Muriendo))) {
+		if (enem->getTipoEnemigo() == Fanty || !(this->_player->getEstado() & (TodasMonedasCogidas | Muriendo))) {
 			// Rectangle intersection: r1->player, r2->enemy.
 			//!( r2->left > r1->right || r2->right < r1->left || r2->top > r1->bottom || r2->bottom < r1->top)
-			if(!(enem->_x > rect.x + rect.width - 1 || enem->_x + this->_map->cellWidth - 1 < rect.x ||
-				 enem->_y > rect.y + rect.height - 1 || enem->_y + this->_map->cellHeight - 1 < rect.y)) {
-				if(this->_player->getEstado() & Desnudo) {
+			if (!(enem->_x > rect.x + rect.width - 1 || enem->_x + this->_map->cellWidth - 1 < rect.x ||
+				enem->_y > rect.y + rect.height - 1 || enem->_y + this->_map->cellHeight - 1 < rect.y)) {
+				if (this->_player->getEstado() & Desnudo) {
 					this->_player->setEstado(Muriendo);
 				}
 
-				if(this->_player->getEstado() & Normal)	{
+				if (this->_player->getEstado() & Normal) {
 					this->_player->setEstado((this->_player->getEstado() & 0xFFFFFFF0) | Parpadeo | Desnudo);
 					this->colocarCamiseta();
 					this->_fxHit.PlayAsFx(false);
@@ -229,13 +249,13 @@ void Room::checkEnemies(RECTANGLEF rect) {
 }
 
 void Room::pickCamiseta(int tileX1, int tileX2, int tileY1, int tileY2) {
-	if(
-	   (tileX1 == _camisetaX || tileX2 == _camisetaX)
-	   &&
-	   (tileY1 == _camisetaY || tileY2 == _camisetaY)
-	   &&
-	   (this->_player->getEstado() & Desnudo)
-	  ) {
+	if (
+		(tileX1 == _camisetaX || tileX2 == _camisetaX)
+		&&
+		(tileY1 == _camisetaY || tileY2 == _camisetaY)
+		&&
+		(this->_player->getEstado() & Desnudo)
+		) {
 		this->quitarCamiseta();
 		this->_player->AddScore(15);
 		this->_player->setEstado((this->_player->getEstado() & 0xFFFFFFF0) | Normal);
@@ -244,33 +264,33 @@ void Room::pickCamiseta(int tileX1, int tileX2, int tileY1, int tileY2) {
 
 void Room::colocarCamiseta() {
 	bool posCorrecta = false;
-	
+
 	do {
-        this->_camisetaX = rand() % 11;
-        this->_camisetaY = rand() % 9;
+		this->_camisetaX = rand() % 11;
+		this->_camisetaY = rand() % 9;
 
 		posCorrecta = (this->_map->map[this->_camisetaY * this->_map->cols + this->_camisetaX] != COLLISION_BLOCK);
-		
-		if(posCorrecta) {
+
+		if (posCorrecta) {
 			// Comprobamos que no colisione con ninguna moneda.
 			vector<Coin*>::iterator iter;
 			Coin *coin;
-			
-			for(iter = this->_monedas.begin(); iter != this->_monedas.end(); iter++) {
+
+			for (iter = this->_monedas.begin(); iter != this->_monedas.end(); iter++) {
 				coin = *iter;
-				if( this->_camisetaX == coin->_x && this->_camisetaY == coin->_y) {
+				if (this->_camisetaX == coin->_x && this->_camisetaY == coin->_y) {
 					posCorrecta = false;
 					break;
 				}
 			}
 
-			if(posCorrecta)	{
+			if (posCorrecta) {
 				vector<Enemigo*>::iterator iterEnem;
 				Enemigo *enem;
-				
-				for(iterEnem = this->_enemigos.begin(); iterEnem != this->_enemigos.end(); iterEnem++) {
+
+				for (iterEnem = this->_enemigos.begin(); iterEnem != this->_enemigos.end(); iterEnem++) {
 					enem = *iterEnem;
-					if( this->_camisetaX == enem->getTileIni() && this->_camisetaY == enem->getTileVert()) {
+					if (this->_camisetaX == enem->getTileIni() && this->_camisetaY == enem->getTileVert()) {
 						posCorrecta = false;
 						break;
 					}
@@ -278,12 +298,11 @@ void Room::colocarCamiseta() {
 			}
 		}
 
-		if(posCorrecta)	{
-		   this->_camisetaVisible = true;
+		if (posCorrecta) {
+			this->_camisetaVisible = true;
 		}
 
-	} 
-	while(!this->_camisetaVisible);
+	} while (!this->_camisetaVisible);
 }
 
 void Room::quitarCamiseta() {
@@ -295,15 +314,15 @@ void Room::pickCoins(int tileX1, int tileX2, int tileY1, int tileY2) {
 	vector<Coin*>::iterator iter;
 	vector<IDrawable*>::iterator iterDraw;
 	Coin *coin;
-	
-	for(iter = this->_monedas.begin(); iter != this->_monedas.end(); iter++) {
+
+	for (iter = this->_monedas.begin(); iter != this->_monedas.end(); iter++) {
 		coin = *iter;
-		if( (tileX1 == coin->_x || tileX2 == coin->_x)
+		if ((tileX1 == coin->_x || tileX2 == coin->_x)
 			&&
 			(tileY1 == coin->_y || tileY2 == coin->_y)
-		  )	{
-			for(iterDraw = this->_drawables.begin(); iterDraw != this->_drawables.end(); iterDraw++) {
-				if(*iterDraw == coin) {
+			) {
+			for (iterDraw = this->_drawables.begin(); iterDraw != this->_drawables.end(); iterDraw++) {
+				if (*iterDraw == coin) {
 					this->_drawables.erase(iterDraw);
 					break;
 				}
@@ -311,15 +330,15 @@ void Room::pickCoins(int tileX1, int tileX2, int tileY1, int tileY2) {
 			this->_monedas.erase(iter);
 			this->_monedasRecogidas.push_back(coin);
 
-			this->_player->_coinsTaken ++;
+			this->_player->_coinsTaken++;
 			this->_player->AddScore(1);
-			
+
 			this->_fxCoin.PlayAsFx(false);
 			break;
 		}
 	}
 
-	if(this->Completada || (this->_monedas.size() == 0 && !(this->_player->getEstado() & (TodasMonedasCogidas | Muriendo)))) {
+	if (this->Completada || (this->_monedas.size() == 0 && !(this->_player->getEstado() & (TodasMonedasCogidas | Muriendo)))) {
 		this->_player->setEstado(this->_player->getEstado() | TodasMonedasCogidas);
 	}
 }
@@ -415,24 +434,24 @@ void Room::drawCamiseta() {
 }
 
 void Room::Dispose(void) {
-	if(!this->_disposed) {
+	if (!this->_disposed) {
 		int i;
 		int count;
 
 		count = (int) this->_plataformas.size();
-		for(i = 0; i < count; i++) {
+		for (i = 0; i < count; i++) {
 			delete this->_plataformas[i];
 		}
 		this->_plataformas.clear();
 
 		count = (int) this->_monedas.size();
-		for(i = 0; i < count; i++) {
+		for (i = 0; i < count; i++) {
 			delete this->_monedas[i];
 		}
 		this->_monedas.clear();
 
 		count = (int) this->_enemigos.size();
-		for(i = 0; i < count; i++) {
+		for (i = 0; i < count; i++) {
 			delete this->_enemigos[i];
 		}
 		this->_enemigos.clear();
@@ -454,12 +473,12 @@ Plataforma* Room::AddPlatform(TilePlataforma tipo, Direccion dir, char longitud,
 	plat->setLongitud(longitud);
 	plat->setPos(tileX, tileY);
 
-	this->_drawables.push_back(plat);       
+	this->_drawables.push_back(plat);
 	this->_plataformas.push_back(plat);
 
 	int mapPos = (tileY * MAP_COLS) + tileX;
-	int incr = (dir == Horizontal)? 1 : MAP_COLS;
-	for(int i=0; i<longitud; i++) {
+	int incr = (dir == Horizontal) ? 1 : MAP_COLS;
+	for (int i = 0; i < longitud; i++) {
 		this->_map->map[mapPos] = COLLISION_BLOCK;
 		mapPos += incr;
 	}
@@ -482,7 +501,7 @@ Enemigo* Room::AddEnemy(TipoEnemigo tipo, Velocidad velocidad, char tileIni, cha
 
 void Room::AddFanty() {
 	VECTOR2 vect;
-	
+
 	vect.x = 32;
 	vect.y = 32;
 
@@ -494,12 +513,12 @@ void Room::AddFanty() {
 	this->_enemigos.push_back(this->_fanty);
 
 	this->_fanty->setAlpha(0.65f);
-	this->_fanty->setPlayer(this->_player);
+	((EFanty*)this->_fanty)->setChaseable(this->_player);
 }
 
 Coin* Room::AddCoin(char tileX, char tileY, VECTOR2 tileSize) {
 	Coin *coin = new Coin();
-    coin->_rotationFactor = ((rand() % 30) / 10.0f) + 0.5f;
+	coin->_rotationFactor = ((rand() % 30) / 10.0f) + 0.5f;
 	coin->setTileSize(tileSize);
 	coin->setPos(tileX, tileY);
 
@@ -526,13 +545,13 @@ bool Room::loadRoom(ifstream &roomsFile) {
 	// Leemos el tile de fondo.
 	roomsFile.read(reinterpret_cast<char*>(&tileFondo), sizeof(unsigned char));
 	this->_back = new Background();
-	this->_back->setTileFondo((TilesFondo) tileFondo);
+	this->_back->setTileFondo((TilesFondo)tileFondo);
 
 	Log::Out << "   - Background: " << tileFondo << endl;
 
 	// Leemos las plataformas:
 	moreData = (unsigned char)roomsFile.peek();
-	while(moreData != 0xFF) {
+	while (moreData != 0xFF) {
 		unsigned char tipo;
 		unsigned char dir;
 		unsigned char lon;
@@ -554,7 +573,7 @@ bool Room::loadRoom(ifstream &roomsFile) {
 
 	// Enemigos.
 	moreData = (unsigned char)roomsFile.peek();
-	while(moreData != 0xFF) {
+	while (moreData != 0xFF) {
 		unsigned char tileVert;
 		unsigned char tipoEnemigo;
 		unsigned char velocidad;
@@ -567,10 +586,10 @@ bool Room::loadRoom(ifstream &roomsFile) {
 		roomsFile.read(reinterpret_cast<char*>(&tileIzq), sizeof(unsigned char));
 		roomsFile.read(reinterpret_cast<char*>(&tileDer), sizeof(unsigned char));
 
-		this->AddEnemy((TipoEnemigo) tipoEnemigo, (Velocidad) velocidad, tileIzq, tileDer, tileVert, vect);
+		this->AddEnemy((TipoEnemigo)tipoEnemigo, (Velocidad)velocidad, tileIzq, tileDer, tileVert, vect);
 
 		moreData = (unsigned char)roomsFile.peek();
-		Log::Out << "Adding Enemy: " << tipoEnemigo << endl;
+		Log::Out << "Adding Enemy: " << (int)tipoEnemigo << endl;
 	}
 
 	// Saltamos el siguiente caracter...
@@ -578,17 +597,17 @@ bool Room::loadRoom(ifstream &roomsFile) {
 
 	// Monedas.
 	moreData = (unsigned char)roomsFile.peek();
-	
+
 	this->_initialTime = 0;
 
-	while(moreData != 0xFF) {
+	while (moreData != 0xFF) {
 		unsigned char tileX;
 		unsigned char tileY;
 
 		roomsFile.read(reinterpret_cast<char*>(&tileX), sizeof(unsigned char));
 		roomsFile.read(reinterpret_cast<char*>(&tileY), sizeof(unsigned char));
 		this->AddCoin(tileX, tileY, vect);
-		
+
 		this->_initialTime += 2000;
 
 		moreData = (unsigned char)roomsFile.peek();

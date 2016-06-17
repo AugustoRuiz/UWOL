@@ -10,6 +10,8 @@ Stage::Stage(void) {
 	this->Player = new TPlayer();
 	this->StatsDrawer = new StatsDraw();
 
+	Room::StaticInit();
+
 	this->RoomIndex = 0;
 	this->CurrentRoom = this->loadRooms();
 
@@ -51,10 +53,10 @@ void Stage::Draw() {
 	this->CurrentRoom->Draw();
 
 	// Cortamos por las bravas...
-	_g->BlitFrameAbs(this->_frameSombra, 0, 0, _g->ScreenWidth, _g->OffsetY - 1, false, false);
-	_g->BlitFrameAbs(this->_frameSombra, 0, _g->ScreenHeight - _g->OffsetY, _g->ScreenWidth, _g->OffsetY, false, false);
-	_g->BlitFrameAbs(this->_frameSombra, 0, 0, _g->OffsetX, _g->ScreenHeight, false, false);
-	_g->BlitFrameAbs(this->_frameSombra, _g->ScreenWidth - _g->OffsetX, 0, _g->OffsetX, _g->ScreenHeight, false, false);
+	_g->BlitFrameAbs(this->_frameSombra, 0, 0, _g->ScreenWidth, (int)_g->OffsetY - 1, false, false);
+	_g->BlitFrameAbs(this->_frameSombra, 0, _g->ScreenHeight - (int)_g->OffsetY, _g->ScreenWidth, (int)_g->OffsetY, false, false);
+	_g->BlitFrameAbs(this->_frameSombra, 0, 0, (int)_g->OffsetX, _g->ScreenHeight, false, false);
+	_g->BlitFrameAbs(this->_frameSombra, _g->ScreenWidth - (int)_g->OffsetX, 0, (int)_g->OffsetX, _g->ScreenHeight, false, false);
 
 	this->StatsDrawer->DrawLives(0, -32, this->Player->_vidas);
 	this->DrawTime();
@@ -237,7 +239,7 @@ Room* Stage::loadRooms()
 
 		Enemigo* fanty = tmpRoom->AddEnemy(Fanty, Lento, 3, 6, 4, vect);
 		fanty->setAlpha(0.75f);
-		fanty->setPlayer(tmpRoom->_player);
+		((EFanty*)fanty)->setChaseable(tmpRoom->_player);
 
 		this->Rooms.push_back(tmpRoom);
 	}

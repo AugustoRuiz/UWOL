@@ -1,5 +1,6 @@
 #pragma once
 #include "Enemigo.h"
+#include "IChaseable.h"
 #include "math.h"
 
 class EFanty : public Enemigo
@@ -15,8 +16,12 @@ public:
 	void Update(Uint32 milliSec) override;
 	void Draw() override;
 
+	void setChaseable(IChaseable* chaseable);
+
 private:
 
 	Frame _frameHalo;
 	float _haloValue;
+
+	IChaseable* _chaseable;
 };

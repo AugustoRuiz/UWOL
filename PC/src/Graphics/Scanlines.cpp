@@ -25,16 +25,15 @@ void Scanlines::InitScanlines(int tileWidth,
 	this->setSize(tileWidth, tileHeight);
 	this->setTileCount(tilesX, tilesY);
 
-	this->_texture = TextureMgr::GetInstance()->LoadTexture("data/Entrelazado.png");
-
-	this->_texture2 = TextureMgr::GetInstance()->LoadTexture("data/Entrelazado2.png");
-	this->_tv1 = TextureMgr::GetInstance()->LoadTexture("data/tvSim1.png");
-	this->_tv2 = TextureMgr::GetInstance()->LoadTexture("data/tvSim2.png");
-	this->_tv3 = TextureMgr::GetInstance()->LoadTexture("data/tvSim3.png");
+	this->_texture = Frame("data/Entrelazado.png");
+	this->_texture2 = Frame("data/Entrelazado2.png");
+	this->_tv1 = Frame("data/tvSim1.png");
+	this->_tv2 = Frame("data/tvSim2.png");
+	this->_tv3 = Frame("data/tvSim3.png");
 
 	this->Mode = 1;
 
-	gl = GLFuncs::GetInstance();
+	g = Graphics::GetInstance();
 }
 
 void Scanlines::setSize(int width, int height)
@@ -56,36 +55,38 @@ void Scanlines::Draw()
 		float tvEffect = 0.15f;
 		bool tvAdditive = true;
 
+		this->_tv1.Coords.ty2 = ((float)this->_height / this->_tv1.Texture->height);
+		this->_tv2.Coords.ty2 = ((float)this->_height / this->_tv2.Texture->height);
+		this->_tv3.Coords.ty2 = ((float)this->_height / this->_tv3.Texture->height);
+
+		this->_texture2.Coords.ty2 = ((float) this->_width) / this->_texture2.Texture->width;
+
 		for(int i=0; i < (this->_width / 32) + 1; i+=3)
 		{
-			gl->BlitColoredRect(this->_tv1->texture, i*32, 0, 32, this->_height, 0, 0, 1.0f, (float) (this->_height / this->_tv1->height), 1.0f, 1.0f, 1.0f, tvEffect, tvAdditive);
-			gl->BlitColoredRect(this->_tv2->texture, (i+1)*32, 0, 32, this->_height, 0, 0, 1.0f, (float) (this->_height / this->_tv2->height), 1.0f, 1.0f, 1.0f, tvEffect, tvAdditive);
-			gl->BlitColoredRect(this->_tv3->texture, (i+2)*32, 0, 32, this->_height, 0, 0, 1.0f, (float) (this->_height / this->_tv3->height), 1.0f, 1.0f, 1.0f, tvEffect, tvAdditive);
+			g->BlitColoredFrameAbs(this->_tv1, i*32, 0, 32, this->_height, 1.0f, 1.0f, 1.0f, tvEffect, tvAdditive, false, false);
+			g->BlitColoredFrameAbs(this->_tv2, (i+1)*32, 0, 32, this->_height, 1.0f, 1.0f, 1.0f, tvEffect, tvAdditive, false, false);
+			g->BlitColoredFrameAbs(this->_tv3, (i+2)*32, 0, 32, this->_height, 1.0f, 1.0f, 1.0f, tvEffect, tvAdditive, false, false);
 		}
 
-		gl->BlitRect(this->_texture2->texture, 
-						0, 
-						0, 
-						this->_width, 
-						this->_height, 
-						0, 
-						0, 
-						(float) this->_width / this->_texture2->width, 
-						1.0f,
-						0.2f);
+		g->BlitFrameAlphaAbs(this->_texture2, 
+					 0, 
+					 0, 
+					 this->_width, 
+					 this->_height, 
+					 0.2f, 
+					 false, false);
 	}
 	else
 	{
-		gl->BlitRect(this->_texture->texture, 
-						0, 
-						0, 
-						this->_width, 
-						this->_height, 
-						0, 
-						0, 
-						(float) this->_width / this->_texture->width, 
-						(float) this->_height / this->_texture->height,
-						0.2f);
+		this->_texture.Coords.tx2 = ((float) this->_width) / this->_texture.Texture->width;
+		this->_texture.Coords.ty2 = ((float) this->_height) / this->_texture.Texture->height;
+
+		g->BlitFrameAlphaAbs(this->_texture,
+					 0, 
+					 0, 
+					 this->_width, 
+					 this->_height, 
+					 0.2f, false, false);
 	}
 }
 
