@@ -119,6 +119,8 @@ void MusicManager::Initialize()
 		Log::Out << "Error initializing SDL_Mixer." << endl << Mix_GetError() << endl;
 		exit(1);
 	}
+	Mix_Volume(-1, 96);
+	Mix_Volume(0, 128);
 	Log::Out << "Ok" << endl;
 }
 

@@ -72,7 +72,10 @@ enum ActionKeys
 	ActionKeysScanlines = 8,
 	ActionKeysAltScanlines = 9,
 	ActionKeysDebug = 10,
-	ActionKeysAliasing = 11
+	ActionKeysAliasing = 11,
+	ActionKeysNextScreen = 12,
+	ActionKeysPreviousScreen = 13,
+	ActionKeysAddCoins = 14
 };
 
 enum ControlMode

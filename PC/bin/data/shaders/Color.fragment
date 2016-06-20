@@ -1,0 +1,12 @@
+#version 330 core
+ 
+// Interpolated values from the vertex shaders
+in vec4 vertColor;
+
+// Ouput data
+out vec4 fragColor;
+
+void main()
+{
+  fragColor = vertColor;
+}

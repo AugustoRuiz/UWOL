@@ -126,6 +126,10 @@ void Room::SetDepth(int depth) {
 		this->_tune = _tunes[2];
 	else
 		this->_tune = _tunes[3];
+
+	if (this->_depth >= 10) {
+		this->_textureFlechaDer = this->_textureFlechaIzq = Frame("data/Puerta.png");
+	}
 }
 
 int Room::GetDepth() {

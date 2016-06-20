@@ -59,7 +59,8 @@ void Scanlines::Draw()
 		this->_tv2.Coords.ty2 = ((float)this->_height / this->_tv2.Texture->height);
 		this->_tv3.Coords.ty2 = ((float)this->_height / this->_tv3.Texture->height);
 
-		this->_texture2.Coords.ty2 = ((float) this->_width) / this->_texture2.Texture->width;
+		this->_texture2.Coords.tx2 = ((float) this->_width) / this->_texture2.Texture->width;
+		this->_texture2.Coords.ty2 = ((float) this->_height) / this->_texture2.Texture->height;
 
 		for(int i=0; i < (this->_width / 32) + 1; i+=3)
 		{
@@ -73,7 +74,7 @@ void Scanlines::Draw()
 					 0, 
 					 this->_width, 
 					 this->_height, 
-					 0.2f, 
+					 0.25f, 
 					 false, false);
 	}
 	else
@@ -86,7 +87,7 @@ void Scanlines::Draw()
 					 0, 
 					 this->_width, 
 					 this->_height, 
-					 0.2f, false, false);
+					 0.5f, false, false);
 	}
 }
 

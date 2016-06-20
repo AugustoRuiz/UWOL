@@ -101,6 +101,7 @@ SDL_Window *GLFuncs::Initialize(int screenWidth, int screenHeight, GLboolean ful
 	glGenBuffers(1, &_vertexBuffer);
 	glGenBuffers(1, &_uvBuffer);
 	glGenBuffers(1, &_colorBuffer);
+	glGenBuffers(1, &_lineVertexBuffer);
 
 	this->ResetMVP();
 
@@ -133,12 +134,19 @@ void GLFuncs::BlitColoredRect(int iX, int iY, int width, int height,
 		tx1, ty2
 	};
 
-	GLfloat color_buffer_data[] = { 
-		red, green, blue, alpha, 
-		red, green, blue, alpha, 
-		red, green, blue, alpha, 
-		red, green, blue, alpha 
+	GLfloat color_buffer_data[] = {
+		red, green, blue, alpha,
+		red, green, blue, alpha,
+		red, green, blue, alpha,
+		red, green, blue, alpha
 	};
+
+	if (additive) {
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+	}
+	else {
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	}
 
 	this->BlitVerts(vertex_buffer_data, sizeof(vertex_buffer_data),
 		uv_buffer_data, sizeof(uv_buffer_data),
@@ -164,7 +172,24 @@ void GLFuncs::BlitVerts(float vertex_buffer_data[], unsigned int vBufSize,
 	glBufferData(GL_ARRAY_BUFFER, cBufSize, color_buffer_data, GL_STATIC_DRAW);
 	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
+	glEnable(GL_TEXTURE_2D);
+
+	if (aliasing)
+	{
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	}
+	else
+	{
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	}
+
 	glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+	glDisableVertexAttribArray(2);
+	glDisableVertexAttribArray(1);
+	glDisableVertexAttribArray(0);
 }
 
 void GLFuncs::BlitRect(int iX, int iY, int width, int height,
@@ -191,13 +216,22 @@ void GLFuncs::Clear()
 }
 
 void GLFuncs::DrawPolyLine(const vector<VECTOR2> &vertexes, float red, float green, float blue, float alpha) {
-	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-	glDisable(GL_TEXTURE_2D);
-	glBegin(GL_LINES);
+
+	vector<GLfloat> coords;
+	GLsizei vertexCount = vertexes.size();
 	for (VECTOR2 v : vertexes) {
-		glVertex2i(v.x, v.y);
+		coords.push_back((float)v.x);
+		coords.push_back((float)v.y);
 	}
-	glEnd();
+
+	glEnableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, _lineVertexBuffer);
+	glBufferData(GL_ARRAY_BUFFER, coords.size() * sizeof(GLfloat), &(coords[0]), GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
+	glDrawArrays(GL_LINES, 0, vertexCount);
+
+	glDisableVertexAttribArray(0);
 }
 
 GLuint GLFuncs::CreateProgram(const std::vector<GLuint> &shaderList)

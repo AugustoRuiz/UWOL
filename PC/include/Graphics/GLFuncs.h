@@ -65,6 +65,6 @@ protected :
 	SDL_Renderer *_renderer;
 	SDL_GLContext _mainContext;
 
-	GLuint _vertexBuffer, _uvBuffer, _colorBuffer;
+	GLuint _vertexBuffer, _uvBuffer, _colorBuffer, _lineVertexBuffer;
 };
 

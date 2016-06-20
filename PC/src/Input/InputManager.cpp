@@ -31,7 +31,7 @@ InputManager::InputManager()
 	this->KeyMap[SDLK_LCTRL] = ActionKeysUp;
 	this->KeyMap[SDLK_RCTRL] = ActionKeysUp;
 	this->KeyMap[SDLK_q] = ActionKeysUp;
-	
+
 	this->KeyMap[SDLK_DOWN] = ActionKeysDown;
 	this->KeyMap[SDLK_a] = ActionKeysDown;
 
@@ -42,6 +42,9 @@ InputManager::InputManager()
 	this->KeyMap[SDLK_F2] = ActionKeysAltScanlines;
 	this->KeyMap[SDLK_F3] = ActionKeysAliasing;
 	this->KeyMap[SDLK_d] = ActionKeysDebug;
+	this->KeyMap[SDLK_PLUS] = ActionKeysNextScreen;
+	this->KeyMap[SDLK_MINUS] = ActionKeysPreviousScreen;
+	this->KeyMap[SDLK_e] = ActionKeysAddCoins;
 
 	this->SetControlMode(Keyboard);
 	this->_joystick = NULL;

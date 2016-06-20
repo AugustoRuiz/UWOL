@@ -275,9 +275,8 @@ void TPlayer::DebugPaint() {
 
 	vertexes.push_back(VECTOR2(x1, y1));
 	vertexes.push_back(VECTOR2(x2, y1));
-	vertexes.push_back(VECTOR2(x2, y2));
 	vertexes.push_back(VECTOR2(x1, y2));
-	vertexes.push_back(VECTOR2(x1, y1));
+	vertexes.push_back(VECTOR2(x2, y2));
 
 	_graphics->DrawPolyLines(vertexes, 1.0f, 1.0f, 1.0f, 1.0f);
 }

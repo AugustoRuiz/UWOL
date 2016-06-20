@@ -29,7 +29,7 @@ public:
 	VECTOR2 LightPosition;
 	VECTOR2 MaxShadowOffset;
 
-	Program* DefaultProgram;
+	Program *DefaultProgram, *DefaultLineProgram;
 
 	void ResetMVP();
 	void OffsetMVP(float offsetX, float offsetY);

@@ -65,7 +65,6 @@ private:
 	Scanlines *_scanlines;
 
 	map<string, IGameState*> _states;
-	map<string, IGameState*>::iterator _statesIt;
 	string _currentStatus;
 
 	void loadResources();
