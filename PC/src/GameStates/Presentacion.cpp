@@ -15,8 +15,8 @@ Presentacion::Presentacion() {
 	this->_portada = Frame("data/uwol_portada.png");
 	this->_bg = Frame("data/warp.png");
 	
-	vector<string> vertexShaders = { "data/shaders/Default.vertex" };
-	vector<string> fragmentShaders = { "data/shaders/ColorCycle.fragment" };
+	vector<string> vertexShaders = { "data/shaders/Default.150.vertex" };
+	vector<string> fragmentShaders = { "data/shaders/ColorCycle.150.fragment" };
 
 	Frame colorCycle("data/warpCycle.png");
 
@@ -96,8 +96,6 @@ void Presentacion::Draw() {
 	// Cortamos por las bravas...
 	_g->BlitFrameAbs(this->_shadow, 0, 0, _g->ScreenWidth, (int)_g->OffsetY - 33, false, false);
 	_g->BlitFrameAbs(this->_shadow, 0, _g->ScreenHeight - (int)_g->OffsetY + 33, _g->ScreenWidth, (int)_g->OffsetY - 33, false, false);
-	_g->BlitFrameAbs(this->_shadow, 0, 0, (int)_g->OffsetX - 33, _g->ScreenHeight, false, false);
-	_g->BlitFrameAbs(this->_shadow, _g->ScreenWidth - (int)_g->OffsetX + 33, 0, (int)_g->OffsetX, _g->ScreenHeight, false, false);
 }
 
 string Presentacion::Update(Uint32 milliSec, Event & inputEvent) {
@@ -156,9 +154,6 @@ string Presentacion::Update(Uint32 milliSec, Event & inputEvent) {
 			input->SetControlMode(Keyboard);
 			return "Piramide";
 		}
-		//else {
-		//	this->_goNext = true;
-		//}
 	}
 	if (inputEvent.Name == "JOY_DOWN") {
 		int button = inputEvent.Data["button"].asInt();
@@ -166,9 +161,9 @@ string Presentacion::Update(Uint32 milliSec, Event & inputEvent) {
 			input->SetControlMode(Joystick);
 			return "Piramide";
 		}
-		//else {
-		//	this->_goNext = true;
-		//}
+	}
+	if (inputEvent.Name == "KEY_UP" || inputEvent.Name == "JOY_UP") {
+		this->_goNext = true;
 	}
 
 	if (this->_goNext) {

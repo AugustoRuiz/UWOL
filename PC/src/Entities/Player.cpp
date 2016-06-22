@@ -112,7 +112,7 @@ void TPlayer::Update(Uint32 milliSec)
 			this->_contParpadeo += milliSec;
 			this->_visibleParpadeo = (this->_contParpadeo / TICKS_PARPADEO) & 1;
 			if (this->_contParpadeo > TICKS_INVULNERABLE) {
-				this->_estado = this->_estado & ~(Parpadeo);
+				this->setEstado(this->_estado & ~(Parpadeo));
 			}
 		}
 
@@ -378,21 +378,21 @@ void TPlayer::checkInput(Uint32 milliSec) {
 }
 
 void TPlayer::setEstado(int estado) {
-	this->_estado = estado;
-
 	if (estado & Parpadeo) {
-		_visibleParpadeo = true;
-		_contParpadeo = 0;
+		if (!(this->_estado & (Parpadeo | Muriendo))) {
+			_visibleParpadeo = true;
+			_contParpadeo = 0;
 
-		if (this->_facing == Left) {
-			this->_vx = 5.0f;
-		}
-		else {
-			this->_vx = -5.0f;
-		}
+			if (this->_facing == Left) {
+				this->_vx = 5.0f;
+			}
+			else {
+				this->_vx = -5.0f;
+			}
 
-		this->_vy = -7.5f;
-		this->_saltando = false;
+			this->_vy = -7.5f;
+			this->_saltando = false;
+		}
 	}
 
 	if (estado & Muriendo) {
@@ -401,6 +401,7 @@ void TPlayer::setEstado(int estado) {
 		this->_musicDie.PlayAsMusic(false);
 		this->_vy = -10.0f;
 	}
+	this->_estado = estado;
 }
 
 int TPlayer::getEstado() {

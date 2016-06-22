@@ -44,6 +44,7 @@ Credits::Credits(void)
 	this->_uwolAnimPlayer.setAnimation(Animation::Get("uwol_walk_right"));
 	this->_uwolX = -32;
 	this->_uwolVX = UWOL_VX;
+	this->_textTicks = 0;
 }
 
 Credits::~Credits(void)
@@ -52,8 +53,8 @@ Credits::~Credits(void)
 
 void Credits::OnEnter(void)
 {
-	_totalTicks = 0;
-	
+	_textTicks = _totalTicks = 0;
+
 	this->_fanty._x = -32;
 	this->_fanty._y = -32;
 
@@ -73,7 +74,14 @@ void Credits::OnExit(void)
 string Credits::Update(Uint32 milliSec, Event & inputEvent)
 {
 	_totalTicks += milliSec;
-	if (_totalTicks > 5000 ) {
+	if (_totalTicks > 5000 && (_g->OffsetY > -this->_textPosY)) {
+		_g->OffsetY -= (milliSec / 25.0f);
+		if (_g->OffsetY <= -this->_textPosY) {
+			_textTicks = _totalTicks;
+		}
+	}
+
+	if(_textTicks > 0 && _totalTicks > _textTicks + 5000) {
 		_g->OffsetY -= (milliSec / 25.0f);
 	}
 
@@ -87,7 +95,7 @@ string Credits::Update(Uint32 milliSec, Event & inputEvent)
 	}
 	_uwolAnimPlayer.Update(milliSec);
 
-	if (inputEvent.Name == "KEY_DOWN" || inputEvent.Name == "JOY_DOWN" || _g->OffsetY < -this->_maxPosY) {
+	if (inputEvent.Name == "KEY_UP" || inputEvent.Name == "JOY_UP" || _g->OffsetY < -this->_maxPosY) {
 		return "Portada";
 	}
 
@@ -98,12 +106,16 @@ string Credits::Update(Uint32 milliSec, Event & inputEvent)
 
 void Credits::Draw(void)
 {
-	int posY = 16;
+	int posY = 32;
+	int ofsY = (_g->ScreenHeight - _g->WorldHeight) / 2;
+	int botY = _g->ScreenHeight - ofsY;
+	int bandHeight = 4;
 
 	this->_fanty.Draw();
 
-	drawFrame(&posY, _uwolIcon);
+	drawFrame(&posY, _uwolIcon); posY += 32;
 
+	this->_textPosY = (float) posY - ofsY - 16;
 	drawCentered(posY, "^Designed by _Anjuel ^& _Na-th-an"); posY += 16;
 	drawCentered(posY, "^Story by _David Pimperl Marco"); posY += 16;
 	drawCentered(posY, "^Code by _Na-th-an"); posY += 16;
@@ -139,10 +151,6 @@ void Credits::Draw(void)
 
 	_maxPosY = posY;
 
-	int ofsY = (_g->ScreenHeight - _g->WorldHeight) / 2;
-	int botY = _g->ScreenHeight - ofsY;
-	int bandHeight = 4;
-
 	_g->BlitFrameAbs(this->_shadow, 0, 0, _g->ScreenWidth, ofsY, false, false);
 	_g->BlitFrameAbs(this->_shadow, 0, botY, _g->ScreenWidth, ofsY, false, false);
 
@@ -161,8 +169,8 @@ void Credits::Draw(void)
 }
 
 void Credits::drawFrame(int *y, const Frame& frame) {
-	_g->BlitFrame(frame, (_g->WorldWidth - frame.Texture->width) / 2, *y, frame.Texture->width, frame.Texture->height, false, false);
-	*y += frame.Texture->height + 32;
+	_g->BlitFrame(frame, (_g->WorldWidth - (frame.Texture->width * 2)) / 2, *y, frame.Texture->width * 2, frame.Texture->height * 2, false, false);
+	*y += (frame.Texture->height * 2) + 32;
 }
 
 bool Credits::ShouldChase()
@@ -202,7 +210,9 @@ void Credits::drawCentered(int y, const string &str) {
 			rB = _rGoldBot, gB = _gGoldBot, bB = _bGoldBot;
 			break;
 		default:
-			_g->DrawString(posX, y, _textSize, string(1, c), rT, gT, bT, rB, gB, bB);
+			string character(1, c);
+			//_g->DrawStringAlpha(posX + 2, y + 2, _textSize, character, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.3f);
+			_g->DrawString(posX, y, _textSize, character, rT, gT, bT, rB, gB, bB);
 			posX += _textSize;
 			break;
 		}

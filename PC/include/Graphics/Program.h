@@ -31,13 +31,12 @@ public:
 	void Compile();
 	void Use();
 
+	void BindTextures();
 	void BindAttribLocation(GLuint location, const string &name);
 	void BindFragDataLocation(GLuint location, const string &name);
 
 	SHADERLIST Shaders;
 	vector<TEXTUREINFO*> Textures;
-
-	void BindTextures();
 
 	void SetUniform(const string &name, float x, float y, float z);
 	void SetUniform(const string &name, const vec2 & v);

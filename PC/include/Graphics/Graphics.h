@@ -16,6 +16,8 @@ protected:
 	Graphics();
 	~Graphics();
 
+	TEXTUREINFO* _framebufferTexture;
+
 public:
 	static Graphics* GetInstance();
 
@@ -64,5 +66,7 @@ public:
 
 	void SwapBuffers();
 	GLuint CreateProgram(const vector<Shader*> shaders);
+
+	TEXTUREINFO* GetFramebufferTexture();
 };
 

@@ -45,6 +45,7 @@ public:
 	void DeleteShader(GLuint shaderId);
 
 	void SwapBuffers();
+	GLuint GetFramebufferTexture();
 
 protected :
 	GLFuncs(void){};

@@ -1,5 +1,6 @@
 #include "Room.h"
 
+Frame Room::_texturePuerta;
 Frame Room::_textureFlechaDer;
 Frame Room::_textureFlechaIzq;
 Frame Room::_textureCamiseta;
@@ -16,6 +17,7 @@ void Room::StaticInit() {
 	Background::StaticInit();
 	Plataforma::StaticInit();
 
+	_texturePuerta = Frame("data/Puerta.png");
 	_textureFlechaDer = Frame("data/FlechaDer.png");
 	_textureFlechaIzq = Frame("data/FlechaIzq.png");
 	_textureCamiseta = Frame("data/Camiseta.png");
@@ -128,8 +130,13 @@ void Room::SetDepth(int depth) {
 		this->_tune = _tunes[3];
 
 	if (this->_depth >= 10) {
-		this->_textureFlechaDer = this->_textureFlechaIzq = Frame("data/Puerta.png");
+		this->_texFlechaDer = this->_texFlechaIzq = Room::_texturePuerta;
 	}
+	else {
+		this->_texFlechaDer = Room::_textureFlechaDer;
+		this->_texFlechaIzq = Room::_textureFlechaIzq;
+	}
+
 }
 
 int Room::GetDepth() {
@@ -242,7 +249,7 @@ void Room::checkEnemies(RECTANGLEF rect) {
 				}
 
 				if (this->_player->getEstado() & Normal) {
-					this->_player->setEstado((this->_player->getEstado() & 0xFFFFFFF0) | Parpadeo | Desnudo);
+					this->_player->setEstado((this->_player->getEstado() & !Normal) | Parpadeo | Desnudo);
 					this->colocarCamiseta();
 					this->_fxHit.PlayAsFx(false);
 				}
@@ -262,7 +269,7 @@ void Room::pickCamiseta(int tileX1, int tileX2, int tileY1, int tileY2) {
 		) {
 		this->quitarCamiseta();
 		this->_player->AddScore(15);
-		this->_player->setEstado((this->_player->getEstado() & 0xFFFFFFF0) | Normal);
+		this->_player->setEstado((this->_player->getEstado() & ~(Parpadeo | Desnudo)) | Normal);
 	}
 }
 
@@ -391,10 +398,10 @@ void Room::Draw(void) {
 				posMap3 = this->_map->cols * 9 + 10;
 				posMap4 = this->_map->cols * 8 + 10;
 				if (this->_map->map[posMap1] == COLLISION_BLOCK && this->_map->map[posMap2] != COLLISION_BLOCK) {
-					_g->BlitFrame(this->_textureFlechaIzq, 32, 288, 32, 32, false, false);
+					_g->BlitFrame(this->_texFlechaIzq, 32, 288, 32, 32, false, false);
 				}
 				if (this->_map->map[posMap3] == COLLISION_BLOCK && this->_map->map[posMap4] != COLLISION_BLOCK) {
-					_g->BlitFrame(this->_textureFlechaDer, 320, 288, 32, 32, false, false);
+					_g->BlitFrame(this->_texFlechaDer, 320, 288, 32, 32, false, false);
 				}
 			}
 

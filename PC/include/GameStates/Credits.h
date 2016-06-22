@@ -34,7 +34,9 @@ private:
 	float _rTextTop, _gTextTop, _bTextTop, _rTextBot, _gTextBot, _bTextBot, _textAlpha;
 	float _rGoldTop, _gGoldTop, _bGoldTop, _rGoldBot, _gGoldBot, _bGoldBot;
 
-	Uint32 _totalTicks;
+	float _textPosY;
+
+	Uint32 _totalTicks, _textTicks;
 	int _textSize;
 	int _maxPosY;
 

@@ -10,8 +10,8 @@ SDL_Window *GLFuncs::Initialize(int screenWidth, int screenHeight, GLboolean ful
 	Uint32 flags;
 
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+	//SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
 	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);		//Use at least 8 bits of Red
 	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);	    //Use at least 8 bits of Green
@@ -44,7 +44,7 @@ SDL_Window *GLFuncs::Initialize(int screenWidth, int screenHeight, GLboolean ful
 
 	_mainContext = SDL_GL_CreateContext(_window);
 
-	Log::Out << "OpenGL " << glGetString(GL_VERSION) << " (GLSL " << glGetString(GL_SHADING_LANGUAGE_VERSION) << ')' << std::endl;
+	Log::Out << "OpenGL " << glGetString(GL_VERSION) << " (GLSL " << glGetString(GL_SHADING_LANGUAGE_VERSION) << ")" << std::endl;
 
 	SDL_Surface *icon = IMG_Load("data/UWOLIcon.png");
 	SDL_SetWindowIcon(_window, icon);
@@ -54,27 +54,27 @@ SDL_Window *GLFuncs::Initialize(int screenWidth, int screenHeight, GLboolean ful
 
 	// Inicializemos el framebuffer para poder renderizar sobre una textura, así podremos aplicar shaders 
 	// a lo que pintemos. ;)
-	//glGenFramebuffers(1, &_frameBufferName);
-	//glBindFramebuffer(GL_FRAMEBUFFER, _frameBufferName);
+	glGenFramebuffers(1, &_frameBufferName);
+	glBindFramebuffer(GL_FRAMEBUFFER, _frameBufferName);
 
-	//glGenTextures(1, &_renderedTexture);
-	//glBindTexture(GL_TEXTURE_2D, _renderedTexture);
-	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, _screenWidth, _screenHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+	glGenTextures(1, &_renderedTexture);
+	glBindTexture(GL_TEXTURE_2D, _renderedTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, _screenWidth, _screenHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
-	//glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, _renderedTexture, 0);
-	//GLenum drawBuffers[1] = { GL_COLOR_ATTACHMENT0 };
-	//glDrawBuffers(1, drawBuffers);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, _renderedTexture, 0);
+	GLenum drawBuffers[1] = { GL_COLOR_ATTACHMENT0 };
+	glDrawBuffers(1, drawBuffers);
 
-	//if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-	//	SDL_DestroyWindow(_window);
-	//	Log::Out << "Unable to initialize Framebuffer! " << gluErrorString(glGetError()) << endl;
-	//	return NULL;
-	//}
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+		SDL_DestroyWindow(_window);
+		Log::Out << "Unable to initialize Framebuffer! " << gluErrorString(glGetError()) << endl;
+		return NULL;
+	}
 
-	//glBindFramebuffer(GL_FRAMEBUFFER, _frameBufferName);
+	glBindFramebuffer(GL_FRAMEBUFFER, _frameBufferName);
 
 	glViewport(0, 0, screenWidth, screenHeight);
 
@@ -306,22 +306,26 @@ void GLFuncs::UseProgram(GLuint programId) {
 	glUseProgram(programId);
 }
 
+GLuint GLFuncs::GetFramebufferTexture() {
+	return this->_renderedTexture;
+}
+
 void GLFuncs::SwapBuffers()
 {
-	//// Render to the screen
-	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	//// Render on the whole framebuffer, complete from the lower left corner to the upper right
-	//glViewport(0, 0, _screenWidth, _screenHeight); 
+	// Render to the screen
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	// Render on the whole framebuffer, complete from the lower left corner to the upper right
+	glViewport(0, 0, _screenWidth, _screenHeight); 
 
-	//// Clear the screen
-	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	// Clear the screen
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	//// Renderizar la textura.
-	//BlitRect(_renderedTexture, 0, 0, _screenWidth, _screenHeight, 0, 1, 1, 0);
+	// Renderizar la textura.
+	BlitRect(0, 0, _screenWidth, _screenHeight, 0.0f, 1.0f, 1.0f, 0.0f);
 
 	SDL_GL_SwapWindow(this->_window);
 
 	// Restore so we draw in the texture again.
-	//glBindFramebuffer(GL_FRAMEBUFFER, _frameBufferName);
-	//glViewport(0, 0, _screenWidth, _screenHeight);
+	glBindFramebuffer(GL_FRAMEBUFFER, _frameBufferName);
+	glViewport(0, 0, _screenWidth, _screenHeight);
 }

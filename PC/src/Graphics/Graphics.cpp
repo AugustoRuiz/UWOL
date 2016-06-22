@@ -17,6 +17,11 @@ Graphics::~Graphics()
 {
 }
 
+TEXTUREINFO* Graphics::GetFramebufferTexture() 
+{
+	return this->_framebufferTexture;
+}
+
 void Graphics::ResetMVP()
 {
 	this->_gl->ResetMVP();
@@ -38,11 +43,16 @@ bool Graphics::Initialize(int screenWidth, int screenHeight, int worldWidth, int
 	this->OffsetY = (this->ScreenHeight - this->WorldHeight) / 2.0f;
 	result = (NULL != _gl->Initialize(this->ScreenWidth, this->ScreenHeight, fullscreen, name));
 
-	vector<string> vertexShaders = { "data/shaders/Default.vertex" };
-	vector<string> fragmentShaders = { "data/shaders/TexturedColored.fragment" };
+	this->_framebufferTexture = new TEXTUREINFO();
+	this->_framebufferTexture->texture = _gl->GetFramebufferTexture();
+	this->_framebufferTexture->width = this->ScreenWidth;
+	this->_framebufferTexture->height = this->ScreenHeight;
 
-	vector<string> lineVertexShaders = { "data/shaders/Line.vertex" };
-	vector<string> lineFragmentShaders = { "data/shaders/Color.fragment" };
+	vector<string> vertexShaders = { "data/shaders/Default.150.vertex" };
+	vector<string> fragmentShaders = { "data/shaders/TexturedColored.150.fragment" };
+
+	vector<string> lineVertexShaders = { "data/shaders/Line.150.vertex" };
+	vector<string> lineFragmentShaders = { "data/shaders/Color.150.fragment" };
 
 	this->DefaultProgram = new Program(vertexShaders, fragmentShaders);
 	this->DefaultLineProgram = new Program(lineVertexShaders, lineFragmentShaders);
@@ -63,8 +73,6 @@ void Graphics::BlitColoredFrameAbs(const Frame& frame, int x, int y, int width, 
 	program->Use();
 	program->BindTextures();
 	program->SetUniform("MVP", _gl->MVP);
-
-	//glUniformMatrix4fv(glGetUniformLocation(program->ProgramId, "MVP"), 1, GL_FALSE, &(_gl->MVP[0][0]));
 
 	_gl->BlitColoredRect(x, y, width, height,
 		flipX ? frame.Coords.tx2 : frame.Coords.tx1, flipY ? frame.Coords.ty2 : frame.Coords.ty1,

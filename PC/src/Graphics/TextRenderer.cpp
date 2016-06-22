@@ -25,8 +25,8 @@ void TextRenderer::DrawStringAlpha(int x, int y, int textSize, const string &tex
 	}
 
 	if (this->_program == NULL) {
-		vector<string> vertexShaders = { "data/shaders/Default.vertex" };
-		vector<string> fragmentShaders = { "data/shaders/TexturedColored.fragment" };
+		vector<string> vertexShaders = { "data/shaders/Default.150.vertex" };
+		vector<string> fragmentShaders = { "data/shaders/TexturedColored.150.fragment" };
 		this->_program = new Program(vertexShaders, fragmentShaders);
 	}
 
@@ -40,8 +40,7 @@ void TextRenderer::DrawStringAlpha(int x, int y, int textSize, const string &tex
 
 	program->Use();
 	program->BindTextures();
-
-	glUniformMatrix4fv(glGetUniformLocation(program->ProgramId, "MVP"), 1, GL_FALSE, &(g->MVP[0][0]));
+	program->SetUniform("MVP", g->MVP);
 
 	GLfloat color_buffer_data[] = {
 		rTop, gTop, bTop, alpha,

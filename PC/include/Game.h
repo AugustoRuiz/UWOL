@@ -5,7 +5,6 @@
 #include "Graphics.h"
 #include "GameData.h"
 #include "IGameState.h"
-#include "Scanlines.h"
 #include "Stage.h"
 #include "Presentacion.h"
 #include "Portada.h"
@@ -61,8 +60,9 @@ private:
 	vector<Uint32>::iterator _evtBufferIterator;
 
 	Graphics *_g;
+	Program* _blitProgram;
+	vector<Program*> _blitPrograms;
 	InputManager *_input;
-	Scanlines *_scanlines;
 
 	map<string, IGameState*> _states;
 	string _currentStatus;
@@ -70,6 +70,8 @@ private:
 	void loadResources();
 	void handleInput(Event &currentEvent);
 	void updateAttractMode();
+
+	void SwapBuffers();
 
 	Stage* _stage;
 };

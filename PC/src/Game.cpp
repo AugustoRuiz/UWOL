@@ -31,6 +31,17 @@ bool Game::Initialize(int width, int height, bool fullscreen, const char* name)
 
 	_running = _g->Initialize(width, height, 384, 320, fullscreen, name);
 
+	vector<string> vertexShaders = { "data/shaders/Default.150.vertex" };
+	vector<string> fragmentNoScanlines = { "data/shaders/TexturedColored.150.fragment" };
+	this->_blitProgram = new Program(vertexShaders, fragmentNoScanlines);
+	this->_blitProgram->Textures.push_back(_g->GetFramebufferTexture());
+	this->_blitPrograms.push_back(this->_blitProgram);
+
+	vector<string> fragmentShaders = { "data/shaders/CRT.150.fragment" };
+	this->_blitProgram = new Program(vertexShaders, fragmentShaders);
+	this->_blitProgram->Textures.push_back(_g->GetFramebufferTexture());
+	this->_blitPrograms.push_back(this->_blitProgram);
+
 	_g->LightPosition.x = _g->WorldWidth / 2;
 	_g->LightPosition.y = 0;
 
@@ -66,9 +77,6 @@ bool Game::Initialize(int width, int height, bool fullscreen, const char* name)
 
 	Log::Out << "Game: Initializing Scanlines..." << endl;
 
-	_scanlines = new Scanlines();
-	_scanlines->setSize(width, height);
-
 	this->_savingStatus = false;
 	this->_statusSaved = false;
 	this->_attractMode = false;
@@ -86,8 +94,6 @@ void Game::Dispose()
 		pairState.second->Dispose();
 		delete pairState.second;
 	}
-
-	delete _scanlines;
 
 	TextureMgr::GetInstance()->DeleteTextures();
 }
@@ -144,10 +150,7 @@ void Game::handleInput(Event &currentEvent) {
 			aliasing = !aliasing;
 			break;
 		case ActionKeysScanlines:
-			scanlines = !scanlines;
-			break;
-		case ActionKeysAltScanlines:
-			this->_scanlines->Mode ^= 1;
+			_blitProgram = _blitPrograms[_blitProgram == _blitPrograms[0] ? 1 : 0];
 			break;
 		case ActionKeysDebug:
 			debugPaint = !debugPaint;
@@ -245,12 +248,7 @@ void Game::Render()
 		state->Draw();
 	}
 
-	if (scanlines)
-	{
-		this->_scanlines->Draw();
-	}
-
-	_g->SwapBuffers();
+	this->SwapBuffers();
 }
 
 void Game::Restart() {
@@ -322,7 +320,7 @@ void Game::ShowCursor(bool show)
 void Game::loadResources() {
 	// Barra de progreso?
 	_g->Clear();
-	_g->SwapBuffers();
+	this->SwapBuffers();
 
 	Log::Out << "Game: Loading resources..." << endl;
 	ifstream resourcesFile("resources.json", ios::binary);
@@ -332,6 +330,9 @@ void Game::loadResources() {
 		return;
 	}
 
+	float grayValue = 0.4f;
+	int fontSize = 8;
+
 	Json::Value root;
 	resourcesFile >> root;
 	Json::Value images = root["images"];
@@ -339,8 +340,13 @@ void Game::loadResources() {
 		TextureMgr* texMgr = TextureMgr::GetInstance();
 		for (Json::Value::iterator img = images.begin(); img != images.end(); ++img) {
 			string file = img->asString();
-			Log::Out << "Loading image " << file << endl;
+			stringstream ss;
+			ss << "Loading image: " << file << endl;
+			Log::Out << ss.str();
 			texMgr->LoadTexture(file);
+			_g->Clear();
+			_g->DrawString(0, _g->WorldHeight - 32, fontSize, ss.str(), grayValue, grayValue, grayValue, grayValue, grayValue, grayValue);
+			this->SwapBuffers();
 		}
 	}
 	Json::Value music = root["music"];
@@ -348,17 +354,27 @@ void Game::loadResources() {
 		MusicManager* musicMgr = MusicManager::GetInstance();
 		for (Json::Value::iterator mus = music.begin(); mus != music.end(); ++mus) {
 			string file = mus->asString();
-			Log::Out << "Loading song " << file << endl;
+			stringstream ss;
+			ss << "Loading song " << file << endl;
+			Log::Out << ss.str();
 			musicMgr->LoadMusic(mus->asString());
+			_g->Clear();
+			_g->DrawString(0, _g->WorldHeight - 32, fontSize, ss.str(), grayValue, grayValue, grayValue, grayValue, grayValue, grayValue);
+			this->SwapBuffers();
 		}
 	}
 	Json::Value effects = root["fx"];
 	if (Json::Value::null != effects) {
 		MusicManager* musicMgr = MusicManager::GetInstance();
 		for (Json::Value::iterator fx = effects.begin(); fx != effects.end(); ++fx) {
+			stringstream ss;
 			string file = fx->asString();
-			Log::Out << "Loading effect " << file << endl;
+			ss << "Loading effect " << file << endl;
+			Log::Out << ss.str();
 			musicMgr->LoadMusic(fx->asString());
+			_g->Clear();
+			_g->DrawString(0, _g->WorldHeight - 32, fontSize, ss.str(), grayValue, grayValue, grayValue, grayValue, grayValue, grayValue);
+			this->SwapBuffers();
 		}
 	}
 	Log::Out << "Done!" << endl;
@@ -366,4 +382,12 @@ void Game::loadResources() {
 
 void Game::AddState(IGameState* state) {
 	this->_states[state->Name] = state;
+}
+
+void Game::SwapBuffers() {
+	this->_blitProgram->Use();
+	this->_blitProgram->BindTextures();
+	this->_blitProgram->SetUniform("iGlobalTime", (float)this->_totalTicks);
+	this->_blitProgram->SetUniform("MVP", GLFuncs::GetInstance()->MVP);
+	this->_g->SwapBuffers();
 }

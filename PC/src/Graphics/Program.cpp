@@ -37,6 +37,7 @@ void Program::Use() {
 		for (Program* p : Program::_programs) {
 			p->_inUse = (this == p);
 		}
+		this->_inUse = true;
 	}
 }
 

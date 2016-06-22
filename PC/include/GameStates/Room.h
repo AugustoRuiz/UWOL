@@ -63,7 +63,10 @@ private:
 
 	float _valorOscuro;
 
+	Frame _texFlechaIzq, _texFlechaDer;
+
 	static Frame _textureCamiseta;
+	static Frame _texturePuerta;
 	static Frame _textureFlechaIzq;
 	static Frame _textureFlechaDer;
 	static Frame _textureSombra;

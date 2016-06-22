@@ -63,7 +63,7 @@ string Portada::Update(Uint32 milliSec, Event & inputEvent)
 {
 	this->_currentAlpha += ((float)this->_incrFactor) *  milliSec * 0.001f;
 
-	if (inputEvent.Name == "KEY_DOWN" || inputEvent.Name == "JOY_DOWN") {
+	if (inputEvent.Name == "KEY_UP" || inputEvent.Name == "JOY_UP") {
 		this->_incrFactor = 0;
 		this->_currentTick = 0;
 		this->_currentAlpha = 1.0f;
