@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <SDL/SDL_main.h>
+#include <SDL2/SDL_main.h>
 #include "MusicManager.h"
 #include "Game.h"
 #include "TimerFuncs.h"

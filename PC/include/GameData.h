@@ -3,7 +3,7 @@
 #include <vector>
 
 #include <GL/glew.h>
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 #include <GL/freeglut.h>
 
 #ifdef __APPLE__
@@ -11,9 +11,10 @@
 #include <SDL_mixer/SDL_mixer.h>
 #include "CoreFoundation/CoreFoundation.h"
 #else
-#include <SDL/SDL_image.h>
-#include <SDL/SDL_mixer.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_mixer.h>
 #endif
+
 #include "UWOL.h"
 #include "Log.h"
 

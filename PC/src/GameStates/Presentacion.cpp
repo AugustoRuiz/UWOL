@@ -20,9 +20,11 @@ Presentacion::Presentacion() {
 
 	Frame colorCycle("data/warpCycle.png");
 
-	this->_bg.Program = new Program(vertexShaders, fragmentShaders);
-	this->_bg.Program->Textures.push_back(this->_bg.Texture);
-	this->_bg.Program->Textures.push_back(colorCycle.Texture);
+	Program *prog = new Program(vertexShaders, fragmentShaders);
+	prog->Textures.push_back(this->_bg.Texture);
+	prog->Textures.push_back(colorCycle.Texture);
+
+	this->_bg.SetProgram(prog);
 
 	this->_shadow = Frame("data/TileSombra.png");;
 
@@ -78,7 +80,7 @@ void Presentacion::Draw() {
 		this->_coins[i]->DrawInPos(this->_coins[i]->_x, (int) round(this->_coins[i]->_y), 0.5f);
 	}
 
-	this->_bg.Program->SetUniform("iGlobalTime", -(float)this->_totalTicks);
+	this->_bg.GetProgram()->SetUniform("iGlobalTime", -(float)this->_totalTicks);
 	_g->BlitFrameAlpha(_bg, _g->WorldWidth/2 - _bg.Texture->width, _g->WorldHeight/2 - _bg.Texture->height + 48, _bg.Texture->width * 2, _bg.Texture->height * 2, this->_currentAlpha, false, false);
 	_g->BlitCenteredFrameAlpha(_portada, _portada.Texture->width * 2, _portada.Texture->height * 2, this->_currentAlpha, false, false);
 

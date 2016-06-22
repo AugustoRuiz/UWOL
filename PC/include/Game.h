@@ -1,9 +1,9 @@
 #pragma once
 
+#include "GameData.h"
 #include "InputManager.h"
 #include "Event.h"
 #include "Graphics.h"
-#include "GameData.h"
 #include "IGameState.h"
 #include "Stage.h"
 #include "Presentacion.h"

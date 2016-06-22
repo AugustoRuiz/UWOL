@@ -49,7 +49,7 @@ SDL_Window *GLFuncs::Initialize(int screenWidth, int screenHeight, GLboolean ful
 	SDL_Surface *icon = IMG_Load("data/UWOLIcon.png");
 	SDL_SetWindowIcon(_window, icon);
 
-	glewExperimental = TRUE;
+	glewExperimental = true;
 	glewInit();
 
 	// Inicializemos el framebuffer para poder renderizar sobre una textura, así podremos aplicar shaders 

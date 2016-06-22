@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Program.h"
 #include "Frame.h"
 #include "Shader.h"
 #include "GLFuncs.h"

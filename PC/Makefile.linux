@@ -7,8 +7,8 @@ MKDIR=mkdir
 
 CC=gcc
 CXX=g++
-CXXFLAGS=-std=c++11 -I/usr/local/include/SDL -D_GNU_SOURCE=1 -D_THREAD_SAFE -g -Werror -Wall -fsigned-char
-LDLIBS=-L/usr/local/lib -lSDLmain -lSDL -lSDL_image -lSDL_mixer -logg -lvorbis -lGL
+CXXFLAGS=-std=c++11 -I/usr/local/include/SDL2 -D_GNU_SOURCE=1 -D_THREAD_SAFE -g -Werror -Wall -fsigned-char
+LDLIBS=-L/usr/local/lib -lSDLmain -lSDL2 -lSDL2_image -lSDL2_mixer -logg -lvorbis -lglut -lGLEW -lGLU -lGL
 
 vpath %.h $(INCDIR)
 vpath %.cpp $(SRCDIR)
@@ -24,7 +24,7 @@ APPNAME = $(BINDIR)/uwol
 all: createFolders $(APPNAME)
 
 $(APPNAME): $(OBJS)
-	$(CXX) $(LDFLAGS) -o $@ $(OBJS) $(LDLIBS) `sdl-config --cflags --libs`
+	$(CXX) $(LDFLAGS) -o $@ $(OBJS) $(LDLIBS) `sdl2-config --cflags --libs`
 
 $(OBJDIR)/%.o: %.cc
 	$(MKDIR) -p $(dir $@)

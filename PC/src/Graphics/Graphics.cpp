@@ -63,7 +63,9 @@ bool Graphics::Initialize(int screenWidth, int screenHeight, int worldWidth, int
 void Graphics::BlitColoredFrameAbs(const Frame& frame, int x, int y, int width, int height,
 	float red, float green, float blue, float alpha, bool additive, bool flipX, bool flipY) {
 
-	Program* program = frame.Program == NULL ? this->DefaultProgram : frame.Program;
+	Program* program = frame.GetProgram();
+	if (program == NULL) program = this->DefaultProgram;
+
 	if (program->Textures.size() > 0) {
 		program->Textures[0] = frame.Texture;
 	} else {

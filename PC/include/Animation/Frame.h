@@ -21,8 +21,12 @@ public:
 	TEXTUREINFO *Texture;
 	TEXTURERECT Coords;
 
-	Program* Program;
+	Program* GetProgram() const;
+	void SetProgram(Program* p);
 
 	void Init(const Json::Value& frame);
+private:
+	Program* _program;
+
 };
 

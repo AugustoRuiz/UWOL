@@ -2,7 +2,7 @@
 
 Frame::Frame()
 {
-	this->Program = NULL;
+	this->_program = NULL;
 }
 
 Frame::Frame(const string &path) : Frame(path, 0, 1, 0, 1) {
@@ -14,11 +14,15 @@ Frame::Frame(const string &path, float tx1, float tx2, float ty1, float ty2) : F
 	this->Coords.tx2 = tx2;
 	this->Coords.ty1 = ty1;
 	this->Coords.ty2 = ty2;
+	this->_program = NULL;
 };
 
 Frame::~Frame()
 {
 }
+
+Program* Frame::GetProgram() const { return this->_program; }
+void Frame::SetProgram(Program* p) { this->_program = p; }
 
 void Frame::Init(const Json::Value& frame)
 {
