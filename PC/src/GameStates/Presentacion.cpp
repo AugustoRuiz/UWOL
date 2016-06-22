@@ -162,9 +162,9 @@ string Presentacion::Update(Uint32 milliSec, Event & inputEvent) {
 			return "Piramide";
 		}
 	}
-	if (inputEvent.Name == "KEY_UP" || inputEvent.Name == "JOY_UP") {
-		this->_goNext = true;
-	}
+	//if (inputEvent.Name == "KEY_UP" || inputEvent.Name == "JOY_UP") {
+	//	this->_goNext = true;
+	//}
 
 	if (this->_goNext) {
 		return "Credits";

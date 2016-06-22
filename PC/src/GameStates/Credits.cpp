@@ -166,6 +166,10 @@ void Credits::Draw(void)
 	_g->BlitFrameAlphaAbs(this->_shadow, 0, botY - bandHeight, _g->ScreenWidth, bandHeight, 0.75f, false, false);
 	_g->BlitFrameAlphaAbs(this->_shadow, 0, botY - (2* bandHeight), _g->ScreenWidth, bandHeight, 0.5f, false, false);
 	_g->BlitFrameAlphaAbs(this->_shadow, 0, botY - (3* bandHeight), _g->ScreenWidth, bandHeight, 0.25f, false, false);
+
+	_g->BlitFrameAbs(this->_shadow, 0, 0, 16, _g->ScreenHeight, false, false);
+	_g->BlitFrameAbs(this->_shadow, _g->ScreenWidth - 16, 0, 16, _g->ScreenHeight, false, false);
+
 }
 
 void Credits::drawFrame(int *y, const Frame& frame) {
