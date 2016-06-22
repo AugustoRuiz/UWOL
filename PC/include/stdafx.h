@@ -8,12 +8,12 @@
 #include <iostream>
 
 // TODO: mencionar aquí los encabezados adicionales que el programa necesita
-#include <SDL/SDL.h>
-#include <SDL/SDL_opengl.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_opengl.h>
 
 #ifdef __APPLE__
 #include <SDL_image/SDL_image.h>
 #else
-#include <SDL/SDL_image.h>
+#include <SDL2/SDL_image.h>
 #endif
 
