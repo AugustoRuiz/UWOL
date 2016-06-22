@@ -1,8 +1,9 @@
+#pragma once
+
 #include "TextureMgr.h"
 #include "GLFuncs.h"
+#include "Program.h"
 #include "GameData.h"
-
-#pragma once
 
 class TextRenderer
 {
@@ -13,7 +14,7 @@ public:
 	void DrawStringAlpha(int x, int y, int textSize, const string &text, float rTop, float gTop, float bTop, float rBot, float gBot, float bBot, float alpha);
 
 private:
-    TEXTUREINFO *texture;
-
-	void updateTexCoords(char currentChar, float *tx1, float *tx2, float *ty1, float *ty2);
+	Program* _program;
+    TEXTUREINFO* _texture;
+	void updateTexCoords(char currentChar, float* tx1, float* ty1, float* tx2, float* ty2);
 };

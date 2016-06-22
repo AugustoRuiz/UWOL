@@ -12,6 +12,7 @@
 #include "Piramide.h"
 #include "EndGame.h"
 #include "GameOver.h"
+#include "Credits.h"
 #include <string>
 #include <iostream>
 #include <iterator>
@@ -28,8 +29,7 @@ class Game
 public:
 	static Game* GetInstance();
 
-	bool Initialize(int width, int height, bool fullscreen);
-	void SetWindowName(const char *name);
+	bool Initialize(int width, int height, bool fullscreen, const char* name);
 	void Update(Uint32 mSecs);
 	void Render();
 	void Dispose();
@@ -65,7 +65,6 @@ private:
 	Scanlines *_scanlines;
 
 	map<string, IGameState*> _states;
-	map<string, IGameState*>::iterator _statesIt;
 	string _currentStatus;
 
 	void loadResources();

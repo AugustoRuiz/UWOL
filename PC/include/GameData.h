@@ -2,8 +2,9 @@
 
 #include <vector>
 
+#include <GL/glew.h>
 #include <SDL/SDL.h>
-#include <SDL/SDL_opengl.h>
+#include <GL/freeglut.h>
 
 #ifdef __APPLE__
 #include <SDL_image/SDL_image.h>

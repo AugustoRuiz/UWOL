@@ -275,9 +275,8 @@ void TPlayer::DebugPaint() {
 
 	vertexes.push_back(VECTOR2(x1, y1));
 	vertexes.push_back(VECTOR2(x2, y1));
-	vertexes.push_back(VECTOR2(x2, y2));
 	vertexes.push_back(VECTOR2(x1, y2));
-	vertexes.push_back(VECTOR2(x1, y1));
+	vertexes.push_back(VECTOR2(x2, y2));
 
 	_graphics->DrawPolyLines(vertexes, 1.0f, 1.0f, 1.0f, 1.0f);
 }
@@ -428,4 +427,14 @@ void TPlayer::setAnimation(string name) {
 		ss << "_naked";
 	}
 	this->_animPlayer.setAnimation(Animation::Get(ss.str()));
+}
+
+bool TPlayer::ShouldChase()
+{
+	return !(this->getEstado() & Muriendo);
+}
+
+VECTOR2F TPlayer::GetPosition()
+{
+	return VECTOR2F(this->_x, this->_y);
 }

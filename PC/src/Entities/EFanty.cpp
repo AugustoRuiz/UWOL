@@ -11,6 +11,7 @@ EFanty::~EFanty()
 
 void EFanty::Initialize()
 {
+	this->_chaseable = NULL;
 	this->_haloValue = 0.0f;
 	this->_animPlayer.setAnimation(Animation::Get("fanty_float"));
 	this->_frameHalo = Frame("data/Halo.png");
@@ -18,6 +19,10 @@ void EFanty::Initialize()
 	Enemigo::Initialize();
 
 	this->setTipoEnemigo(Fanty);
+}
+
+void EFanty::setChaseable(IChaseable* chaseable) {
+	this->_chaseable = chaseable;
 }
 
  void EFanty::Draw()
@@ -43,39 +48,37 @@ bool EFanty::UpdateWhenNoCoins()
 
 void EFanty::Update(Uint32 milliSec)
 {
-	float ptX, ptY;
+	VECTOR2F target;
 
 	_animPlayer.Update(milliSec);
 
 	_haloValue += milliSec * 0.005f;
 
-	if(this->_player->getEstado() & Muriendo)
+	if(this->_chaseable == NULL || !this->_chaseable->ShouldChase())
 	{
-		ptX = 6.0f * this->_tileSize.x;
-		ptY = 5.0f * this->_tileSize.y;
+		target = VECTOR2F(6.0f * this->_tileSize.x, 5.0f * this->_tileSize.y);
 	}
 	else
 	{
-		ptX = this->_player->_x;
-		ptY = this->_player->_y;
+		target = this->_chaseable->GetPosition();
 	}
 
-	if(this->_x < ptX)
+	if(this->_x < target.x)
 	{
 		_vx += ACCEL_FANTY * milliSec;
 		if(_vx > 3.0f) _vx = 3.0f;
 	}
-	if(this->_x > ptX)
+	if(this->_x > target.x)
 	{
 		_vx -= ACCEL_FANTY * milliSec;
 		if(_vx < -3.0f) _vx = -3.0f;
 	}
-	if(this->_y < ptY)
+	if(this->_y < target.y)
 	{
 		_vy += ACCEL_FANTY * milliSec;
 		if(_vy > 3.0f) _vy = 3.0f;
 	}
-	if(this->_y > ptY)
+	if(this->_y > target.y)
 	{
 		_vy -= ACCEL_FANTY * milliSec;
 		if(_vy < -3.0f) _vy = -3.0f;

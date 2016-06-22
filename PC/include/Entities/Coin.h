@@ -28,7 +28,7 @@ public:
     bool UpdateWhenNoCoins() override;
 
 	int _x;
-	int _y;
+	float _y;
 
 	VECTOR2F _speed;
 	float _rotationFactor;

@@ -2,6 +2,8 @@
 
 #include "GameData.h"
 #include "TextureMgr.h"
+#include "Program.h"
+
 #ifdef __APPLE__
 #include "json.h"
 #else
@@ -19,6 +21,8 @@ public:
 	TEXTUREINFO *Texture;
 	TEXTURERECT Coords;
 
-	void Init(Json::Value frame);
+	Program* Program;
+
+	void Init(const Json::Value& frame);
 };
 

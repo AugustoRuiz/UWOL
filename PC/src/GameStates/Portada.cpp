@@ -8,8 +8,8 @@ Portada::Portada()
 	this->_g = Graphics::GetInstance();
 
 	this->_imagenes.push_back(Frame("data/logoMojon.png"));
-	this->_imagenes.push_back(Frame("data/logoRetroworks.png"));
-	this->_imagenes.push_back(Frame("data/credits.png"));
+	//this->_imagenes.push_back(Frame("data/logoRetroworks.png"));
+	//this->_imagenes.push_back(Frame("data/credits.png"));
 
 	this->_sonido = Sound("sounds/coinPicked.ogg");
 

@@ -20,7 +20,7 @@ bool Game::Running()
 	return _running;
 }
 
-bool Game::Initialize(int width, int height, bool fullscreen)
+bool Game::Initialize(int width, int height, bool fullscreen, const char* name)
 {
 	Log::Out << "Game: Initializing..." << endl;
 
@@ -29,7 +29,7 @@ bool Game::Initialize(int width, int height, bool fullscreen)
 
 	Log::Out << "Game: Initializing screen (" << width << " x " << height << ")..." << endl;
 
-	_running = _g->Initialize(width, height, 384, 320, fullscreen);
+	_running = _g->Initialize(width, height, 384, 320, fullscreen, name);
 
 	_g->LightPosition.x = _g->WorldWidth / 2;
 	_g->LightPosition.y = 0;
@@ -55,6 +55,7 @@ bool Game::Initialize(int width, int height, bool fullscreen)
 
 	this->AddState(new Portada());
 	this->AddState(new Presentacion());
+	this->AddState(new Credits());
 	this->AddState(new Piramide((*(this->_stage))));
 	this->AddState(this->_stage);
 	this->AddState(new EndGame(true));
@@ -75,11 +76,6 @@ bool Game::Initialize(int width, int height, bool fullscreen)
 	this->_totalTicks = 0;
 
 	return _running;
-}
-
-void Game::SetWindowName(const char *name)
-{
-	SDL_WM_SetCaption(name, NULL);
 }
 
 void Game::Dispose()
@@ -118,7 +114,6 @@ void Game::Update(Uint32 mSecs)
 
 	map<string, IGameState*>::iterator it = _states.find(_currentStatus);
 	if (it != _states.end()) {
-		this->_statesIt = it;
 		IGameState *state = it->second;
 		string oldStatus = _currentStatus;
 		_currentStatus = state->Update(mSecs, currentEvent);
@@ -142,28 +137,64 @@ void Game::handleInput(Event &currentEvent) {
 	if (currentEvent.Name == "KEY_DOWN") {
 		ActionKeys key = (ActionKeys)(currentEvent.Data["key"].asInt());
 		switch (key) {
-			case ActionKeysExit:
-				_running = false;
-				break;
-			case ActionKeysAliasing:
-				aliasing = !aliasing;
-				break;
-			case ActionKeysScanlines:
-				scanlines = !scanlines;
-					break;
-			case ActionKeysAltScanlines:
-				this->_scanlines->Mode ^= 1;
-				break;
-			case ActionKeysDebug:
-				debugPaint = !debugPaint;
-				break;
-			case ActionKeysStopRecording:
-				// Dejamos de guardar después de guardar la pulsación de la tecla de grabar. Así la grabación 
-				// durará hasta el momento en el que se ha pulsado la tecla.
-				this->_savingStatus = false;
-				break;
-			default:
-				break;
+		case ActionKeysExit:
+			_running = false;
+			break;
+		case ActionKeysAliasing:
+			aliasing = !aliasing;
+			break;
+		case ActionKeysScanlines:
+			scanlines = !scanlines;
+			break;
+		case ActionKeysAltScanlines:
+			this->_scanlines->Mode ^= 1;
+			break;
+		case ActionKeysDebug:
+			debugPaint = !debugPaint;
+			break;
+		case ActionKeysStopRecording:
+			// Dejamos de guardar después de guardar la pulsación de la tecla de grabar. Así la grabación 
+			// durará hasta el momento en el que se ha pulsado la tecla.
+			this->_savingStatus = false;
+			break;
+		case ActionKeysNextScreen:
+			if (this->_currentStatus == "Stage") {
+				map<string, IGameState*>::iterator it = _states.find(_currentStatus);
+				if (it != _states.end()) {
+					IGameState *state = it->second;
+					Stage* s = (Stage*)state;
+					int nextIdx = s->RoomIndex + 1;
+					if (nextIdx < (int)s->Rooms.size()) {
+						s->GoToRoom(nextIdx);
+					}
+				}
+			}
+			break;
+		case ActionKeysPreviousScreen:
+			if (this->_currentStatus == "Stage") {
+				map<string, IGameState*>::iterator it = _states.find(_currentStatus);
+				if (it != _states.end()) {
+					IGameState *state = it->second;
+					Stage* s = (Stage*)state;
+					int nextIdx = s->RoomIndex - 1;
+					if (nextIdx >= 0) {
+						s->GoToRoom(nextIdx);
+					}
+				}
+			}
+			break;
+		case ActionKeysAddCoins:
+			if (this->_currentStatus == "Stage") {
+				map<string, IGameState*>::iterator it = _states.find(_currentStatus);
+				if (it != _states.end()) {
+					IGameState *state = it->second;
+					Stage* s = (Stage*)state;
+					s->Player->_coinsTaken += 1;
+				}
+			}
+			break;
+		default:
+			break;
 		}
 
 		if (this->_savingStatus) {
@@ -180,32 +211,32 @@ void Game::handleInput(Event &currentEvent) {
 			this->_eventBuffer.push_back((Uint32)(0x4000 | (0x3FFF & key)));
 		}
 	}
-	}
+}
 
 void Game::updateAttractMode() {
 	if (this->_evtBufferIterator != this->_eventBuffer.end()) {
 		if (this->_totalTicks >= *this->_evtBufferIterator) {
-				++this->_evtBufferIterator;
-				Uint32 keyData = *this->_evtBufferIterator++;
+			++this->_evtBufferIterator;
+			Uint32 keyData = *this->_evtBufferIterator++;
 
-				Event fakeEvent;
+			Event fakeEvent;
 
-				fakeEvent.Data["key"] = (ActionKeys)(keyData & 0x3FFF);
-				fakeEvent.Name = ((keyData & 0x4000) == 0x4000) ? "KEY_UP" : "KEY_DOWN";
+			fakeEvent.Data["key"] = (ActionKeys)(keyData & 0x3FFF);
+			fakeEvent.Name = ((keyData & 0x4000) == 0x4000) ? "KEY_UP" : "KEY_DOWN";
 
-				_input->SetKeyPressedState(fakeEvent);
-			}
-		}
-	else {
-			Log::Out << "Exiting attract mode..." << endl;
-			this->_attractMode = false;
-			_currentStatus = "Portada";
+			_input->SetKeyPressedState(fakeEvent);
 		}
 	}
+	else {
+		Log::Out << "Exiting attract mode..." << endl;
+		this->_attractMode = false;
+		_currentStatus = "Portada";
+	}
+}
 
 void Game::Render()
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	_g->Clear();
 
 	map<string, IGameState*>::iterator it = _states.find(_currentStatus);
 	if (it != _states.end())
@@ -219,7 +250,7 @@ void Game::Render()
 		this->_scanlines->Draw();
 	}
 
-	SDL_GL_SwapBuffers();
+	_g->SwapBuffers();
 }
 
 void Game::Restart() {
@@ -290,8 +321,8 @@ void Game::ShowCursor(bool show)
 
 void Game::loadResources() {
 	// Barra de progreso?
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	SDL_GL_SwapBuffers();
+	_g->Clear();
+	_g->SwapBuffers();
 
 	Log::Out << "Game: Loading resources..." << endl;
 	ifstream resourcesFile("resources.json", ios::binary);

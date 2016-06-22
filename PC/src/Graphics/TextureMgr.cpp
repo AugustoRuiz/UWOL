@@ -17,7 +17,7 @@ TEXTUREINFO* TextureMgr::LoadTexture(const string &sFileName)
 {
 	TEXTUREINFO* result = NULL;
 
-	Log::Out << "TextureMgr: Loading texture " << sFileName << endl;
+	Log::Out << "TextureMgr: Loading texture '" << sFileName << "'...";
 
 	if (cache.find(sFileName) != cache.end())
 	{

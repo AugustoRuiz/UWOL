@@ -24,15 +24,15 @@ public:
 
 private:
 
-	bool _disposed;
+	bool _disposed, _goNext;
 
 	Graphics *_g;
 
-	Frame _frameSombra;
 	Sound _music;
 
-	vector<Frame>::iterator _currentFrame;
-	vector<Frame> _logos;
+	Frame _bg;
+	Frame _portada;
+	Frame _shadow;
 
 	Coin** _coins;
 
@@ -41,6 +41,5 @@ private:
 
 	Uint32 _currentTick;
 
-	void UpdateCurrentTexture();
 };
 

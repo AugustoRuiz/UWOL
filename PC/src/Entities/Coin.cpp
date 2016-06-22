@@ -41,7 +41,7 @@ void Coin::DrawShadow()
 {
 	Frame current = this->_animPlayer.GetCurrentFrame();
 	_g->BlitShadow(current, 
-		(this->_x * this->_tileSize.x), (this->_y * this->_tileSize.y),
+		(this->_x * this->_tileSize.x), ((int)round(this->_y) * this->_tileSize.y),
 		this->_tileSize.x, this->_tileSize.y, 
 		false, false);
 }
@@ -68,12 +68,18 @@ void Coin::Draw()
 
 void Coin::DrawInPos(int pX, int pY, float alpha)
 {
-	_g->BlitFrameAlphaAbs(this->_animPlayer.GetCurrentFrame(),
-		          pX, 
-		          pY, 
-				  this->_tileSize.x,
-				  this->_tileSize.y,
-				  alpha, false, false);
+	int sX = this->_tileSize.x;
+	int sY = this->_tileSize.y;
+
+	_g->BlitShadowAbs(this->_animPlayer.GetCurrentFrame(),
+		pX + 4, pY + 4, 
+		sX, sY, 
+		false, false);
+
+	_g->BlitColoredFrameAbs(this->_animPlayer.GetCurrentFrame(),
+		          pX, pY, 
+				  sX, sY,
+				  alpha, alpha, alpha, 1.0, false, false, false);
 }
 
 void Coin::Update(Uint32 milliSec)

@@ -1,7 +1,7 @@
 #include "IDrawable.h"
 
 #include "GameData.h"
-#include "GLFuncs.h"
+#include "Graphics.h"
 #include "TextureMgr.h"
 
 class Scanlines : public IDrawable
@@ -21,14 +21,14 @@ public:
 	int Mode;
 
 private:
-	GLFuncs* gl;
+	Graphics* g;
 
-    TEXTUREINFO* _texture;
+    Frame _texture;
 
-	TEXTUREINFO* _texture2;
-	TEXTUREINFO* _tv1;
-	TEXTUREINFO* _tv2;
-	TEXTUREINFO* _tv3;
+	Frame _texture2;
+	Frame _tv1;
+	Frame _tv2;
+	Frame _tv3;
 	
 	int _width;
 	int _height;
