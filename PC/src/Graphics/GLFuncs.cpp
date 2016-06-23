@@ -9,17 +9,6 @@ SDL_Window *GLFuncs::Initialize(int screenWidth, int screenHeight, GLboolean ful
 {
 	Uint32 flags;
 
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
-	//SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-
-	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);		//Use at least 8 bits of Red
-	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);	    //Use at least 8 bits of Green
-	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);		//Use at least 8 bits of Blue
-	SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);		//Use at least 8 bits of Alpha
-	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);	    //Use at least 16 bits for the depth buffer
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);	//Enable double buffering
-
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK) != 0) {
 		Log::Out << "Unable to initialize SDL: " << SDL_GetError() << endl;
 		return NULL;
@@ -42,39 +31,24 @@ SDL_Window *GLFuncs::Initialize(int screenWidth, int screenHeight, GLboolean ful
 		screenWidth, screenHeight,
 		flags);
 
-	_mainContext = SDL_GL_CreateContext(_window);
-
-	Log::Out << "OpenGL " << glGetString(GL_VERSION) << " (GLSL " << glGetString(GL_SHADING_LANGUAGE_VERSION) << ")" << std::endl;
+	if (!_window) {
+		Log::Out << "Unable to create window." << endl;
+		checkSDLError(__LINE__);
+	}
 
 	SDL_Surface *icon = IMG_Load("data/UWOLIcon.png");
 	SDL_SetWindowIcon(_window, icon);
 
-	glewExperimental = true;
+	_mainContext = SDL_GL_CreateContext(_window);
+
+	setGLAttributes();
+
+#ifndef __APPLE__
+	glewExperimental = GL_TRUE;
 	glewInit();
+#endif
 
-	// Inicializemos el framebuffer para poder renderizar sobre una textura, así podremos aplicar shaders 
-	// a lo que pintemos. ;)
-	glGenFramebuffers(1, &_frameBufferName);
-	glBindFramebuffer(GL_FRAMEBUFFER, _frameBufferName);
-
-	glGenTextures(1, &_renderedTexture);
-	glBindTexture(GL_TEXTURE_2D, _renderedTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, _screenWidth, _screenHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, _renderedTexture, 0);
-	GLenum drawBuffers[1] = { GL_COLOR_ATTACHMENT0 };
-	glDrawBuffers(1, drawBuffers);
-
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-		SDL_DestroyWindow(_window);
-		Log::Out << "Unable to initialize Framebuffer! " << gluErrorString(glGetError()) << endl;
-		return NULL;
-	}
-
-	glBindFramebuffer(GL_FRAMEBUFFER, _frameBufferName);
+	this->_useFramebuffer = initFramebuffer();
 
 	glViewport(0, 0, screenWidth, screenHeight);
 
@@ -106,6 +80,64 @@ SDL_Window *GLFuncs::Initialize(int screenWidth, int screenHeight, GLboolean ful
 	this->ResetMVP();
 
 	return _window;
+}
+
+bool GLFuncs::initFramebuffer() {
+	// Inicializemos el framebuffer para poder renderizar sobre una textura, así podremos aplicar shaders 
+	// a lo que pintemos. ;)
+	glGenFramebuffers(1, &_frameBufferName);
+	glBindFramebuffer(GL_FRAMEBUFFER, _frameBufferName);
+
+	glGenTextures(1, &_renderedTexture);
+	glBindTexture(GL_TEXTURE_2D, _renderedTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, _screenWidth, _screenHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, _renderedTexture, 0);
+
+	GLenum drawBuffers[1] = { GL_COLOR_ATTACHMENT0 };
+	glDrawBuffers(1, drawBuffers);
+
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+		Log::Out << "Unable to initialize Framebuffer! " << gluErrorString(glGetError()) << endl;
+		return false;
+	}
+
+	glBindFramebuffer(GL_FRAMEBUFFER, _frameBufferName);
+	return true;
+}
+
+void GLFuncs::setGLAttributes() {
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+	//SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+
+	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);		//Use at least 8 bits of Red
+	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);	    //Use at least 8 bits of Green
+	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);		//Use at least 8 bits of Blue
+	SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);		//Use at least 8 bits of Alpha
+	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);	    //Use at least 16 bits for the depth buffer
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);	//Enable double buffering
+
+	Log::Out << "OpenGL " << glGetString(GL_VERSION) << " (GLSL " << glGetString(GL_SHADING_LANGUAGE_VERSION) << ")" << std::endl;
+}
+
+void GLFuncs::checkSDLError(int line = -1)
+{
+	std::string error = SDL_GetError();
+
+	if (error != "")
+	{
+		Log::Out << "SDL Error: " << error << endl;
+
+		if (line != -1) {
+			Log::Out << "Line: " << line << endl;
+		}
+
+		SDL_ClearError();
+	}
 }
 
 void GLFuncs::ResetMVP() {
@@ -312,20 +344,24 @@ GLuint GLFuncs::GetFramebufferTexture() {
 
 void GLFuncs::SwapBuffers()
 {
-	// Render to the screen
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	// Render on the whole framebuffer, complete from the lower left corner to the upper right
-	glViewport(0, 0, _screenWidth, _screenHeight); 
+	if (this->_useFramebuffer) {
+		// Render to the screen
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		// Render on the whole framebuffer, complete from the lower left corner to the upper right
+		glViewport(0, 0, _screenWidth, _screenHeight);
 
-	// Clear the screen
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		// Clear the screen
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// Renderizar la textura.
-	BlitRect(0, 0, _screenWidth, _screenHeight, 0.0f, 1.0f, 1.0f, 0.0f);
+		// Renderizar la textura.
+		BlitRect(0, 0, _screenWidth, _screenHeight, 0.0f, 1.0f, 1.0f, 0.0f);
+	}
 
 	SDL_GL_SwapWindow(this->_window);
 
-	// Restore so we draw in the texture again.
-	glBindFramebuffer(GL_FRAMEBUFFER, _frameBufferName);
-	glViewport(0, 0, _screenWidth, _screenHeight);
+	if (this->_useFramebuffer) {
+		// Restore so we draw in the texture again.
+		glBindFramebuffer(GL_FRAMEBUFFER, _frameBufferName);
+		glViewport(0, 0, _screenWidth, _screenHeight);
+	}
 }

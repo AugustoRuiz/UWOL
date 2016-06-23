@@ -121,8 +121,9 @@ void Credits::Draw(void)
 	drawCentered(posY, "^Code by _Na-th-an"); posY += 16;
 	drawCentered(posY, "^Ingame graphics by _Anjuel"); posY += 16;
 	drawCentered(posY, "^Additional gfx. by _Na-th-an"); posY += 16;
+	drawCentered(posY, "^Cover art by _Ferran Criado"); posY += 16;
 	drawCentered(posY, "^Music by _Augusto Ruiz"); posY += 16;
-	drawCentered(posY, "^Development tools by _Augusto Ruiz"); posY += 32;
+	drawCentered(posY, "^Development tools by _Augusto Ruiz"); posY += 16;
 
 	drawCentered(posY, "^Levels & supp.: _Augus, Anjuel,"); posY += 16;
 	drawCentered(posY, "_Na-th-an, Kendroock, Daivod,"); posY += 16;

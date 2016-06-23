@@ -40,10 +40,11 @@ void MusicManager::DeleteMusic()
 {
 	MUSICMAP::iterator iter;
 
-    Log::Out << "MusicMgr: Deleting sound." << endl;
+    Log::Out << "MusicMgr: Deleting sounds." << endl;
 	iter = cache.begin();
 	while(iter != cache.end())
 	{
+		Log::Out << "MusicMgr: Deleting sound '" << iter->first << "'." << endl;
 		Mix_FreeChunk(iter->second);
 		iter++;
 	}

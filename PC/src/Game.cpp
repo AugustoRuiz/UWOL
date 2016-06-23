@@ -385,9 +385,13 @@ void Game::AddState(IGameState* state) {
 }
 
 void Game::SwapBuffers() {
-	this->_blitProgram->Use();
-	this->_blitProgram->BindTextures();
-	this->_blitProgram->SetUniform("iGlobalTime", (float)this->_totalTicks);
-	this->_blitProgram->SetUniform("MVP", GLFuncs::GetInstance()->MVP);
+	
+	if (this->_blitProgram != NULL && this->_blitProgram->ProgramId != 0) {
+		this->_blitProgram->Use();
+		this->_blitProgram->BindTextures();
+		this->_blitProgram->SetUniform("iGlobalTime", (float)this->_totalTicks);
+		this->_blitProgram->SetUniform("MVP", GLFuncs::GetInstance()->MVP);
+	}
+
 	this->_g->SwapBuffers();
 }

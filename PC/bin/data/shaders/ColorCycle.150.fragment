@@ -15,7 +15,7 @@ uniform float iGlobalTime;
 void main(){
 	// Output color = color of the texture at the specified UV
 	vec4 originalColor = texture2D( iChannel0, mod(UV, vec2(1.0,1.0)) );
-	vec2 index = vec2(mod(originalColor.r + (iGlobalTime/500.0f), 11.0/16.0), 0.0);
+	vec2 index = vec2(mod(originalColor.r + (iGlobalTime/500.0f), 12.0/16.0), 0.0);
 	fragColor = vertColor * texture2D( iChannel1, index );
 	fragColor.a = originalColor.a * vertColor.a;
 }

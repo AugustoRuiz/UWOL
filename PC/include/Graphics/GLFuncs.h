@@ -55,6 +55,12 @@ protected :
 	};
 	static GLFuncs _instance;
 
+	void checkSDLError(int line);
+	void setGLAttributes();
+	bool initFramebuffer();
+
+	bool _useFramebuffer;
+
 	GLuint _frameBufferName;
 	GLuint _renderedTexture;
 	GLuint _quad_vertexbuffer;
