@@ -148,10 +148,8 @@ int Room::GetDepth() {
 void Room::OnEnter(void) {
 	this->Restart();
 
-	if (!this->Completada) {
-		this->_tune.PlayAsMusic(true);
-	}
-	else {
+	this->_tune.PlayAsMusic(true);
+	if (this->Completada) {
 		this->_player->setEstado(this->_player->getEstado() | TodasMonedasCogidas);
 	}
 }
@@ -216,7 +214,9 @@ string Room::Update(Uint32 milliSec, Event & inputEvent) {
 		}
 	}
 	else {
-		this->_musicGhost.PlayAsMusic(true);
+		if(!MusicManager::IsPlayingMusic()) {
+			this->_musicGhost.PlayAsMusic(true);
+		}
 	}
 
 	if (this->TimeLeft <= 0 && _valorOscuro < 0.5f) {
