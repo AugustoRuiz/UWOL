@@ -10,6 +10,7 @@ Sound Room::_fxGhost;
 Sound Room::_musicGhost;
 Sound Room::_fxHit;
 Sound Room::_fxCoin;
+Sound Room::_fxCamiseta;
 
 vector<Sound> Room::_tunes;
 
@@ -27,6 +28,7 @@ void Room::StaticInit() {
 	_musicGhost = Sound("music/Ghosts3.ogg");
 	_fxHit = Sound("sounds/Hu.ogg");
 	_fxCoin = Sound("sounds/coinPicked.ogg");
+	_fxCamiseta = Sound("sounds/camiseta.ogg");
 
 	_tunes.push_back(Sound("music/Zona1.ogg"));
 	_tunes.push_back(Sound("music/Zona2.ogg"));
@@ -214,9 +216,7 @@ string Room::Update(Uint32 milliSec, Event & inputEvent) {
 		}
 	}
 	else {
-		if (!MusicManager::IsPlayingMusic()) {
-			this->_musicGhost.PlayAsMusic(true);
-		}
+		this->_musicGhost.PlayAsMusic(true);
 	}
 
 	if (this->TimeLeft <= 0 && _valorOscuro < 0.5f) {
@@ -268,6 +268,7 @@ void Room::pickCamiseta(int tileX1, int tileX2, int tileY1, int tileY2) {
 		(this->_player->getEstado() & Desnudo)
 		) {
 		this->quitarCamiseta();
+		this->_fxCamiseta.PlayAsFx(false);
 		this->_player->AddScore(15);
 		this->_player->setEstado((this->_player->getEstado() & ~(Parpadeo | Desnudo)) | Normal);
 	}

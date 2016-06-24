@@ -20,6 +20,7 @@ TPlayer::TPlayer() {
 	this->_fxStep2 = Sound("sounds/StepStone2.ogg");
 	this->_fxJump = Sound("sounds/boing.ogg");
 	this->_fxDie = Sound("sounds/DeathCry.ogg");
+	this->_fxExtra = Sound("sounds/extra.ogg");
 	this->_musicDie = Sound("music/Death.ogg");
 
 	this->Initialize();
@@ -83,6 +84,7 @@ void TPlayer::AddScore(int amount) {
 
 	if ((oldScore < 1000 && this->_score >= 1000) ||
 	    (oldScore < 2500 && this->_score >= 2500)) {
+		this->_fxExtra.PlayAsFx(false);
 		this->_vidas++;
 	}
 }

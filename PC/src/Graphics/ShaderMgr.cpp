@@ -17,7 +17,7 @@ Shader* ShaderMgr::LoadShader(const string &sFileName, ShaderType shaderType)
 {
 	Shader* result = NULL;
 
-	Log::Out << "ShaderMgr: Loading shader '" << sFileName << "'...";
+	Log::Out << "ShaderMgr: Loading shader '" << sFileName << "'..." << endl;
 
 	if (cache.find(sFileName) != cache.end())
 	{

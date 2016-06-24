@@ -17,24 +17,23 @@ TEXTUREINFO* TextureMgr::LoadTexture(const string &sFileName)
 {
 	TEXTUREINFO* result = NULL;
 
-	Log::Out << "TextureMgr: Loading texture '" << sFileName << "'...";
+	//Log::Out << "TextureMgr: Loading texture '" << sFileName << "'...";
 
 	if (cache.find(sFileName) != cache.end())
 	{
-		Log::Out << "IN CACHE!" << endl;
+		//Log::Out << "IN CACHE!" << endl;
 		result = cache[sFileName];
 	}
 	else
 	{
 		SDL_Surface *textureSurf = IMG_Load(sFileName.c_str());
-
 		if (textureSurf != NULL)
 		{
 			result = this->GL_LoadTexture(textureSurf);
 
 			if (result != NULL)
 			{
-				Log::Out << "texture #" << result->texture << endl;
+				//Log::Out << "texture #" << result->texture << endl;
 				result->width = textureSurf->w;
 				result->height = textureSurf->h;
 				cache[sFileName] = result;
@@ -82,7 +81,7 @@ void TextureMgr::DeleteTextures()
 	iter = cache.begin();
 	while (iter != cache.end())
 	{
-		Log::Out << "TextureMgr: Deleting texture #" << iter->second->texture << "." << endl;
+		//Log::Out << "TextureMgr: Deleting texture #" << iter->second->texture << "." << endl;
 		glDeleteTextures(1, &iter->second->texture);
 		iter++;
 	}

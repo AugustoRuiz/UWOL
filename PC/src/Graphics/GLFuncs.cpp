@@ -43,22 +43,27 @@ SDL_Window *GLFuncs::Initialize(int screenWidth, int screenHeight, GLboolean ful
 
 	setGLAttributes();
 
+	int major;
+	SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &major);
+
+	this->_useVBO = major >= 3;
+
 #ifndef __APPLE__
 	glewExperimental = GL_TRUE;
 	glewInit();
 #endif
 
-	this->_useFramebuffer = initFramebuffer();
+	this->_useFramebuffer = this->_useVBO && initFramebuffer();		
 
 	glViewport(0, 0, screenWidth, screenHeight);
 
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClearDepth(1.0f);
 
-	glDepthFunc(GL_LEQUAL);
+//	glDepthFunc(GL_LEQUAL);
 	glDisable(GL_DEPTH_TEST);
 
-	glShadeModel(GL_SMOOTH);
+//	glShadeModel(GL_SMOOTH);
 
 	glDisable(GL_CULL_FACE);
 	glEnable(GL_ALPHA_TEST);
@@ -72,10 +77,15 @@ SDL_Window *GLFuncs::Initialize(int screenWidth, int screenHeight, GLboolean ful
 
 	glPointSize(2.0f);
 
-	glGenBuffers(1, &_vertexBuffer);
-	glGenBuffers(1, &_uvBuffer);
-	glGenBuffers(1, &_colorBuffer);
-	glGenBuffers(1, &_lineVertexBuffer);
+	if(this->_useVBO) {
+		glGenVertexArrays(1, &_vao);
+		glBindVertexArray(_vao);
+		
+		glGenBuffers(1, &_vertexBuffer);
+		glGenBuffers(1, &_uvBuffer);
+		glGenBuffers(1, &_colorBuffer);
+		glGenBuffers(1, &_lineVertexBuffer);
+	}
 
 	this->ResetMVP();
 
@@ -86,6 +96,10 @@ bool GLFuncs::initFramebuffer() {
 	// Inicializemos el framebuffer para poder renderizar sobre una textura, así podremos aplicar shaders 
 	// a lo que pintemos. ;)
 	glGenFramebuffers(1, &_frameBufferName);
+	if(_frameBufferName == 0) {
+		Log::Out << "Call to glGenFramebuffers failed. " << gluErrorString(glGetError()) << endl;
+		return false; 
+	}
 	glBindFramebuffer(GL_FRAMEBUFFER, _frameBufferName);
 
 	glGenTextures(1, &_renderedTexture);
@@ -95,7 +109,7 @@ bool GLFuncs::initFramebuffer() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, _renderedTexture, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _renderedTexture, 0);
 
 	GLenum drawBuffers[1] = { GL_COLOR_ATTACHMENT0 };
 	glDrawBuffers(1, drawBuffers);
@@ -110,8 +124,8 @@ bool GLFuncs::initFramebuffer() {
 }
 
 void GLFuncs::setGLAttributes() {
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+	//SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+	//SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
 	//SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
 	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);		//Use at least 8 bits of Red
@@ -131,11 +145,9 @@ void GLFuncs::checkSDLError(int line = -1)
 	if (error != "")
 	{
 		Log::Out << "SDL Error: " << error << endl;
-
 		if (line != -1) {
 			Log::Out << "Line: " << line << endl;
 		}
-
 		SDL_ClearError();
 	}
 }
@@ -152,6 +164,13 @@ void GLFuncs::BlitColoredRect(int iX, int iY, int width, int height,
 	float tx1, float ty1, float tx2, float ty2, float red,
 	float green, float blue, float alpha, bool additive)
 {
+	if (additive) {
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+	}
+	else {
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	}
+
 	GLfloat vertex_buffer_data[] = {
 		(float)iX, (float)iY, 0.0f,
 		(float)iX + width, (float)iY, 0.0f,
@@ -173,13 +192,6 @@ void GLFuncs::BlitColoredRect(int iX, int iY, int width, int height,
 		red, green, blue, alpha
 	};
 
-	if (additive) {
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-	}
-	else {
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	}
-
 	this->BlitVerts(vertex_buffer_data, sizeof(vertex_buffer_data),
 		uv_buffer_data, sizeof(uv_buffer_data),
 		color_buffer_data, sizeof(color_buffer_data));
@@ -189,21 +201,6 @@ void GLFuncs::BlitVerts(float vertex_buffer_data[], unsigned int vBufSize,
 	float uv_buffer_data[], unsigned int uvBufSize,
 	float color_buffer_data[], unsigned int cBufSize)
 {
-	glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, vBufSize, vertex_buffer_data, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-
-	glEnableVertexAttribArray(1);
-	glBindBuffer(GL_ARRAY_BUFFER, _uvBuffer);
-	glBufferData(GL_ARRAY_BUFFER, uvBufSize, uv_buffer_data, GL_STATIC_DRAW);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
-
-	glEnableVertexAttribArray(2);
-	glBindBuffer(GL_ARRAY_BUFFER, _colorBuffer);
-	glBufferData(GL_ARRAY_BUFFER, cBufSize, color_buffer_data, GL_STATIC_DRAW);
-	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 0, (void*)0);
-
 	glEnable(GL_TEXTURE_2D);
 
 	if (aliasing)
@@ -217,11 +214,49 @@ void GLFuncs::BlitVerts(float vertex_buffer_data[], unsigned int vBufSize,
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	}
 
-	glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+	if(this->_useVBO) {
+		glEnableVertexAttribArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
+		glBufferData(GL_ARRAY_BUFFER, vBufSize, vertex_buffer_data, GL_STATIC_DRAW);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
-	glDisableVertexAttribArray(2);
-	glDisableVertexAttribArray(1);
-	glDisableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
+		glBindBuffer(GL_ARRAY_BUFFER, _uvBuffer);
+		glBufferData(GL_ARRAY_BUFFER, uvBufSize, uv_buffer_data, GL_STATIC_DRAW);
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
+		glEnableVertexAttribArray(2);
+		glBindBuffer(GL_ARRAY_BUFFER, _colorBuffer);
+		glBufferData(GL_ARRAY_BUFFER, cBufSize, color_buffer_data, GL_STATIC_DRAW);
+		glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
+		glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+		glDisableVertexAttribArray(2);
+		glDisableVertexAttribArray(1);
+		glDisableVertexAttribArray(0);
+	} else {
+		glMatrixMode(GL_MODELVIEW);
+		glLoadMatrixf(&(this->MVP[0][0]));
+
+		glBegin(GL_QUADS);
+			glColor4fv(&color_buffer_data[0]);
+			glTexCoord2fv(&uv_buffer_data[0]);
+			glVertex3fv(&vertex_buffer_data[0]);
+
+			glColor4fv(&color_buffer_data[4]);
+			glTexCoord2fv(&uv_buffer_data[2]);
+			glVertex3fv(&vertex_buffer_data[3]);
+
+			glColor4fv(&color_buffer_data[8]);
+			glTexCoord2fv(&uv_buffer_data[4]);
+			glVertex3fv(&vertex_buffer_data[6]);
+
+			glColor4fv(&color_buffer_data[12]);
+			glTexCoord2fv(&uv_buffer_data[6]);
+			glVertex3fv(&vertex_buffer_data[9]);
+		glEnd();
+	}
 }
 
 void GLFuncs::BlitRect(int iX, int iY, int width, int height,
@@ -248,22 +283,30 @@ void GLFuncs::Clear()
 }
 
 void GLFuncs::DrawPolyLine(const vector<VECTOR2> &vertexes, float red, float green, float blue, float alpha) {
+	if(this->_useVBO) {
+		vector<GLfloat> coords;
+		GLsizei vertexCount = vertexes.size();
+		for (VECTOR2 v : vertexes) {
+			coords.push_back((float)v.x);
+			coords.push_back((float)v.y);
+		}
 
-	vector<GLfloat> coords;
-	GLsizei vertexCount = vertexes.size();
-	for (VECTOR2 v : vertexes) {
-		coords.push_back((float)v.x);
-		coords.push_back((float)v.y);
+		glEnableVertexAttribArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, _lineVertexBuffer);
+		glBufferData(GL_ARRAY_BUFFER, coords.size() * sizeof(GLfloat), &(coords[0]), GL_STATIC_DRAW);
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
+		glDrawArrays(GL_LINES, 0, vertexCount);
+
+		glDisableVertexAttribArray(0);
+	} else {
+		glDisable(GL_TEXTURE_2D);
+		glBegin(GL_LINES);
+		for (VECTOR2 v : vertexes) {
+			glVertex2i(v.x, v.y);
+		}
+		glEnd();
 	}
-
-	glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, _lineVertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, coords.size() * sizeof(GLfloat), &(coords[0]), GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
-
-	glDrawArrays(GL_LINES, 0, vertexCount);
-
-	glDisableVertexAttribArray(0);
 }
 
 GLuint GLFuncs::CreateProgram(const std::vector<GLuint> &shaderList)
@@ -286,6 +329,8 @@ GLuint GLFuncs::CreateProgram(const std::vector<GLuint> &shaderList)
 		glGetProgramInfoLog(program, infoLogLength, NULL, strInfoLog);
 		Log::Out << "Linker failure: " << strInfoLog << endl;
 		delete[] strInfoLog;
+		glDeleteProgram(0);
+		program = 0;
 	}
 
 	for (size_t iLoop = 0; iLoop < shaderList.size(); iLoop++)

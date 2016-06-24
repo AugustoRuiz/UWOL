@@ -12,6 +12,7 @@
 #include "EndGame.h"
 #include "GameOver.h"
 #include "Credits.h"
+#include "Scanlines.h"
 #include <string>
 #include <iostream>
 #include <iterator>
@@ -64,6 +65,9 @@ private:
 	vector<Program*> _blitPrograms;
 	InputManager *_input;
 
+	Scanlines* _scanlines;
+	bool _drawScanlines;
+
 	map<string, IGameState*> _states;
 	string _currentStatus;
 
@@ -71,6 +75,7 @@ private:
 	void handleInput(Event &currentEvent);
 	void updateAttractMode();
 
+	void drawStatusMsg(const string& str);
 	void SwapBuffers();
 
 	Stage* _stage;

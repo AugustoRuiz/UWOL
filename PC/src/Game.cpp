@@ -31,17 +31,6 @@ bool Game::Initialize(int width, int height, bool fullscreen, const char* name)
 
 	_running = _g->Initialize(width, height, 384, 320, fullscreen, name);
 
-	vector<string> vertexShaders = { "data/shaders/Default.150.vertex" };
-	vector<string> fragmentNoScanlines = { "data/shaders/TexturedColored.150.fragment" };
-	this->_blitProgram = new Program(vertexShaders, fragmentNoScanlines);
-	this->_blitProgram->Textures.push_back(_g->GetFramebufferTexture());
-	this->_blitPrograms.push_back(this->_blitProgram);
-
-	vector<string> fragmentShaders = { "data/shaders/CRT.150.fragment" };
-	this->_blitProgram = new Program(vertexShaders, fragmentShaders);
-	this->_blitProgram->Textures.push_back(_g->GetFramebufferTexture());
-	this->_blitPrograms.push_back(this->_blitProgram);
-
 	_g->LightPosition.x = _g->WorldWidth / 2;
 	_g->LightPosition.y = 0;
 
@@ -76,6 +65,30 @@ bool Game::Initialize(int width, int height, bool fullscreen, const char* name)
 	_currentStatus = "Portada";
 
 	Log::Out << "Game: Initializing Scanlines..." << endl;
+	vector<string> vertexShaders = { "data/shaders/Default.150.vertex" };
+	vector<string> fragmentNoScanlines = { "data/shaders/TexturedColored.150.fragment" };
+	
+	this->_blitProgram = new Program(vertexShaders, fragmentNoScanlines);
+	if(this->_blitProgram->ProgramId != 0) {
+		this->_blitProgram->Textures.push_back(_g->GetFramebufferTexture());
+	}
+	this->_blitPrograms.push_back(this->_blitProgram);		
+
+	vector<string> fragmentShaders = { "data/shaders/CRT.150.fragment" };
+	this->_blitProgram = new Program(vertexShaders, fragmentShaders);
+	if(this->_blitProgram->ProgramId != 0) {
+		this->_blitProgram->Textures.push_back(_g->GetFramebufferTexture());		
+	}
+	this->_blitPrograms.push_back(this->_blitProgram);
+
+	if(this->_blitProgram->ProgramId == 0) {
+		_scanlines = new Scanlines();
+		_scanlines->setSize(width, height);
+		_drawScanlines = true;
+	} else {
+		_scanlines = NULL;
+		_drawScanlines = false;
+	}
 
 	this->_savingStatus = false;
 	this->_statusSaved = false;
@@ -93,6 +106,10 @@ void Game::Dispose()
 	for (pair<string, IGameState*> pairState : _states) {
 		pairState.second->Dispose();
 		delete pairState.second;
+	}
+
+	if(this->_scanlines != NULL) {
+		delete _scanlines;
 	}
 
 	TextureMgr::GetInstance()->DeleteTextures();
@@ -150,9 +167,18 @@ void Game::handleInput(Event &currentEvent) {
 			aliasing = !aliasing;
 			break;
 		case ActionKeysScanlines:
-			_blitProgram = _blitPrograms[_blitProgram == _blitPrograms[0] ? 1 : 0];
+			if(this->_scanlines == NULL) {
+				_blitProgram = _blitPrograms[_blitProgram == _blitPrograms[0] ? 1 : 0];
+			} else {
+				_drawScanlines = !_drawScanlines;
+			}
 			break;
-		case ActionKeysDebug:
+		case ActionKeysAltScanlines:
+			if(this->_scanlines != NULL) {
+				this->_scanlines->Mode ^= 1;					
+			}
+			break;
+	case ActionKeysDebug:
 			debugPaint = !debugPaint;
 			break;
 		case ActionKeysStopRecording:
@@ -248,6 +274,11 @@ void Game::Render()
 		state->Draw();
 	}
 
+	if (this->_drawScanlines && this->_scanlines != NULL)
+	{
+		this->_scanlines->Draw();
+	}
+
 	this->SwapBuffers();
 }
 
@@ -317,6 +348,24 @@ void Game::ShowCursor(bool show)
 	SDL_ShowCursor(showCursor);
 }
 
+void Game::drawStatusMsg(const string& str) {
+	float grayValue = 0.4f;
+	int fontSize = 8;
+
+	Log::Out << str << endl;
+
+	_g->Clear();
+	_g->DrawString(0, _g->WorldHeight - 32, fontSize, 
+		str, grayValue, grayValue, grayValue, grayValue, grayValue, grayValue);
+
+	if (this->_drawScanlines && this->_scanlines != NULL)
+	{
+		this->_scanlines->Draw();
+	}
+
+	this->SwapBuffers();
+}
+
 void Game::loadResources() {
 	// Barra de progreso?
 	_g->Clear();
@@ -330,9 +379,6 @@ void Game::loadResources() {
 		return;
 	}
 
-	float grayValue = 0.4f;
-	int fontSize = 8;
-
 	Json::Value root;
 	resourcesFile >> root;
 	Json::Value images = root["images"];
@@ -341,12 +387,9 @@ void Game::loadResources() {
 		for (Json::Value::iterator img = images.begin(); img != images.end(); ++img) {
 			string file = img->asString();
 			stringstream ss;
-			ss << "Loading image: " << file << endl;
-			Log::Out << ss.str();
+			ss << "Loading image: " << file;
+			drawStatusMsg(ss.str());
 			texMgr->LoadTexture(file);
-			_g->Clear();
-			_g->DrawString(0, _g->WorldHeight - 32, fontSize, ss.str(), grayValue, grayValue, grayValue, grayValue, grayValue, grayValue);
-			this->SwapBuffers();
 		}
 	}
 	Json::Value music = root["music"];
@@ -355,12 +398,9 @@ void Game::loadResources() {
 		for (Json::Value::iterator mus = music.begin(); mus != music.end(); ++mus) {
 			string file = mus->asString();
 			stringstream ss;
-			ss << "Loading song " << file << endl;
-			Log::Out << ss.str();
+			ss << "Loading song " << file;
+			drawStatusMsg(ss.str());
 			musicMgr->LoadMusic(mus->asString());
-			_g->Clear();
-			_g->DrawString(0, _g->WorldHeight - 32, fontSize, ss.str(), grayValue, grayValue, grayValue, grayValue, grayValue, grayValue);
-			this->SwapBuffers();
 		}
 	}
 	Json::Value effects = root["fx"];
@@ -369,15 +409,12 @@ void Game::loadResources() {
 		for (Json::Value::iterator fx = effects.begin(); fx != effects.end(); ++fx) {
 			stringstream ss;
 			string file = fx->asString();
-			ss << "Loading effect " << file << endl;
-			Log::Out << ss.str();
+			ss << "Loading effect " << file;
+			drawStatusMsg(ss.str());
 			musicMgr->LoadMusic(fx->asString());
-			_g->Clear();
-			_g->DrawString(0, _g->WorldHeight - 32, fontSize, ss.str(), grayValue, grayValue, grayValue, grayValue, grayValue, grayValue);
-			this->SwapBuffers();
 		}
 	}
-	Log::Out << "Done!" << endl;
+	drawStatusMsg("Done!");
 }
 
 void Game::AddState(IGameState* state) {

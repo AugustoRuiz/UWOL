@@ -129,7 +129,8 @@ void Credits::Draw(void)
 	drawCentered(posY, "_Na-th-an, Kendroock, Daivod,"); posY += 16;
 	drawCentered(posY, "_Dadman, T.Brazil, IvanZX,"); posY += 16;
 	drawCentered(posY, "_Benway, Sejuan, Konamito,"); posY += 16;
-	drawCentered(posY, "_Danthalas, Metalbrain, Zemman"); posY += 32;
+	drawCentered(posY, "_Danthalas, Metalbrain, Zemman"); posY += 16;
+	drawCentered(posY, "^Linux support _utopian"); posY += 16;
 
 	drawCentered(posY, "^Sega Genesis Version By _Shiru"); posY += 16;
 	drawCentered(posY, "^PC Version By _Augusto Ruiz"); posY += 32;

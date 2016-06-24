@@ -66,15 +66,19 @@ void Graphics::BlitColoredFrameAbs(const Frame& frame, int x, int y, int width, 
 	Program* program = frame.GetProgram();
 	if (program == NULL) program = this->DefaultProgram;
 
-	if (program->Textures.size() > 0) {
-		program->Textures[0] = frame.Texture;
-	} else {
-		program->Textures.push_back(frame.Texture);
-	}
+    if(program->ProgramId != 0) {
+		if (program->Textures.size() > 0) {
+			program->Textures[0] = frame.Texture;
+		} else {
+			program->Textures.push_back(frame.Texture);
+		}
 
-	program->Use();
-	program->BindTextures();
-	program->SetUniform("MVP", _gl->MVP);
+		program->Use();
+		program->BindTextures();
+		program->SetUniform("MVP", _gl->MVP);    	
+    } else {
+    	glBindTexture(GL_TEXTURE_2D, frame.Texture->texture);
+    }
 
 	_gl->BlitColoredRect(x, y, width, height,
 		flipX ? frame.Coords.tx2 : frame.Coords.tx1, flipY ? frame.Coords.ty2 : frame.Coords.ty1,
@@ -108,9 +112,11 @@ void Graphics::BlitShadowAbs(const Frame& frame, int x, int y, int width, int he
 }
 
 void Graphics::DrawPolyLinesAbs(const vector<VECTOR2> &vertexes, float red, float green, float blue, float alpha) {
-	this->DefaultLineProgram->Use();
-	this->DefaultLineProgram->SetUniform("vertexColor", glm::vec4(red, green, blue, alpha));
-	this->DefaultLineProgram->SetUniform("MVP", _gl->MVP);
+	if(this->DefaultLineProgram->ProgramId != 0) {
+		this->DefaultLineProgram->Use();
+		this->DefaultLineProgram->SetUniform("vertexColor", glm::vec4(red, green, blue, alpha));
+		this->DefaultLineProgram->SetUniform("MVP", _gl->MVP);		
+	}
 
 	_gl->DrawPolyLine(vertexes, red, green, blue, alpha);
 }

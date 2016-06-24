@@ -33,11 +33,13 @@ Program::Program(vector<Shader*> shaders) {
 
 void Program::Use() {
 	if (!this->_inUse) {
-		glUseProgram(this->ProgramId);
-		for (Program* p : Program::_programs) {
-			p->_inUse = (this == p);
+		if(this->ProgramId != 0) {
+			glUseProgram(this->ProgramId);
+			for (Program* p : Program::_programs) {
+				p->_inUse = (this == p);
+			}
+			this->_inUse = true;			
 		}
-		this->_inUse = true;
 	}
 }
 

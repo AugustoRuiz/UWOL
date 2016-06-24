@@ -56,7 +56,7 @@ private:
 	AnimationPlayer _animPlayer;
 	InputManager *_input;
 
-	Sound _fxStep, _fxStep2, _fxJump, _fxDie, _musicDie;
+	Sound _fxStep, _fxStep2, _fxJump, _fxDie, _musicDie, _fxExtra;
 
 	VECTOR2 _tileSize;
 	RECTANGLEF _colRect;

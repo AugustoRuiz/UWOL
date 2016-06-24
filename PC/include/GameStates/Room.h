@@ -70,7 +70,7 @@ private:
 	static Frame _textureFlechaIzq;
 	static Frame _textureFlechaDer;
 	static Frame _textureSombra;
-	static Sound _fxCoin, _fxHit, _fxGhost, _musicGhost;
+	static Sound _fxCoin, _fxHit, _fxGhost, _musicGhost, _fxCamiseta;
 	static vector<Sound> _tunes;
 	Sound _tune;
 

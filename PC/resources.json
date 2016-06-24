@@ -96,8 +96,10 @@
 	"fx" : [
 		"sounds/Bells.ogg",
 		"sounds/boing.ogg",
+        "sounds/camiseta.ogg",
 		"sounds/coinPicked.ogg",
 		"sounds/DeathCry.ogg",
+        "sounds/extra.ogg",
 		"sounds/Hu.ogg",
 		"sounds/StepStone1.ogg",
 		"sounds/StepStone2.ogg"

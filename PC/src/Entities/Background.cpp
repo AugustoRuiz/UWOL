@@ -1,5 +1,7 @@
 #include "Background.h"
 
+vector<Frame> Background::_frames;
+
 Background::Background(void)
 {
 	_g = Graphics::GetInstance();
@@ -16,8 +18,6 @@ Background::Background(TilesFondo tileFondo,
 {
 	InitBackground(tileFondo, tilesX, tilesY);
 }
-
-vector<Frame> Background::_frames;
 
 void Background::StaticInit() {
 	_frames.push_back(Frame("data/TileFondo0.png"));

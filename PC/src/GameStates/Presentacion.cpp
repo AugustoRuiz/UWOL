@@ -13,18 +13,20 @@ Presentacion::Presentacion() {
 	this->_g = Graphics::GetInstance();
 
 	this->_portada = Frame("data/uwol_portada.png");
-	this->_bg = Frame("data/warp.png");
 	
 	vector<string> vertexShaders = { "data/shaders/Default.150.vertex" };
 	vector<string> fragmentShaders = { "data/shaders/ColorCycle.150.fragment" };
 
-	Frame colorCycle("data/warpCycle.png");
-
 	Program *prog = new Program(vertexShaders, fragmentShaders);
-	prog->Textures.push_back(this->_bg.Texture);
-	prog->Textures.push_back(colorCycle.Texture);
-
-	this->_bg.SetProgram(prog);
+	if(prog->ProgramId != 0) {
+		this->_bg = Frame("data/warp.png");
+		Frame colorCycle("data/warpCycle.png");
+		prog->Textures.push_back(this->_bg.Texture);
+		prog->Textures.push_back(colorCycle.Texture);
+		this->_bg.SetProgram(prog);		
+	} else {
+		this->_bg = Frame("data/warp_original.png");
+	}
 
 	this->_shadow = Frame("data/TileSombra.png");;
 
@@ -80,7 +82,10 @@ void Presentacion::Draw() {
 		this->_coins[i]->DrawInPos(this->_coins[i]->_x, (int) round(this->_coins[i]->_y), 0.5f);
 	}
 
-	this->_bg.GetProgram()->SetUniform("iGlobalTime", -(float)this->_totalTicks);
+	Program* prog = this->_bg.GetProgram();
+	if(prog != NULL) {
+		prog->SetUniform("iGlobalTime", -(float)this->_totalTicks);		
+	}
 	_g->BlitFrameAlpha(_bg, _g->WorldWidth/2 - _bg.Texture->width, _g->WorldHeight/2 - _bg.Texture->height + 48, _bg.Texture->width * 2, _bg.Texture->height * 2, this->_currentAlpha, false, false);
 	_g->BlitCenteredFrameAlpha(_portada, _portada.Texture->width * 2, _portada.Texture->height * 2, this->_currentAlpha, false, false);
 

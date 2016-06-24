@@ -59,6 +59,7 @@ protected :
 	void setGLAttributes();
 	bool initFramebuffer();
 
+	bool _useVBO;
 	bool _useFramebuffer;
 
 	GLuint _frameBufferName;
@@ -72,6 +73,7 @@ protected :
 	SDL_Renderer *_renderer;
 	SDL_GLContext _mainContext;
 
+	GLuint _vao;
 	GLuint _vertexBuffer, _uvBuffer, _colorBuffer, _lineVertexBuffer;
 };
 

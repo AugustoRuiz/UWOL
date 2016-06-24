@@ -55,7 +55,7 @@ void Portada::Draw()
 	posY = (this->_g->WorldHeight - h) >> 1;
 
 	_g->BlitColoredFrame(current, posX, posY, w, h,
-		this->_currentAlpha, this->_currentAlpha, 1.0f, this->_currentAlpha, false,
+		this->_currentAlpha, this->_currentAlpha, this->_currentAlpha, this->_currentAlpha, false,
 		false, false);
 }
 
