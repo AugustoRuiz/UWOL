@@ -61,7 +61,7 @@ SDL_Window *GLFuncs::Initialize(int screenWidth, int screenHeight, GLboolean ful
 	stringstream ss(obtainedVersion);
 	ss >> version;
 
-	this->_useVBO = version >= 3.0;
+	this->_useVBO = version >= 1.1;
 	this->_useFramebuffer = this->_useVBO && initFramebuffer();
 
 	glViewport(0, 0, screenWidth, screenHeight);
@@ -108,10 +108,13 @@ SDL_Window *GLFuncs::Initialize(int screenWidth, int screenHeight, GLboolean ful
 }
 
 bool GLFuncs::initFramebuffer() {
+	if(((unsigned long)glGenFramebuffers) == 0) {
+		Log::Out << "glGenFramebuffers is not available." << endl;
+		return false;
+	}
 	Log::Out << "Creating framebuffer" << endl;
 	// Inicializemos el framebuffer para poder renderizar sobre una textura, así podremos aplicar shaders 
 	// a lo que pintemos. ;)
-	Log::Out << "glGenFramebuffers ptr=" << (unsigned long)glGenFramebuffers << endl;
 	glGenFramebuffers(1, &_frameBufferName);
 	Log::Out << "Framebuffer #" << _frameBufferName << endl;
 	if(_frameBufferName == 0) {
