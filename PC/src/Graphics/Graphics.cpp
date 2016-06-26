@@ -77,7 +77,7 @@ void Graphics::BlitColoredFrameAbs(const Frame& frame, int x, int y, int width, 
 		program->BindTextures();
 		program->SetUniform("MVP", _gl->MVP);
     } else {
-    	glBindTexture(GL_TEXTURE_2D, frame.Texture->texture);
+		_gl->SetTexture(0, frame.Texture->texture);
     }
 
 	_gl->BlitColoredRect(x, y, width, height,

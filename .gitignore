@@ -11,3 +11,9 @@
 /PC/bin/UWOL.pdb
 /PC/obj
 /PC/UWOL.sdf
+/PC/ext/freeglut
+/PC/ext/glew-1.13.0
+/PC/ext/glm
+/PC/ext/SDL2_image-2.0.1
+/PC/ext/SDL2_mixer-2.0.1
+/PC/ext/SDL2-2.0.4

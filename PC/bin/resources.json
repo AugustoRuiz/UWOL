@@ -28,7 +28,6 @@
         "data/franky7.png",
         "data/franky8.png",
         "data/franky9.png",
-        "data/freeglut_logo.png",
         "data/game-over.png",
         "data/glew-logo.png",
         "data/glm-logo.png",
@@ -96,8 +95,10 @@
 	"fx" : [
 		"sounds/Bells.ogg",
 		"sounds/boing.ogg",
+        "sounds/camiseta.ogg",
 		"sounds/coinPicked.ogg",
 		"sounds/DeathCry.ogg",
+        "sounds/extra.ogg",
 		"sounds/Hu.ogg",
 		"sounds/StepStone1.ogg",
 		"sounds/StepStone2.ogg"

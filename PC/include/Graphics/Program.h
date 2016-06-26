@@ -57,8 +57,8 @@ public:
 protected:
 	std::map<string, int> _uniformLocations;
 	ShaderMgr* _shaderMgr;
+	GLFuncs* _g;
 
-	int getUniformLocation(const string& name);
 	const string getTypeString(GLenum type);
 
 	bool _inUse;

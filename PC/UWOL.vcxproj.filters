@@ -21,9 +21,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Background.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\CollisionMap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -40,9 +37,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\NileEngine.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Plataforma.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\stdafx.cpp">
@@ -141,11 +135,32 @@
     <ClCompile Include="src\Sound\Sound.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Graphics\Shader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\ShaderMgr.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\Program.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Entities\Component.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Entities\Entity.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Entities\Plataforma.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Entities\Background.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameStates\Credits.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\Background.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\CollisionMap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -162,9 +177,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\Log.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Plataforma.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\stdafx.h">
@@ -278,6 +290,33 @@
     <ClInclude Include="include\Sound\Sound.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\Graphics\Shader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\ShaderMgr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\Program.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Entities\Entity.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Entities\Component.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Entities\Plataforma.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Entities\Background.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GameStates\Credits.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Entities\IChaseable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="UWOL.rc">
@@ -296,5 +335,17 @@
     <None Include="resources.json">
       <Filter>resources</Filter>
     </None>
+    <None Include="bin\data\shaders\fragmentShader.template" />
+    <None Include="bin\data\shaders\TexturedColored.fragment" />
+    <None Include="bin\data\shaders\Default.vertex" />
+    <None Include="bin\data\shaders\ColorCycle.fragment" />
+    <None Include="bin\data\shaders\Color.fragment" />
+    <None Include="bin\data\shaders\Line.vertex" />
+    <None Include="bin\data\shaders\Color.150.fragment" />
+    <None Include="bin\data\shaders\TexturedColored.150.fragment" />
+    <None Include="bin\data\shaders\ColorCycle.150.fragment" />
+    <None Include="bin\data\shaders\Default.150.vertex" />
+    <None Include="bin\data\shaders\Line.150.vertex" />
+    <None Include="bin\data\shaders\CRT.150.fragment" />
   </ItemGroup>
 </Project>

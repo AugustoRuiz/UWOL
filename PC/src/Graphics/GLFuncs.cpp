@@ -30,10 +30,6 @@ SDL_Window *GLFuncs::Initialize(int screenWidth, int screenHeight, GLboolean ful
 	_screenWidth = screenWidth;
 	_screenHeight = screenHeight;
 
-#ifndef __APPLE__
-	glewExperimental = GL_TRUE;
-	glewInit();
-#endif
 	setGLAttributes();
 
 	_window = SDL_CreateWindow(name,
@@ -50,15 +46,22 @@ SDL_Window *GLFuncs::Initialize(int screenWidth, int screenHeight, GLboolean ful
 	SDL_SetWindowIcon(_window, icon);
 
 	_mainContext = SDL_GL_CreateContext(_window);
+	SDL_GL_MakeCurrent(_window, _mainContext);
+
+#ifndef __APPLE__
+	glewExperimental = GL_TRUE;
+	glewInit();
+#endif
 
 	char* obtainedVersion = (char*) glGetString(GL_VERSION);
 
 	Log::Out << "OpenGL " << obtainedVersion << " (GLSL " << glGetString(GL_SHADING_LANGUAGE_VERSION) << ")" << std::endl;
 
-	int major;
-	sscanf(obtainedVersion, "%d.", &major);
+	double version;
+	stringstream ss(obtainedVersion);
+	ss >> version;
 
-	this->_useVBO = major >= 3;
+	this->_useVBO = version >= 3.0;
 	this->_useFramebuffer = this->_useVBO && initFramebuffer();
 
 	glViewport(0, 0, screenWidth, screenHeight);
@@ -95,6 +98,11 @@ SDL_Window *GLFuncs::Initialize(int screenWidth, int screenHeight, GLboolean ful
 	}
 
 	this->ResetMVP();
+
+	GLint texture_units;
+	
+	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &texture_units);
+	_activeTextures.resize(texture_units, 0);
 
 	return _window;
 }
@@ -200,6 +208,14 @@ void GLFuncs::ResetMVP() {
 
 void GLFuncs::OffsetMVP(float offsetX, float offsetY) {
 	this->MVP = glm::translate(this->MVP, glm::vec3(offsetX, offsetY, 0.0f));
+}
+
+void GLFuncs::SetTexture(unsigned int channel, unsigned int texture) {
+	if (_activeTextures[channel] != texture) {
+		glActiveTexture(GL_TEXTURE0 + channel);
+		glBindTexture(GL_TEXTURE_2D, texture);
+		_activeTextures[channel] = texture;
+	}
 }
 
 void GLFuncs::BlitColoredRect(int iX, int iY, int width, int height,
@@ -390,37 +406,45 @@ GLuint GLFuncs::CreateShader(GLenum eShaderType, const std::string &strShaderFil
     // Determine if GLSL version 140 is supported by this context.
     //  We'll use this info to generate a GLSL shader source string  
     //  with the proper version preprocessor string prepended
-    float  glLanguageVersion;
-    
-#if TARGET_IOS
-    sscanf((char *)glGetString(GL_SHADING_LANGUAGE_VERSION), "OpenGL ES GLSL ES %f", &glLanguageVersion);
-#else
-    sscanf((char *)glGetString(GL_SHADING_LANGUAGE_VERSION), "%f", &glLanguageVersion); 
-#endif
+	float  glLanguageVersion;
+	char* glslVersion = (char *)glGetString(GL_SHADING_LANGUAGE_VERSION);
+	stringstream glslExtractor(glslVersion);
+	glslExtractor >> glLanguageVersion;
+
+//#if TARGET_IOS
+//    sscanf((char *)glGetString(GL_SHADING_LANGUAGE_VERSION), "OpenGL ES GLSL ES %f", &glLanguageVersion);
+//#else
+//    sscanf((char *)glGetString(GL_SHADING_LANGUAGE_VERSION), "%f", &glLanguageVersion); 
+//#endif
     
     // GL_SHADING_LANGUAGE_VERSION returns the version standard version form 
     //  with decimals, but the GLSL version preprocessor directive simply
     //  uses integers (thus 1.10 should 110 and 1.40 should be 140, etc.)
     //  We multiply the floating point number by 100 to get a proper
     //  number for the GLSL preprocessor directive
-    GLuint version = 100 * glLanguageVersion;
+    GLuint version = (GLuint) (100 * glLanguageVersion);
 
     // Get the size of the version preprocessor string info so we know 
     // how much memory to allocate for our sourceString
     const GLsizei versionStringSize = sizeof("#version 123\n");
 
 	// Allocate memory for the source string including the version preprocessor information
-    GLchar* sourceString = (GLchar*) malloc(strShaderFile.size() + versionStringSize);
+    // GLchar* sourceString = (GLchar*) malloc(strShaderFile.size() + versionStringSize);
     // Prepend our vertex shader source string with the supported GLSL version so
     //  the shader will work on ES, Legacy, and OpenGL 3.2 Core Profile contexts
-    sprintf(sourceString, "#version %d\n%s", version, strShaderFile.c_str());
-	Log::Out << sourceString << endl;
+	stringstream ss;
+	ss << "#version " << version << endl << strShaderFile.c_str();
+    //sprintf(sourceString, "#version %d\n%s", version, strShaderFile.c_str());
+	
+	string shaderTextStr = ss.str();
+	const GLchar* shaderText = (GLchar*)shaderTextStr.c_str();
+	Log::Out << shaderText << endl;
 
-	glShaderSource(shader, 1, (const GLchar**) &(sourceString), NULL);
+	glShaderSource(shader, 1, &shaderText, NULL); // &(sourceString), NULL);
 	glCompileShader(shader);
 
-    free(sourceString);
-    sourceString = NULL;
+    //free(sourceString);
+    //sourceString = NULL;
 
 	GLint logLength;
 	glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &logLength);
@@ -467,7 +491,81 @@ void GLFuncs::DeleteShader(GLuint shaderId) {
 }
 
 void GLFuncs::UseProgram(GLuint programId) {
-	glUseProgram(programId);
+	if (this->_currentProgram != programId) {
+		glUseProgram(programId);
+		this->_currentProgram = programId;
+	}
+}
+
+void GLFuncs::SetUniform(GLuint programId, const string &name, float x, float y, float z) {
+	GLuint location = getUniformLocation(programId, name);
+	this->UseProgram(programId);
+	glUniform3f(location, x, y, z);
+}
+
+void GLFuncs::SetUniform(GLuint programId, const string &name, const vec2 & v) {
+	GLuint location = getUniformLocation(programId, name);
+	this->UseProgram(programId);
+	glUniform2f(location, v.x, v.y);
+}
+void GLFuncs::SetUniform(GLuint programId, const string &name, const vec3 & v) {
+	GLuint location = getUniformLocation(programId, name);
+	this->UseProgram(programId);
+	glUniform3f(location, v.x, v.y, v.z);
+}
+
+void GLFuncs::SetUniform(GLuint programId, const string &name, const vec4 & v) {
+	GLuint location = getUniformLocation(programId, name);
+	this->UseProgram(programId);
+	glUniform4f(location, v.x, v.y, v.z, v.w);
+}
+
+void GLFuncs::SetUniform(GLuint programId, const string &name, const mat4 & m) {
+	GLuint location = getUniformLocation(programId, name);
+	this->UseProgram(programId);
+	glUniformMatrix4fv(location, 1, GL_FALSE, &(m[0][0]));
+}
+
+void GLFuncs::SetUniform(GLuint programId, const string &name, const mat3 & m) {
+	GLuint location = getUniformLocation(programId, name);
+	this->UseProgram(programId);
+	glUniformMatrix3fv(location, 1, GL_FALSE, &(m[0][0]));
+}
+
+void GLFuncs::SetUniform(GLuint programId, const string &name, float val) {
+	GLuint location = getUniformLocation(programId, name);
+	this->UseProgram(programId);
+	glUniform1f(location, val);
+}
+
+void GLFuncs::SetUniform(GLuint programId, const string &name, int val) {
+	GLuint location = getUniformLocation(programId, name);
+	this->UseProgram(programId);
+	glUniform1i(location, val);
+}
+
+void GLFuncs::SetUniform(GLuint programId, const string &name, bool val) {
+	GLuint location = getUniformLocation(programId, name);
+	this->UseProgram(programId);
+	glUniform1i(location, val);
+}
+
+void GLFuncs::SetUniform(GLuint programId, const string &name, GLuint val) {
+	GLuint location = getUniformLocation(programId, name);
+	this->UseProgram(programId);
+	glUniform1ui(location, val);
+}
+
+GLuint GLFuncs::getUniformLocation(GLuint programId, const std::string &uniformName) {
+	map<string, int> programCache = this->_uniformLocationCache[programId];
+	map<string, int>::iterator pos;
+	pos = programCache.find(uniformName);
+
+	if (pos == programCache.end()) {
+		programCache[uniformName] = glGetUniformLocation(programId, uniformName.c_str());
+	}
+
+	return programCache[uniformName];
 }
 
 GLuint GLFuncs::GetFramebufferTexture() {

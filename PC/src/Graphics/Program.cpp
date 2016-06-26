@@ -3,13 +3,13 @@
 #include <iomanip>
 
 Program::Program() {
+	this->_g = GLFuncs::GetInstance();
 	this->_shaderMgr = ShaderMgr::GetInstance();
 	Program::_programs.push_back(this);
 	this->_inUse = false;
 }
 
-Program::Program(vector<string> vertexShaders, vector<string> fragmentShaders) {
-	this->_shaderMgr = ShaderMgr::GetInstance();
+Program::Program(vector<string> vertexShaders, vector<string> fragmentShaders) : Program() {
 	for (string shaderFile : vertexShaders) {
 		this->AddShader(shaderFile, ShaderType::Vertex);
 	}
@@ -17,24 +17,19 @@ Program::Program(vector<string> vertexShaders, vector<string> fragmentShaders) {
 		this->AddShader(shaderFile, ShaderType::Fragment);
 	}
 	this->Compile();
-	Program::_programs.push_back(this);
-	this->_inUse = false;
 }
 
-Program::Program(vector<Shader*> shaders) {
-	this->_shaderMgr = ShaderMgr::GetInstance();
+Program::Program(vector<Shader*> shaders) : Program() {
 	for (Shader* shader : shaders) {
 		this->AddShader(shader);
 	}
 	this->Compile();
-	Program::_programs.push_back(this);
-	this->_inUse = false;
 }
 
 void Program::Use() {
 	if (!this->_inUse) {
 		if(this->ProgramId != 0) {
-			glUseProgram(this->ProgramId);
+			_g->UseProgram(this->ProgramId);
 			for (Program* p : Program::_programs) {
 				p->_inUse = (this == p);
 			}
@@ -83,94 +78,64 @@ void Program::BindFragDataLocation(GLuint location, const string &name)
 	ShaderMgr::GetInstance()->BindFragDataLocation(this->ProgramId, location, name);
 }
 
-int Program::getUniformLocation(const string& name)
-{
-	std::map<string, int>::iterator pos;
-	pos = _uniformLocations.find(name);
-
-	if (pos == _uniformLocations.end()) {
-		_uniformLocations[name] = glGetUniformLocation(this->ProgramId, name.c_str());
-	}
-
-	return _uniformLocations[name];
-}
-
 void Program::BindTextures() {
 	for (int i = 0, li = this->Textures.size(); i < li; ++i) {
+		_g->SetTexture(i, this->Textures[i]->texture);
+
 		stringstream ss;
 		ss << "iChannel" << i;
-		glActiveTexture(GL_TEXTURE0 + i);
-		glBindTexture(GL_TEXTURE_2D, this->Textures[i]->texture);
 		this->SetUniform(ss.str(), i);
 	}
 }
 
 void Program::SetUniform(const string &name, float x, float y, float z)
 {
-	GLint loc = getUniformLocation(name);
-	this->Use();
-	glUniform3f(loc, x, y, z);
+	_g->SetUniform(this->ProgramId, name, x, y, z);
 }
 
 void Program::SetUniform(const string &name, const vec3 & v)
 {
-	this->SetUniform(name, v.x, v.y, v.z);
+	_g->SetUniform(this->ProgramId, name, v);
 }
 
 void Program::SetUniform(const string &name, const vec4 & v)
 {
-	GLint loc = getUniformLocation(name);
-	this->Use();
-	glUniform4f(loc, v.x, v.y, v.z, v.w);
+	_g->SetUniform(this->ProgramId, name, v);
 }
 
 void Program::SetUniform(const string &name, const vec2 & v)
 {
-	GLint loc = getUniformLocation(name);
-	this->Use();
-	glUniform2f(loc, v.x, v.y);
+	_g->SetUniform(this->ProgramId, name, v);
 }
 
 void Program::SetUniform(const string &name, const mat4 & m)
 {
-	GLint loc = getUniformLocation(name);
-	this->Use();
-	glUniformMatrix4fv(loc, 1, GL_FALSE, &m[0][0]);
+	_g->SetUniform(this->ProgramId, name, m);
 }
 
 void Program::SetUniform(const string &name, const mat3 & m)
 {
-	GLint loc = getUniformLocation(name);
-	this->Use();
-	glUniformMatrix3fv(loc, 1, GL_FALSE, &m[0][0]);
+	_g->SetUniform(this->ProgramId, name, m);
 }
 
 void Program::SetUniform(const string &name, float val)
 {
-	GLint loc = getUniformLocation(name);
-	this->Use();
-	glUniform1f(loc, val);
+	_g->SetUniform(this->ProgramId, name, val);
 }
 
 void Program::SetUniform(const string &name, int val)
 {
-	GLint loc = getUniformLocation(name);
-	this->Use();
-	glUniform1i(loc, val);
+	_g->SetUniform(this->ProgramId, name, val);
 }
 
 void Program::SetUniform(const string &name, GLuint val)
 {
-	GLint loc = getUniformLocation(name);
-	this->Use();
-	glUniform1ui(loc, val);
+	_g->SetUniform(this->ProgramId, name, val);
 }
 
 void Program::SetUniform(const string &name, bool val)
 {
-	int loc = getUniformLocation(name);
-	this->Use();
-	glUniform1i(loc, val);
+	_g->SetUniform(this->ProgramId, name, val);
 }
 
 void Program::PrintActiveUniforms() {
