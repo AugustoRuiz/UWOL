@@ -1,17 +1,22 @@
-#version 130
-
+#if __VERSION__ >= 140
 // Interpolated values from the vertex shaders
 in vec2 UV;
 in vec4 vertColor;
-
 // Ouput data
 out vec4 fragColor;
+#else
+varying vec2 UV;
+varying vec4 vertColor;
+#endif
 
 // Values that stay constant for the whole mesh.
 uniform sampler2D iChannel0;
 
 void main(){
 	// Output color = color of the texture at the specified UV
-	vec4 originalColor = texture2D( iChannel0, mod(UV, vec2(1.0,1.0)) );
-	fragColor = originalColor * vertColor;
+#if __VERSION__ >= 140
+	fragColor = texture( iChannel0, mod(UV, vec2(1.0,1.0)) ) * vertColor;
+#else
+	gl_FragColor = texture2D( iChannel0, mod(UV, vec2(1.0,1.0)) ) * vertColor;
+#endif
 }

@@ -1,5 +1,9 @@
 #include "GLFuncs.h"
 
+#define VTX_ATTRIB_IDX 0
+#define UV_ATTRIB_IDX  1
+#define COL_ATTRIB_IDX 2
+
 GLFuncs *GLFuncs::GetInstance()
 {
 	return &_instance;
@@ -26,6 +30,12 @@ SDL_Window *GLFuncs::Initialize(int screenWidth, int screenHeight, GLboolean ful
 	_screenWidth = screenWidth;
 	_screenHeight = screenHeight;
 
+#ifndef __APPLE__
+	glewExperimental = GL_TRUE;
+	glewInit();
+#endif
+	setGLAttributes();
+
 	_window = SDL_CreateWindow(name,
 		SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 		screenWidth, screenHeight,
@@ -41,36 +51,33 @@ SDL_Window *GLFuncs::Initialize(int screenWidth, int screenHeight, GLboolean ful
 
 	_mainContext = SDL_GL_CreateContext(_window);
 
-	setGLAttributes();
+	char* obtainedVersion = (char*) glGetString(GL_VERSION);
+
+	Log::Out << "OpenGL " << obtainedVersion << " (GLSL " << glGetString(GL_SHADING_LANGUAGE_VERSION) << ")" << std::endl;
 
 	int major;
-	SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &major);
+	sscanf(obtainedVersion, "%d.", &major);
 
 	this->_useVBO = major >= 3;
-
-#ifndef __APPLE__
-	glewExperimental = GL_TRUE;
-	glewInit();
-#endif
-
-	this->_useFramebuffer = this->_useVBO && initFramebuffer();		
+	this->_useFramebuffer = this->_useVBO && initFramebuffer();
 
 	glViewport(0, 0, screenWidth, screenHeight);
 
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glClearDepth(1.0f);
 
 //	glDepthFunc(GL_LEQUAL);
 	glDisable(GL_DEPTH_TEST);
+	glDepthMask(GL_FALSE);
 
 //	glShadeModel(GL_SMOOTH);
 
 	glDisable(GL_CULL_FACE);
+
+#if !ESSENTIAL_GL_PRACTICES_SUPPORT_GL3
 	glEnable(GL_ALPHA_TEST);
-
 	glAlphaFunc(GL_GREATER, 0.01f);
-
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+#endif
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -78,13 +85,13 @@ SDL_Window *GLFuncs::Initialize(int screenWidth, int screenHeight, GLboolean ful
 	glPointSize(2.0f);
 
 	if(this->_useVBO) {
-		glGenVertexArrays(1, &_vao);
-		glBindVertexArray(_vao);
+		glGenVertexArrays(1, &_vaoVertex);
+		glBindVertexArray(_vaoVertex);
 		
-		glGenBuffers(1, &_vertexBuffer);
-		glGenBuffers(1, &_uvBuffer);
-		glGenBuffers(1, &_colorBuffer);
-		glGenBuffers(1, &_lineVertexBuffer);
+		glGenBuffers(1, &_vboVertex);
+		glGenBuffers(1, &_vboUV);
+		glGenBuffers(1, &_vboColor);
+		glGenBuffers(1, &_vboLineVertex);
 	}
 
 	this->ResetMVP();
@@ -93,41 +100,72 @@ SDL_Window *GLFuncs::Initialize(int screenWidth, int screenHeight, GLboolean ful
 }
 
 bool GLFuncs::initFramebuffer() {
+	Log::Out << "Creating framebuffer" << endl;
 	// Inicializemos el framebuffer para poder renderizar sobre una textura, así podremos aplicar shaders 
 	// a lo que pintemos. ;)
+	Log::Out << "glGenFramebuffers ptr=" << (unsigned long)glGenFramebuffers << endl;
 	glGenFramebuffers(1, &_frameBufferName);
+	Log::Out << "Framebuffer #" << _frameBufferName << endl;
 	if(_frameBufferName == 0) {
-		Log::Out << "Call to glGenFramebuffers failed. " << gluErrorString(glGetError()) << endl;
+		Log::Out << "Call to glGenFramebuffers failed. " << getErrorString(glGetError()) << endl;
 		return false; 
 	}
 	glBindFramebuffer(GL_FRAMEBUFFER, _frameBufferName);
+	Log::Out << "Framebuffer bound!" << endl;
 
 	glGenTextures(1, &_renderedTexture);
 	glBindTexture(GL_TEXTURE_2D, _renderedTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, _screenWidth, _screenHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-
+	
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, _screenWidth, _screenHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	Log::Out << "Texture created" << endl;
+
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _renderedTexture, 0);
+	Log::Out << "Texture #" << _renderedTexture << " attached to framebuffer!" << endl;
 
 	GLenum drawBuffers[1] = { GL_COLOR_ATTACHMENT0 };
 	glDrawBuffers(1, drawBuffers);
 
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-		Log::Out << "Unable to initialize Framebuffer! " << gluErrorString(glGetError()) << endl;
+		Log::Out << "Unable to initialize Framebuffer! " << getErrorString(glGetError()) << endl;
 		return false;
 	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, _frameBufferName);
+	Log::Out << "Framebuffer initialized Ok! " << _frameBufferName << endl;
 	return true;
 }
 
-void GLFuncs::setGLAttributes() {
-	//SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-	//SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
-	//SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+string GLFuncs::getErrorString(GLuint error) {
+	switch(error) {
+		case GL_NO_ERROR:
+			return "Ok";
+		case GL_INVALID_ENUM:
+			return "GL_INVALID_ENUM. An unacceptable value is specified for an enumerated argument. The offending command is ignored and has no other side effect than to set the error flag.";
+		case GL_INVALID_VALUE:
+			return "GL_INVALID_VALUE: A numeric argument is out of range. The offending command is ignored and has no other side effect than to set the error flag.";
+		case GL_INVALID_OPERATION:
+			return "GL_INVALID_OPERATION: The specified operation is not allowed in the current state. The offending command is ignored and has no other side effect than to set the error flag.";
+		case GL_INVALID_FRAMEBUFFER_OPERATION:
+			return "GL_INVALID_FRAMEBUFFER_OPERATION: The framebuffer object is not complete. The offending command is ignored and has no other side effect than to set the error flag.";
+		case GL_OUT_OF_MEMORY:
+			return "GL_OUT_OF_MEMORY: There is not enough memory left to execute the command. The state of the GL is undefined, except for the state of the error flags, after this error is recorded.";
+#if !ESSENTIAL_GL_PRACTICES_SUPPORT_GL3
+		case GL_STACK_UNDERFLOW:
+			return "GL_STACK_UNDERFLOW: An attempt has been made to perform an operation that would cause an internal stack to underflow.";
+		case GL_STACK_OVERFLOW:
+			return "GL_STACK_OVERFLOW: An attempt has been made to perform an operation that would cause an internal stack to overflow.";
+#endif
+		default:
+			stringstream ss;
+			ss << "Unknown code: " << error;
+			return ss.str();
+	}
+}
 
+void GLFuncs::setGLAttributes() {
 	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);		//Use at least 8 bits of Red
 	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);	    //Use at least 8 bits of Green
 	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);		//Use at least 8 bits of Blue
@@ -135,7 +173,11 @@ void GLFuncs::setGLAttributes() {
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);	    //Use at least 16 bits for the depth buffer
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);	//Enable double buffering
 
-	Log::Out << "OpenGL " << glGetString(GL_VERSION) << " (GLSL " << glGetString(GL_SHADING_LANGUAGE_VERSION) << ")" << std::endl;
+#ifdef __APPLE__
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3); 
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+#endif
 }
 
 void GLFuncs::checkSDLError(int line = -1)
@@ -201,8 +243,6 @@ void GLFuncs::BlitVerts(float vertex_buffer_data[], unsigned int vBufSize,
 	float uv_buffer_data[], unsigned int uvBufSize,
 	float color_buffer_data[], unsigned int cBufSize)
 {
-	glEnable(GL_TEXTURE_2D);
-
 	if (aliasing)
 	{
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -215,27 +255,28 @@ void GLFuncs::BlitVerts(float vertex_buffer_data[], unsigned int vBufSize,
 	}
 
 	if(this->_useVBO) {
-		glEnableVertexAttribArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
+		glEnableVertexAttribArray(VTX_ATTRIB_IDX);
+		glBindBuffer(GL_ARRAY_BUFFER, _vboVertex);
 		glBufferData(GL_ARRAY_BUFFER, vBufSize, vertex_buffer_data, GL_STATIC_DRAW);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+		glVertexAttribPointer(VTX_ATTRIB_IDX, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), (void*)0);
 
-		glEnableVertexAttribArray(1);
-		glBindBuffer(GL_ARRAY_BUFFER, _uvBuffer);
+		glEnableVertexAttribArray(UV_ATTRIB_IDX);
+		glBindBuffer(GL_ARRAY_BUFFER, _vboUV);
 		glBufferData(GL_ARRAY_BUFFER, uvBufSize, uv_buffer_data, GL_STATIC_DRAW);
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+		glVertexAttribPointer(UV_ATTRIB_IDX, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GL_FLOAT), (void*)0);
 
-		glEnableVertexAttribArray(2);
-		glBindBuffer(GL_ARRAY_BUFFER, _colorBuffer);
+		glEnableVertexAttribArray(COL_ATTRIB_IDX);
+		glBindBuffer(GL_ARRAY_BUFFER, _vboColor);
 		glBufferData(GL_ARRAY_BUFFER, cBufSize, color_buffer_data, GL_STATIC_DRAW);
-		glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 0, (void*)0);
+		glVertexAttribPointer(COL_ATTRIB_IDX, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GL_FLOAT), (void*)0);
 
 		glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
-		glDisableVertexAttribArray(2);
-		glDisableVertexAttribArray(1);
-		glDisableVertexAttribArray(0);
+		glDisableVertexAttribArray(COL_ATTRIB_IDX);
+		glDisableVertexAttribArray(UV_ATTRIB_IDX);
+		glDisableVertexAttribArray(VTX_ATTRIB_IDX);
 	} else {
+#if !ESSENTIAL_GL_PRACTICES_SUPPORT_GL3
 		glMatrixMode(GL_MODELVIEW);
 		glLoadMatrixf(&(this->MVP[0][0]));
 
@@ -256,6 +297,7 @@ void GLFuncs::BlitVerts(float vertex_buffer_data[], unsigned int vBufSize,
 			glTexCoord2fv(&uv_buffer_data[6]);
 			glVertex3fv(&vertex_buffer_data[9]);
 		glEnd();
+#endif
 	}
 }
 
@@ -291,21 +333,23 @@ void GLFuncs::DrawPolyLine(const vector<VECTOR2> &vertexes, float red, float gre
 			coords.push_back((float)v.y);
 		}
 
-		glEnableVertexAttribArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER, _lineVertexBuffer);
+		glEnableVertexAttribArray(VTX_ATTRIB_IDX);
+		glBindBuffer(GL_ARRAY_BUFFER, _vboLineVertex);
 		glBufferData(GL_ARRAY_BUFFER, coords.size() * sizeof(GLfloat), &(coords[0]), GL_STATIC_DRAW);
-		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+		glVertexAttribPointer(VTX_ATTRIB_IDX, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
 		glDrawArrays(GL_LINES, 0, vertexCount);
 
-		glDisableVertexAttribArray(0);
+		glDisableVertexAttribArray(VTX_ATTRIB_IDX);
 	} else {
+#if !ESSENTIAL_GL_PRACTICES_SUPPORT_GL3
 		glDisable(GL_TEXTURE_2D);
 		glBegin(GL_LINES);
 		for (VECTOR2 v : vertexes) {
 			glVertex2i(v.x, v.y);
 		}
 		glEnd();
+#endif
 	}
 }
 
@@ -342,9 +386,52 @@ GLuint GLFuncs::CreateProgram(const std::vector<GLuint> &shaderList)
 GLuint GLFuncs::CreateShader(GLenum eShaderType, const std::string &strShaderFile)
 {
 	GLuint shader = glCreateShader(eShaderType);
-	const char *strFileData = strShaderFile.c_str();
-	glShaderSource(shader, 1, &strFileData, NULL);
+	
+    // Determine if GLSL version 140 is supported by this context.
+    //  We'll use this info to generate a GLSL shader source string  
+    //  with the proper version preprocessor string prepended
+    float  glLanguageVersion;
+    
+#if TARGET_IOS
+    sscanf((char *)glGetString(GL_SHADING_LANGUAGE_VERSION), "OpenGL ES GLSL ES %f", &glLanguageVersion);
+#else
+    sscanf((char *)glGetString(GL_SHADING_LANGUAGE_VERSION), "%f", &glLanguageVersion); 
+#endif
+    
+    // GL_SHADING_LANGUAGE_VERSION returns the version standard version form 
+    //  with decimals, but the GLSL version preprocessor directive simply
+    //  uses integers (thus 1.10 should 110 and 1.40 should be 140, etc.)
+    //  We multiply the floating point number by 100 to get a proper
+    //  number for the GLSL preprocessor directive
+    GLuint version = 100 * glLanguageVersion;
+
+    // Get the size of the version preprocessor string info so we know 
+    // how much memory to allocate for our sourceString
+    const GLsizei versionStringSize = sizeof("#version 123\n");
+
+	// Allocate memory for the source string including the version preprocessor information
+    GLchar* sourceString = (GLchar*) malloc(strShaderFile.size() + versionStringSize);
+    // Prepend our vertex shader source string with the supported GLSL version so
+    //  the shader will work on ES, Legacy, and OpenGL 3.2 Core Profile contexts
+    sprintf(sourceString, "#version %d\n%s", version, strShaderFile.c_str());
+	Log::Out << sourceString << endl;
+
+	glShaderSource(shader, 1, (const GLchar**) &(sourceString), NULL);
 	glCompileShader(shader);
+
+    free(sourceString);
+    sourceString = NULL;
+
+	GLint logLength;
+	glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &logLength);
+    
+    if (logLength > 0) 
+    {
+        GLchar *log = (GLchar*) malloc(logLength);
+        glGetShaderInfoLog(shader, logLength, &logLength, log);
+        Log::Out << "Shader compile log:" << log << endl;
+        free(log);
+    }
 
 	GLint status;
 	glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
@@ -392,11 +479,14 @@ void GLFuncs::SwapBuffers()
 	if (this->_useFramebuffer) {
 		// Render to the screen
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glDrawBuffer(GL_BACK);
 		// Render on the whole framebuffer, complete from the lower left corner to the upper right
 		glViewport(0, 0, _screenWidth, _screenHeight);
 
 		// Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		glBindTexture(GL_TEXTURE_2D, _renderedTexture);
 
 		// Renderizar la textura.
 		BlitRect(0, 0, _screenWidth, _screenHeight, 0.0f, 1.0f, 1.0f, 0.0f);
@@ -407,6 +497,10 @@ void GLFuncs::SwapBuffers()
 	if (this->_useFramebuffer) {
 		// Restore so we draw in the texture again.
 		glBindFramebuffer(GL_FRAMEBUFFER, _frameBufferName);
+
+		GLenum drawBuffers[1] = { GL_COLOR_ATTACHMENT0 };
+		glDrawBuffers(1, drawBuffers);
+
 		glViewport(0, 0, _screenWidth, _screenHeight);
 	}
 }

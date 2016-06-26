@@ -1,5 +1,6 @@
 #pragma once
 
+#include "GLFuncs.h"
 #include "Shader.h"
 #include <map>
 #include <string>

@@ -3,6 +3,8 @@
 #include "GameData.h"
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
+#include <string>
+#include <sstream>
 
 class GLFuncs
 {
@@ -56,6 +58,7 @@ protected :
 	static GLFuncs _instance;
 
 	void checkSDLError(int line);
+	string getErrorString(GLuint error);
 	void setGLAttributes();
 	bool initFramebuffer();
 
@@ -73,7 +76,7 @@ protected :
 	SDL_Renderer *_renderer;
 	SDL_GLContext _mainContext;
 
-	GLuint _vao;
-	GLuint _vertexBuffer, _uvBuffer, _colorBuffer, _lineVertexBuffer;
+	GLuint _vaoVertex;
+	GLuint _vboVertex, _vboUV, _vboColor, _vboLineVertex;
 };
 

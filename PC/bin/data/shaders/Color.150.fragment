@@ -1,12 +1,17 @@
-#version 130
- 
+#if __VERSION__ >= 140
 // Interpolated values from the vertex shaders
 in vec4 vertColor;
-
 // Ouput data
 out vec4 fragColor;
+#else
+varying vec4 vertColor;
+#endif
 
 void main()
 {
+#if __VERSION__ >= 140
   fragColor = vertColor;
+#else
+  gl_FragColor = vertColor;
+#endif
 }

@@ -13,14 +13,16 @@
 // Please take and use, change, or whatever.
 //
 
-#version 130
-
+#if __VERSION__ >= 140
 // Interpolated values from the vertex shaders
 in vec2 UV;
 in vec4 vertColor;
-
 // Ouput data
 out vec4 fragColor;
+#else
+varying vec2 UV;
+varying vec4 vertColor;
+#endif
 
 // Values that stay constant for the whole mesh.
 uniform sampler2D iChannel0;
@@ -62,8 +64,14 @@ vec3 ToSrgb(vec3 c){return vec3(ToSrgb1(c.r),ToSrgb1(c.g),ToSrgb1(c.b));}
 // Nearest emulated sample given floating point position and texel offset.
 // Also zero's off screen.
 vec3 Fetch(vec2 pos,vec2 off){
+  vec3 result;
   pos = (floor( pos*res + off) + vec2(0.5,0.5))/res;
-  return ToLinear(1.2 * texture(iChannel0 , pos.xy, -16.0).rgb);
+#if __VERSION__ >= 140
+  result = ToLinear(1.2 * texture(iChannel0 , pos.xy, -16.0).rgb);
+#else
+  result = ToLinear(1.2 * texture2D(iChannel0 , pos.xy, -16.0).rgb);
+#endif
+  return result;
 }
 
 // Distance in emulated pixels to nearest texel.
@@ -138,7 +146,13 @@ vec3 Mask(vec2 pos){
 void main() {
     vec2 pos = gl_FragCoord.xy/res;
     pos = Warp(gl_FragCoord.xy/res);
-    fragColor.rgb = Tri(pos) * Mask(gl_FragCoord.xy);    
-    fragColor.a=1.0;
-    fragColor = vertColor * vec4(ToSrgb(fragColor.rgb), fragColor.a);
+    vec4 result;
+    result.rgb = Tri(pos) * Mask(gl_FragCoord.xy);
+    result.a = 1.0;
+    result = vertColor * vec4(ToSrgb(result.rgb), result.a);
+#if __VERSION__ >= 140
+    fragColor = result;
+#else
+    gl_FragColor = result;
+#endif
 }

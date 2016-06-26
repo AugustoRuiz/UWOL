@@ -72,12 +72,12 @@ bool Game::Initialize(int width, int height, bool fullscreen, const char* name)
 	if(this->_blitProgram->ProgramId != 0) {
 		this->_blitProgram->Textures.push_back(_g->GetFramebufferTexture());
 	}
-	this->_blitPrograms.push_back(this->_blitProgram);		
+	this->_blitPrograms.push_back(this->_blitProgram);
 
 	vector<string> fragmentShaders = { "data/shaders/CRT.150.fragment" };
 	this->_blitProgram = new Program(vertexShaders, fragmentShaders);
 	if(this->_blitProgram->ProgramId != 0) {
-		this->_blitProgram->Textures.push_back(_g->GetFramebufferTexture());		
+		this->_blitProgram->Textures.push_back(_g->GetFramebufferTexture());
 	}
 	this->_blitPrograms.push_back(this->_blitProgram);
 
@@ -175,7 +175,7 @@ void Game::handleInput(Event &currentEvent) {
 			break;
 		case ActionKeysAltScanlines:
 			if(this->_scanlines != NULL) {
-				this->_scanlines->Mode ^= 1;					
+				this->_scanlines->Mode ^= 1;
 			}
 			break;
 	case ActionKeysDebug:

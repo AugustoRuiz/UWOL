@@ -10,7 +10,6 @@ Credits::Credits(void)
 	this->_uwolIcon = Frame("data/texturaUWOL.png");
 	this->_sdlIcon = Frame("data/SDL_logo.png");
 	this->_openGlIcon = Frame("data/Opengl-logo.svg.png");
-	this->_freeGlutIcon = Frame("data/freeglut_logo.png");
 	this->_glmIcon = Frame("data/glm-logo.png");
 	this->_glewIcon = Frame("data/glew-logo.png");
 
@@ -148,8 +147,6 @@ void Credits::Draw(void)
 	drawFrame(&posY, _glmIcon);
 	drawCentered(posY, "_glew"); posY += 32;
 	drawFrame(&posY, _glewIcon);
-	drawCentered(posY, "_freeGlut"); posY += 32;
-	drawFrame(&posY, _freeGlutIcon);
 
 	_maxPosY = posY;
 

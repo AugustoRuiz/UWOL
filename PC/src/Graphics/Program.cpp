@@ -38,7 +38,7 @@ void Program::Use() {
 			for (Program* p : Program::_programs) {
 				p->_inUse = (this == p);
 			}
-			this->_inUse = true;			
+			this->_inUse = true;
 		}
 	}
 }
@@ -99,9 +99,9 @@ void Program::BindTextures() {
 	for (int i = 0, li = this->Textures.size(); i < li; ++i) {
 		stringstream ss;
 		ss << "iChannel" << i;
-		this->SetUniform(ss.str(), i);
 		glActiveTexture(GL_TEXTURE0 + i);
 		glBindTexture(GL_TEXTURE_2D, this->Textures[i]->texture);
+		this->SetUniform(ss.str(), i);
 	}
 }
 
@@ -247,7 +247,7 @@ void Program::PrintActiveUniformBlocks() {
 			GLenum type;
 
 			glGetActiveUniform(this->ProgramId, uniIndex, maxUniLen, &written, &size, &type, uniName);
-			Log::Out << "    " << name " (" << getTypeString(type) << ")" << endl;
+			Log::Out << "    " << name << " (" << getTypeString(type) << ")" << endl;
 		}
 
 		delete[] unifIndexes;

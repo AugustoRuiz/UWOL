@@ -75,7 +75,7 @@ void Graphics::BlitColoredFrameAbs(const Frame& frame, int x, int y, int width, 
 
 		program->Use();
 		program->BindTextures();
-		program->SetUniform("MVP", _gl->MVP);    	
+		program->SetUniform("MVP", _gl->MVP);
     } else {
     	glBindTexture(GL_TEXTURE_2D, frame.Texture->texture);
     }
@@ -115,7 +115,7 @@ void Graphics::DrawPolyLinesAbs(const vector<VECTOR2> &vertexes, float red, floa
 	if(this->DefaultLineProgram->ProgramId != 0) {
 		this->DefaultLineProgram->Use();
 		this->DefaultLineProgram->SetUniform("vertexColor", glm::vec4(red, green, blue, alpha));
-		this->DefaultLineProgram->SetUniform("MVP", _gl->MVP);		
+		this->DefaultLineProgram->SetUniform("MVP", _gl->MVP);
 	}
 
 	_gl->DrawPolyLine(vertexes, red, green, blue, alpha);

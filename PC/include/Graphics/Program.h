@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <sstream>
+#include "GLFuncs.h"
 #include "Shader.h"
 #include "ShaderMgr.h"
 
