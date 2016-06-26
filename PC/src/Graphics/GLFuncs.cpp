@@ -426,7 +426,7 @@ GLuint GLFuncs::CreateShader(GLenum eShaderType, const std::string &strShaderFil
 
     // Get the size of the version preprocessor string info so we know 
     // how much memory to allocate for our sourceString
-    const GLsizei versionStringSize = sizeof("#version 123\n");
+    // const GLsizei versionStringSize = sizeof("#version 123\n");
 
 	// Allocate memory for the source string including the version preprocessor information
     // GLchar* sourceString = (GLchar*) malloc(strShaderFile.size() + versionStringSize);

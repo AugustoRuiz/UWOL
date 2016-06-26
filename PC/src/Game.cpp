@@ -43,6 +43,23 @@ bool Game::Initialize(int width, int height, bool fullscreen, const char* name)
 		Log::Out << "Game: Error initializing." << endl;
 	}
 
+	Log::Out << "Game: Initializing Scanlines..." << endl;
+	vector<string> vertexShaders = { "data/shaders/Default.150.vertex" };
+	vector<string> fragmentNoScanlines = { "data/shaders/TexturedColored.150.fragment" };
+	
+	this->_blitProgram = new Program(vertexShaders, fragmentNoScanlines);
+	if(this->_blitProgram->ProgramId != 0) {
+		this->_blitProgram->Textures.push_back(_g->GetFramebufferTexture());
+	}
+	this->_blitPrograms.push_back(this->_blitProgram);
+
+	vector<string> fragmentShaders = { "data/shaders/CRT.150.fragment" };
+	this->_blitProgram = new Program(vertexShaders, fragmentShaders);
+	if(this->_blitProgram->ProgramId != 0) {
+		this->_blitProgram->Textures.push_back(_g->GetFramebufferTexture());
+	}
+	this->_blitPrograms.push_back(this->_blitProgram);
+
 	this->loadResources();
 
 	Log::Out << "Game: Loading animations..." << endl;
@@ -63,23 +80,6 @@ bool Game::Initialize(int width, int height, bool fullscreen, const char* name)
 	this->AddState(new GameOver());
 
 	_currentStatus = "Portada";
-
-	Log::Out << "Game: Initializing Scanlines..." << endl;
-	vector<string> vertexShaders = { "data/shaders/Default.150.vertex" };
-	vector<string> fragmentNoScanlines = { "data/shaders/TexturedColored.150.fragment" };
-	
-	this->_blitProgram = new Program(vertexShaders, fragmentNoScanlines);
-	if(this->_blitProgram->ProgramId != 0) {
-		this->_blitProgram->Textures.push_back(_g->GetFramebufferTexture());
-	}
-	this->_blitPrograms.push_back(this->_blitProgram);
-
-	vector<string> fragmentShaders = { "data/shaders/CRT.150.fragment" };
-	this->_blitProgram = new Program(vertexShaders, fragmentShaders);
-	if(this->_blitProgram->ProgramId != 0) {
-		this->_blitProgram->Textures.push_back(_g->GetFramebufferTexture());
-	}
-	this->_blitPrograms.push_back(this->_blitProgram);
 
 	if(this->_blitProgram->ProgramId == 0) {
 		_scanlines = new Scanlines();
@@ -368,8 +368,8 @@ void Game::drawStatusMsg(const string& str) {
 
 void Game::loadResources() {
 	// Barra de progreso?
-	_g->Clear();
-	this->SwapBuffers();
+	//_g->Clear();
+	//this->SwapBuffers();
 
 	Log::Out << "Game: Loading resources..." << endl;
 	ifstream resourcesFile("resources.json", ios::binary);

@@ -125,11 +125,13 @@ TEXTUREINFO* TextureMgr::GL_LoadTexture(SDL_Surface *textureSurf)
 		}
 
 		//Generate the texture
-		glTexImage2D(GL_TEXTURE_2D, 0, textureSurf->format->BytesPerPixel, textureSurf->w, textureSurf->h, 0, textureFormat, GL_UNSIGNED_BYTE, textureSurf->pixels);
+		glTexImage2D(GL_TEXTURE_2D, 0, textureFormat, textureSurf->w, textureSurf->h, 0, textureFormat, GL_UNSIGNED_BYTE, textureSurf->pixels);
 
 		//Use nearest filtering, very good
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
 		result = new TEXTUREINFO();
 		result->texture = texNumber;

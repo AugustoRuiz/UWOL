@@ -20,27 +20,18 @@ void TextRenderer::DrawStringAlpha(int x, int y, int textSize, const string &tex
 	charPos = 0;
 	xPos = x;
 
-	if (this->_texture == NULL) {
-		this->_texture = TextureMgr::GetInstance()->LoadTexture("data/font.png");
-	}
 
 	if (this->_program == NULL) {
+		this->_texture = TextureMgr::GetInstance()->LoadTexture("data/font.png");
 		vector<string> vertexShaders = { "data/shaders/Default.150.vertex" };
 		vector<string> fragmentShaders = { "data/shaders/TexturedColored.150.fragment" };
 		this->_program = new Program(vertexShaders, fragmentShaders);
+		this->_program->Textures.push_back(this->_texture);
 	}
 
-	Program* program = this->_program;
-	if (program->Textures.size() > 0) {
-		program->Textures[0] = this->_texture;
-	}
-	else {
-		program->Textures.push_back(this->_texture);
-	}
-
-	program->Use();
-	program->BindTextures();
-	program->SetUniform("MVP", g->MVP);
+	this->_program->Use();
+	this->_program->BindTextures();
+	this->_program->SetUniform("MVP", g->MVP);
 
 	GLfloat color_buffer_data[] = {
 		rTop, gTop, bTop, alpha,

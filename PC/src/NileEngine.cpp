@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
 	try {
 		Game *game = Game::GetInstance();
 		MusicManager *musicMgr = MusicManager::GetInstance();
-		GLFuncs *g = GLFuncs::GetInstance();
+		//GLFuncs *g = GLFuncs::GetInstance();
 		Uint32 lastTick, currentTick;
 		Uint32 delta;
 		Uint32 accum = 0;
