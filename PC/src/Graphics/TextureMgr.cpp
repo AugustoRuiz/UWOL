@@ -37,6 +37,9 @@ TEXTUREINFO* TextureMgr::LoadTexture(const string &sFileName)
 				result->width = textureSurf->w;
 				result->height = textureSurf->h;
 				cache[sFileName] = result;
+
+				Log::Out << "Texture: '" << sFileName << "'" << endl;
+				dumpTextureInfo(result->texture);
 			}
 			else
 			{
@@ -137,4 +140,76 @@ TEXTUREINFO* TextureMgr::GL_LoadTexture(SDL_Surface *textureSurf)
 		result->texture = texNumber;
 	}
 	return result;
+}
+
+void TextureMgr::dumpTextureInfo(GLuint texNumber) {
+	GLint value;
+	Log::Out << "Texture info:" << endl << "-------------" << endl;
+	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &value);
+	Log::Out << "Size: (" << value << ", ";
+	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &value);
+	Log::Out << value << ") ; depth: ";
+	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_DEPTH, &value);
+	Log::Out << value << endl << "Internal format: ";
+	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_INTERNAL_FORMAT, &value);
+	Log::Out << getInternalFormatString(value) << endl << "Red size: ";
+	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_RED_SIZE, &value);
+	Log::Out << value << endl << "Green size: ";
+	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_GREEN_SIZE, &value);
+	Log::Out << value << endl << "Blue size: ";
+	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_BLUE_SIZE, &value);
+	Log::Out << value << endl << "Alpha size: ";
+	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_RED_SIZE, &value);
+	Log::Out << value << endl << "Depth size: ";
+	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_DEPTH_SIZE, &value);
+	Log::Out << value << endl << "Compressed: ";
+	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_COMPRESSED, &value);
+	Log::Out << value << endl << "Compressed image size: ";
+	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &value);
+	Log::Out << value << endl << "Buffer offset: ";
+	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_BUFFER_OFFSET, &value);
+	Log::Out << value << endl << "-------------" << endl;
+}
+
+string TextureMgr::getInternalFormatString(GLint value) {
+	stringstream ss;
+
+	switch (value) {
+		case 0x1907:
+			ss << "GL_RGB"; break;
+		case 0x1908:
+			ss << "GL_RGBA"; break;
+		case 0x80E0:
+			ss << "GL_BGR"; break;
+		case 0x80E1:
+			ss << "GL_BGRA"; break;
+		case 0x8032:
+			ss << "GL_UNSIGNED_BYTE_3_3_2"; break;
+		case 0x8362:
+			ss << "GL_UNSIGNED_BYTE_2_3_3_REV"; break;
+		case 0x8363:
+			ss << "GL_UNSIGNED_SHORT_5_6_5"; break;
+		case 0x8364:
+			ss << "GL_UNSIGNED_SHORT_5_6_5_REV"; break;
+		case 0x8033:
+			ss << "GL_UNSIGNED_SHORT_4_4_4_4"; break;
+		case 0x8365:
+			ss << "GL_UNSIGNED_SHORT_4_4_4_4_REV"; break;
+		case 0x8034:
+			ss << "GL_UNSIGNED_SHORT_5_5_5_1"; break;
+		case 0x8366:
+			ss << "GL_UNSIGNED_SHORT_1_5_5_5_REV"; break;
+		case 0x8035:
+			ss << "GL_UNSIGNED_INT_8_8_8_8"; break;
+		case 0x8367:
+			ss << "GL_UNSIGNED_INT_8_8_8_8_REV"; break;
+		case 0x8036:
+			ss << "GL_UNSIGNED_INT_10_10_10_2"; break;
+		case 0x8368:
+			ss << "GL_UNSIGNED_INT_2_10_10_10_REV"; break;
+		default:
+			ss << "Unknown";
+	}
+	ss << " (" << value << ")";
+	return ss.str();
 }

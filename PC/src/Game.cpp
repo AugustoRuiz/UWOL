@@ -43,23 +43,6 @@ bool Game::Initialize(int width, int height, bool fullscreen, const char* name)
 		Log::Out << "Game: Error initializing." << endl;
 	}
 
-	Log::Out << "Game: Initializing Scanlines..." << endl;
-	vector<string> vertexShaders = { "data/shaders/Default.150.vertex" };
-	vector<string> fragmentNoScanlines = { "data/shaders/TexturedColored.150.fragment" };
-	
-	this->_blitProgram = new Program(vertexShaders, fragmentNoScanlines);
-	if(this->_blitProgram->ProgramId != 0) {
-		this->_blitProgram->Textures.push_back(_g->GetFramebufferTexture());
-	}
-	this->_blitPrograms.push_back(this->_blitProgram);
-
-	vector<string> fragmentShaders = { "data/shaders/CRT.150.fragment" };
-	this->_blitProgram = new Program(vertexShaders, fragmentShaders);
-	if(this->_blitProgram->ProgramId != 0) {
-		this->_blitProgram->Textures.push_back(_g->GetFramebufferTexture());
-	}
-	this->_blitPrograms.push_back(this->_blitProgram);
-
 	this->loadResources();
 
 	Log::Out << "Game: Loading animations..." << endl;
@@ -120,10 +103,7 @@ void Game::Update(Uint32 mSecs)
 	Event currentEvent = InputManager::GetInstance()->Update(mSecs);
 	this->handleInput(currentEvent);
 
-	if (this->_attractMode || this->_savingStatus)
-	{
-		this->_totalTicks += mSecs;
-	}
+	this->_totalTicks += mSecs;
 
 	if (this->_attractMode)
 	{
@@ -167,8 +147,23 @@ void Game::handleInput(Event &currentEvent) {
 			aliasing = !aliasing;
 			break;
 		case ActionKeysScanlines:
-			if(this->_scanlines == NULL) {
-				_blitProgram = _blitPrograms[_blitProgram == _blitPrograms[0] ? 1 : 0];
+			if(this->_scanlines == NULL && _blitPrograms.size()>0) {
+				if (_blitProgram == NULL) {
+					_blitProgram = _blitPrograms[0];
+				}
+				else {
+					vector<Program*>::iterator pos = std::find(_blitPrograms.begin(), _blitPrograms.end(), _blitProgram);
+					if (pos == _blitPrograms.end()) {
+						_blitProgram = _blitPrograms[0];
+					}
+					else {
+						pos++;
+						if (pos == _blitPrograms.end()) {
+							pos = _blitPrograms.begin();
+						}
+					}
+					_blitProgram = *pos;
+				}
 			} else {
 				_drawScanlines = !_drawScanlines;
 			}
@@ -349,6 +344,11 @@ void Game::ShowCursor(bool show)
 }
 
 void Game::drawStatusMsg(const string& str) {
+	Program* currentProgram = this->_blitProgram;
+	if (this->_blitPrograms.size() > 0) {
+		this->_blitProgram = this->_blitPrograms[0];
+	}
+
 	float grayValue = 0.4f;
 	int fontSize = 8;
 
@@ -358,12 +358,9 @@ void Game::drawStatusMsg(const string& str) {
 	_g->DrawString(0, _g->WorldHeight - 32, fontSize, 
 		str, grayValue, grayValue, grayValue, grayValue, grayValue, grayValue);
 
-	if (this->_drawScanlines && this->_scanlines != NULL)
-	{
-		this->_scanlines->Draw();
-	}
-
 	this->SwapBuffers();
+
+	this->_blitProgram = currentProgram;
 }
 
 void Game::loadResources() {
@@ -381,6 +378,42 @@ void Game::loadResources() {
 
 	Json::Value root;
 	resourcesFile >> root;
+
+	Log::Out << "Game: Initializing Scanlines..." << endl;
+	Json::Value shaders = root["outputShaders"];
+	if (Json::Value::null != shaders) {
+		ShaderMgr* shaderMgr = ShaderMgr::GetInstance();
+		for (Json::Value::iterator itShaderDesc = shaders.begin(); itShaderDesc != shaders.end(); ++itShaderDesc) {
+			vector<Shader*> shaderPtrs;
+			Json::Value child = *itShaderDesc;
+			Json::Value pathArray = child["shaderPaths"];
+			for (Json::Value::iterator itShaderPath = pathArray.begin(); itShaderPath != pathArray.end(); ++itShaderPath) {
+				string shaderFile = itShaderPath->asString();
+				ShaderType shaderType = shaderFile.find(".vertex") == string::npos ? Fragment : Vertex;
+				stringstream ss;
+				ss << "Loading " << ((shaderType == Vertex) ? "vertex" : "fragment") << " shader: " << shaderFile;
+				drawStatusMsg(ss.str());
+				shaderPtrs.push_back(shaderMgr->LoadShader(shaderFile, shaderType));				
+			}
+			Program* p = new Program(shaderPtrs);
+			if (p->ProgramId != 0) {
+				p->Textures.push_back(_g->GetFramebufferTexture());
+			}
+			Json::Value texArray = child["additionalTextures"];
+			for (Json::Value::iterator itTexturePath = texArray.begin(); itTexturePath != texArray.end(); ++itTexturePath) {
+				string texPath = itTexturePath->asString();
+				p->Textures.push_back(Frame(texPath).Texture);
+			}
+			this->_blitPrograms.push_back(p);
+			if (child.isMember("default") && child["default"].asBool()) {
+				this->_blitProgram = p;
+			}
+		}
+		if (this->_blitProgram == NULL && this->_blitPrograms.size() > 0) {
+			this->_blitProgram = this->_blitPrograms.back();
+		}
+	}
+
 	Json::Value images = root["images"];
 	if (Json::Value::null != images) {
 		TextureMgr* texMgr = TextureMgr::GetInstance();
@@ -428,6 +461,7 @@ void Game::SwapBuffers() {
 		this->_blitProgram->BindTextures();
 		this->_blitProgram->SetUniform("iGlobalTime", (float)this->_totalTicks);
 		this->_blitProgram->SetUniform("MVP", GLFuncs::GetInstance()->MVP);
+		this->_blitProgram->SetUniform("iResolution", vec2(this->_g->ScreenWidth, this->_g->ScreenHeight));
 	}
 
 	this->_g->SwapBuffers();

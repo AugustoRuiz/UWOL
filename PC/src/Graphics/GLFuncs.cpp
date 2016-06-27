@@ -218,6 +218,7 @@ void GLFuncs::SetTexture(unsigned int channel, unsigned int texture) {
 		glActiveTexture(GL_TEXTURE0 + channel);
 		glBindTexture(GL_TEXTURE_2D, texture);
 		_activeTextures[channel] = texture;
+		glActiveTexture(GL_TEXTURE0);
 	}
 }
 

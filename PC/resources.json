@@ -1,4 +1,31 @@
 {
+    "outputShaders" : [
+		{
+			"shaderPaths": [
+				"data/shaders/Default.150.vertex",
+				"data/shaders/TexturedColored.150.fragment"
+			]
+		},
+		{
+			"shaderPaths": [
+				"data/shaders/Default.150.vertex",
+				"data/shaders/CRT.150.fragment"
+			],
+			"default": true
+		},
+		{
+			"shaderPaths": [
+				"data/shaders/Default.150.vertex",
+				"data/shaders/CRT-iquilez-modified.fragment"
+			]
+		},
+		{
+			"shaderPaths": [
+				"data/shaders/Default.150.vertex",
+				"data/shaders/CRT-Jasper.fragment"
+			]
+		}
+	],
     "images": [
         "data/Camiseta.png",
         "data/Entrelazado.png",

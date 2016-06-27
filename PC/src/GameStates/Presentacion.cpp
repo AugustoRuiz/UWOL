@@ -155,23 +155,20 @@ string Presentacion::Update(Uint32 milliSec, Event & inputEvent) {
 	}
 
 	InputManager *input = InputManager::GetInstance();
-	if (inputEvent.Name == "KEY_DOWN") {
+	if (inputEvent.Name == "KEY_UP") {
 		ActionKeys key = (ActionKeys)inputEvent.Data["key"].asInt();
 		if (key == ActionKeysUp) {
 			input->SetControlMode(Keyboard);
 			return "Piramide";
 		}
 	}
-	if (inputEvent.Name == "JOY_DOWN") {
+	if (inputEvent.Name == "JOY_UP") {
 		int button = inputEvent.Data["button"].asInt();
 		if (button == JOY_BUTTON_0 || button == JOY_BUTTON_1) {
 			input->SetControlMode(Joystick);
 			return "Piramide";
 		}
 	}
-	//if (inputEvent.Name == "KEY_UP" || inputEvent.Name == "JOY_UP") {
-	//	this->_goNext = true;
-	//}
 
 	if (this->_goNext) {
 		return "Credits";

@@ -35,7 +35,7 @@ string Piramide::Update(Uint32 milliSec, Event & inputEvent)
 	if (this->_currentAlpha < 1.0f) {
 		this->_currentAlpha += ((float)this->_incrFactor) *  milliSec * 0.001f;
 	}
-	if (inputEvent.Name == "KEY_DOWN" || inputEvent.Name == "JOY_DOWN") {
+	if (inputEvent.Name == "KEY_UP" || inputEvent.Name == "JOY_UP") {
 		return "Stage";
 	}
 	return "Piramide";

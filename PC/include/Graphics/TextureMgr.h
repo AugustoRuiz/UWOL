@@ -3,6 +3,7 @@
 #include "GameData.h"
 #include <map>
 #include <string>
+#include <sstream>
 
 using namespace std;
 
@@ -26,4 +27,7 @@ protected:
 private:
 	TEXTUREMAP cache;
 	TEXTUREINFO* GL_LoadTexture(SDL_Surface *textureSurf);
+
+	void dumpTextureInfo(GLuint texNumber);
+	string getInternalFormatString(GLint value);
 };
