@@ -152,7 +152,7 @@ vec3 Mask(vec2 pos) {
 float noise(vec2 p)
 {
 	float smp;
-	smp = texture2D(iChannel1,vec2(1.,2.*cos(iGlobalTime))*iGlobalTime*8. + p*1.).x;
+	smp = texture2D(iChannel1,vec2(1.,2.*cos(iGlobalTime))*mod(iGlobalTime/1000.0,1.0)*8. + p*1.).x;
 	smp *= smp;
 	return smp;
 }
@@ -205,7 +205,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 	uv = screenDistort(uv);
 	vec3 video = getVideo(uv).rgb;
 	
-	float vigAmt = 3.+.3*sin(iGlobalTime + 5.*cos(iGlobalTime*5.));
+	float vigAmt = 4.+.3*sin(iGlobalTime + 5.*cos(iGlobalTime*5.));
 	float vignette = (1.-vigAmt*(uv.y-.5)*(uv.y-.5))*(1.-vigAmt*(uv.x-.5)*(uv.x-.5));
 	
 	video += 0.2 * stripes(uv);

@@ -53,12 +53,16 @@ public:
 	Event Update(int milliSecs);
 	Event GetLastEvent();
 
+	void AddFakeEvent(const Event& ev);
+
 	//ACTIONMAP ActionMap;
 	KEYMAP KeyMap;
 
 protected:
 	InputManager(void);
 	~InputManager(void) { };
+
+	vector<Event> _fakeEvents;
 
 	static InputManager _instance;
 

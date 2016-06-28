@@ -1,27 +1,22 @@
 #include "Game.h"
 
-Game *Game::GetInstance()
-{
+Game *Game::GetInstance() {
 	return &_instance;
 }
 
-Game::Game(void)
-{
+Game::Game(void) {
 
 }
 
-Game::~Game(void)
-{
+Game::~Game(void) {
 
 }
 
-bool Game::Running()
-{
+bool Game::Running() {
 	return _running;
 }
 
-bool Game::Initialize(int width, int height, bool fullscreen, const char* name)
-{
+bool Game::Initialize(int width, int height, bool fullscreen, const char* name) {
 	Log::Out << "Game: Initializing..." << endl;
 
 	_g = Graphics::GetInstance();
@@ -34,12 +29,9 @@ bool Game::Initialize(int width, int height, bool fullscreen, const char* name)
 	_g->LightPosition.x = _g->WorldWidth / 2;
 	_g->LightPosition.y = 0;
 
-	if (_running)
-	{
+	if (_running) {
 		Log::Out << "Game: Initialization OK." << endl;
-	}
-	else
-	{
+	} else {
 		Log::Out << "Game: Error initializing." << endl;
 	}
 
@@ -82,8 +74,7 @@ bool Game::Initialize(int width, int height, bool fullscreen, const char* name)
 	return _running;
 }
 
-void Game::Dispose()
-{
+void Game::Dispose() {
 	_running = false;
 
 	for (pair<string, IGameState*> pairState : _states) {
@@ -100,39 +91,55 @@ void Game::Dispose()
 
 void Game::Update(Uint32 mSecs)
 {
+	string oldStatus = _currentStatus;
+
+	if (this->_attractMode) {
+		this->updateAttractMode();
+	}
+
 	Event currentEvent = InputManager::GetInstance()->Update(mSecs);
 	this->handleInput(currentEvent);
 
 	this->_totalTicks += mSecs;
 
-	if (this->_attractMode)
-	{
-		this->updateAttractMode();
-	}
-
-	if (_currentStatus == "")
-	{
+	if (_currentStatus == "") {
 		throw "No next status!";
 	}
 
-	map<string, IGameState*>::iterator it = _states.find(_currentStatus);
-	if (it != _states.end()) {
-		IGameState *state = it->second;
-		string oldStatus = _currentStatus;
-		_currentStatus = state->Update(mSecs, currentEvent);
-		// Si la ejecución del estado provoca un cambio de estado,
-		// y ese estado tiene un nombre, lo inicializamos.
-		if (oldStatus != _currentStatus) {
-			state->OnExit();
-			if (_states.find(_currentStatus) != _states.end()) {
-				_states[_currentStatus]->OnEnter();
-			}
-		}
+	// Ha habido un cambio derivado de la gestión directa de la entrada de teclado?
+	if (oldStatus != _currentStatus) {
+		this->changeStatus(oldStatus, _currentStatus);
 	}
 	else {
-		stringstream ss;
-		ss << "Status " << _currentStatus << " not found!";
-		throw ss.str();
+		map<string, IGameState*>::iterator it = _states.find(_currentStatus);
+		if (it != _states.end()) {
+			IGameState *state = it->second;
+			string oldStatus = _currentStatus;
+			string newStatus = state->Update(mSecs, currentEvent);
+			// Ha habido un cambio derivado de la actualización del estado actual?
+			if (oldStatus != newStatus) {
+				this->changeStatus(oldStatus, newStatus);
+			}
+		} else {
+			stringstream ss;
+			ss << "No status found with name '" << _currentStatus << "'" << endl;
+			Log::Out << ss.str() << endl;
+			throw ss.str();
+		}
+	}
+}
+
+void Game::changeStatus(const string &oldStatus, const string &newStatus) {
+	if (oldStatus != newStatus) {
+		map<string, IGameState*>::iterator it = _states.find(oldStatus);
+		if (it != _states.end()) {
+			IGameState *state = it->second;
+			state->OnExit();
+			if (_states.find(newStatus) != _states.end()) {
+				_states[newStatus]->OnEnter();
+				this->_currentStatus = newStatus;
+			}
+		}
 	}
 }
 
@@ -141,7 +148,11 @@ void Game::handleInput(Event &currentEvent) {
 		ActionKeys key = (ActionKeys)(currentEvent.Data["key"].asInt());
 		switch (key) {
 		case ActionKeysExit:
-			_running = false;
+			if (this->_attractMode) {
+				this->SetAttractMode(false);
+			} else {
+				_running = false;
+			}
 			break;
 		case ActionKeysAliasing:
 			aliasing = !aliasing;
@@ -150,13 +161,11 @@ void Game::handleInput(Event &currentEvent) {
 			if(this->_scanlines == NULL && _blitPrograms.size()>0) {
 				if (_blitProgram == NULL) {
 					_blitProgram = _blitPrograms[0];
-				}
-				else {
+				} else {
 					vector<Program*>::iterator pos = std::find(_blitPrograms.begin(), _blitPrograms.end(), _blitProgram);
 					if (pos == _blitPrograms.end()) {
 						_blitProgram = _blitPrograms[0];
-					}
-					else {
+					} else {
 						pos++;
 						if (pos == _blitPrograms.end()) {
 							pos = _blitPrograms.begin();
@@ -234,6 +243,9 @@ void Game::handleInput(Event &currentEvent) {
 			this->_eventBuffer.push_back(this->_totalTicks);
 			this->_eventBuffer.push_back((Uint32)(0x4000 | (0x3FFF & key)));
 		}
+		if (this->_attractMode && (!currentEvent.Data["fake"].asBool())) {
+			this->SetAttractMode(false);
+		}
 	}
 }
 
@@ -246,31 +258,27 @@ void Game::updateAttractMode() {
 			Event fakeEvent;
 
 			fakeEvent.Data["key"] = (ActionKeys)(keyData & 0x3FFF);
+			fakeEvent.Data["fake"] = true;
 			fakeEvent.Name = ((keyData & 0x4000) == 0x4000) ? "KEY_UP" : "KEY_DOWN";
-
-			_input->SetKeyPressedState(fakeEvent);
+			Log::Out << "Fake event: " << fakeEvent.Name << "(" << fakeEvent.Data["key"] << ")" << endl;
+			_input->AddFakeEvent(fakeEvent);
 		}
-	}
-	else {
+	} else {
 		Log::Out << "Exiting attract mode..." << endl;
-		this->_attractMode = false;
-		_currentStatus = "Portada";
+		this->SetAttractMode(false);
 	}
 }
 
-void Game::Render()
-{
+void Game::Render() {
 	_g->Clear();
 
 	map<string, IGameState*>::iterator it = _states.find(_currentStatus);
-	if (it != _states.end())
-	{
+	if (it != _states.end()) {
 		IGameState *state = it->second;
 		state->Draw();
 	}
 
-	if (this->_drawScanlines && this->_scanlines != NULL)
-	{
+	if (this->_drawScanlines && this->_scanlines != NULL) {
 		this->_scanlines->Draw();
 	}
 
@@ -281,64 +289,65 @@ void Game::Restart() {
 	this->_stage->Restart();
 }
 
-void Game::SetAttractMode(bool attract)
-{
+void Game::SetAttractMode(bool attract) {
 	this->_attractMode = attract;
+	//_input->Enabled = !attract;
 
 	Log::Out << "SetAttractMode(" << (attract ? "true" : "false") << ")" << endl;
 
-	if (attract)
-	{
-		_input->Enabled = false;
+	if (attract) {
 		this->_savingStatus = false;
-
 		this->_totalTicks = 0;
 		this->LoadAttractModeData();
 		this->_evtBufferIterator = this->_eventBuffer.begin();
+	} else {
+		this->_currentStatus = "Portada";
 	}
 
-	if (_currentStatus == "Stage")
-	{
+	if (_currentStatus == "Stage") {
 		map<string, IGameState*>::iterator it = _states.find(_currentStatus);
-		if (it != _states.end())
-		{
+		if (it != _states.end()) {
 			((Stage*)it->second)->GoToRoom(0);
 			this->_totalTicks = 0;
 		}
 	}
 }
 
-void Game::SetSaveAttract(bool save)
-{
+void Game::SetSaveAttract(bool save) {
 	Log::Out << "SetSaveAttract(" << (save ? "true" : "false") << ")" << endl;
 
 	this->_savingStatus = save;
 
-	if (save)
-	{
+	if (save) {
 		this->_attractMode = false;
 		this->_totalTicks = 0;
 	}
 }
 
-void Game::SaveAttractModeData()
-{
+void Game::SaveAttractModeData() {
 	Log::Out << "Saving attract data to file status.dat." << endl;
-	if (this->_statusSaved)
-	{
+	if (this->_statusSaved) {
 		ofstream output("status.dat", ios::binary);
-		copy(this->_eventBuffer.begin(), this->_eventBuffer.end(), ostreambuf_iterator<char>(output));
+		for (Uint32 data : this->_eventBuffer) {
+			output.write((char*) &data, sizeof(Uint32));;
+		}
 	}
 }
 
-void Game::LoadAttractModeData()
-{
+void Game::LoadAttractModeData() {
 	ifstream input("status.dat", ios::binary);
-	copy(istream_iterator<char>(input), istream_iterator<char>(), back_inserter(this->_eventBuffer));
+	if (input.good()) {
+		while (!input.eof()) {
+			Uint32 data;
+			input.read((char*)&data, sizeof(Uint32));
+			this->_eventBuffer.push_back(data);
+		}
+	} else {
+		this->SetAttractMode(false);
+	}
 }
 
-void Game::ShowCursor(bool show)
-{
+void Game::ShowCursor(bool show) {
 	int showCursor = (show) ? SDL_ENABLE : SDL_DISABLE;
 	SDL_ShowCursor(showCursor);
 }
@@ -364,10 +373,6 @@ void Game::drawStatusMsg(const string& str) {
 }
 
 void Game::loadResources() {
-	// Barra de progreso?
-	//_g->Clear();
-	//this->SwapBuffers();
-
 	Log::Out << "Game: Loading resources..." << endl;
 	ifstream resourcesFile("resources.json", ios::binary);
 
@@ -455,7 +460,6 @@ void Game::AddState(IGameState* state) {
 }
 
 void Game::SwapBuffers() {
-	
 	if (this->_blitProgram != NULL && this->_blitProgram->ProgramId != 0) {
 		this->_blitProgram->Use();
 		this->_blitProgram->BindTextures();

@@ -94,6 +94,8 @@ protected :
 	GLuint _renderedTexture;
 	GLuint _quad_vertexbuffer;
 
+	GLuint _vtxAttribIdx, _uvAttribIdx, _colAttribIdx;
+
 	GLuint _currentProgram;
 
 	int _screenWidth;

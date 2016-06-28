@@ -136,6 +136,8 @@ TEXTUREINFO* TextureMgr::GL_LoadTexture(SDL_Surface *textureSurf)
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
+		glBindTexture(GL_TEXTURE_2D, 0);
+
 		result = new TEXTUREINFO();
 		result->texture = texNumber;
 	}
@@ -159,7 +161,7 @@ void TextureMgr::dumpTextureInfo(GLuint texNumber) {
 	Log::Out << value << endl << "Blue size: ";
 	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_BLUE_SIZE, &value);
 	Log::Out << value << endl << "Alpha size: ";
-	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_RED_SIZE, &value);
+	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_ALPHA_SIZE, &value);
 	Log::Out << value << endl << "Depth size: ";
 	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_DEPTH_SIZE, &value);
 	Log::Out << value << endl << "Compressed: ";

@@ -74,6 +74,7 @@ private:
 	void loadResources();
 	void handleInput(Event &currentEvent);
 	void updateAttractMode();
+	void changeStatus(const string &oldStatus, const string &newStatus);
 
 	void drawStatusMsg(const string& str);
 	void SwapBuffers();

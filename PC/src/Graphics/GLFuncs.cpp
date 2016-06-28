@@ -1,9 +1,5 @@
 #include "GLFuncs.h"
 
-#define VTX_ATTRIB_IDX 0
-#define UV_ATTRIB_IDX  1
-#define COL_ATTRIB_IDX 2
-
 GLFuncs *GLFuncs::GetInstance()
 {
 	return &_instance;
@@ -76,11 +72,11 @@ SDL_Window *GLFuncs::Initialize(int screenWidth, int screenHeight, GLboolean ful
 
 	glDisable(GL_CULL_FACE);
 
-#if !ESSENTIAL_GL_PRACTICES_SUPPORT_GL3
-	glEnable(GL_ALPHA_TEST);
-	glAlphaFunc(GL_GREATER, 0.01f);
-	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-#endif
+//#if !ESSENTIAL_GL_PRACTICES_SUPPORT_GL3
+//	//glEnable(GL_ALPHA_TEST);
+//	//glAlphaFunc(GL_GREATER, 0.01f);
+//	//glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+//#endif
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -186,7 +182,7 @@ void GLFuncs::setGLAttributes() {
 
 #ifdef __APPLE__
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3); 
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 #endif
 }
@@ -275,26 +271,26 @@ void GLFuncs::BlitVerts(float vertex_buffer_data[], unsigned int vBufSize,
 	}
 
 	if(this->_useVBO) {
-		glEnableVertexAttribArray(VTX_ATTRIB_IDX);
+		glEnableVertexAttribArray(_vtxAttribIdx);
 		glBindBuffer(GL_ARRAY_BUFFER, _vboVertex);
 		glBufferData(GL_ARRAY_BUFFER, vBufSize, vertex_buffer_data, GL_STATIC_DRAW);
-		glVertexAttribPointer(VTX_ATTRIB_IDX, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), (void*)0);
+		glVertexAttribPointer(_vtxAttribIdx, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), (void*)0);
 
-		glEnableVertexAttribArray(UV_ATTRIB_IDX);
+		glEnableVertexAttribArray(_uvAttribIdx);
 		glBindBuffer(GL_ARRAY_BUFFER, _vboUV);
 		glBufferData(GL_ARRAY_BUFFER, uvBufSize, uv_buffer_data, GL_STATIC_DRAW);
-		glVertexAttribPointer(UV_ATTRIB_IDX, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GL_FLOAT), (void*)0);
+		glVertexAttribPointer(_uvAttribIdx, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GL_FLOAT), (void*)0);
 
-		glEnableVertexAttribArray(COL_ATTRIB_IDX);
+		glEnableVertexAttribArray(_colAttribIdx);
 		glBindBuffer(GL_ARRAY_BUFFER, _vboColor);
 		glBufferData(GL_ARRAY_BUFFER, cBufSize, color_buffer_data, GL_STATIC_DRAW);
-		glVertexAttribPointer(COL_ATTRIB_IDX, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GL_FLOAT), (void*)0);
+		glVertexAttribPointer(_colAttribIdx, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GL_FLOAT), (void*)0);
 
 		glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
-		glDisableVertexAttribArray(COL_ATTRIB_IDX);
-		glDisableVertexAttribArray(UV_ATTRIB_IDX);
-		glDisableVertexAttribArray(VTX_ATTRIB_IDX);
+		glDisableVertexAttribArray(_colAttribIdx);
+		glDisableVertexAttribArray(_uvAttribIdx);
+		glDisableVertexAttribArray(_vtxAttribIdx);
 	} else {
 #if !ESSENTIAL_GL_PRACTICES_SUPPORT_GL3
 		glMatrixMode(GL_MODELVIEW);
@@ -341,7 +337,7 @@ void GLFuncs::BlitRect(int iX, int iY, int width, int height,
 
 void GLFuncs::Clear()
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT);
 }
 
 void GLFuncs::DrawPolyLine(const vector<VECTOR2> &vertexes, float red, float green, float blue, float alpha) {
@@ -353,14 +349,14 @@ void GLFuncs::DrawPolyLine(const vector<VECTOR2> &vertexes, float red, float gre
 			coords.push_back((float)v.y);
 		}
 
-		glEnableVertexAttribArray(VTX_ATTRIB_IDX);
+		glEnableVertexAttribArray(_vtxAttribIdx);
 		glBindBuffer(GL_ARRAY_BUFFER, _vboLineVertex);
 		glBufferData(GL_ARRAY_BUFFER, coords.size() * sizeof(GLfloat), &(coords[0]), GL_STATIC_DRAW);
-		glVertexAttribPointer(VTX_ATTRIB_IDX, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+		glVertexAttribPointer(_vtxAttribIdx, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
 		glDrawArrays(GL_LINES, 0, vertexCount);
 
-		glDisableVertexAttribArray(VTX_ATTRIB_IDX);
+		glDisableVertexAttribArray(_vtxAttribIdx);
 	} else {
 #if !ESSENTIAL_GL_PRACTICES_SUPPORT_GL3
 		glDisable(GL_TEXTURE_2D);
@@ -498,66 +494,89 @@ void GLFuncs::UseProgram(GLuint programId) {
 	if (this->_currentProgram != programId) {
 		glUseProgram(programId);
 		this->_currentProgram = programId;
+		this->_vtxAttribIdx = glGetAttribLocation(programId, "vertexPosition");
+		this->_uvAttribIdx = glGetAttribLocation(programId, "vertexUV");
+		this->_colAttribIdx = glGetAttribLocation(programId, "vertexColor");
 	}
 }
 
 void GLFuncs::SetUniform(GLuint programId, const string &name, float x, float y, float z) {
 	GLuint location = getUniformLocation(programId, name);
-	this->UseProgram(programId);
-	glUniform3f(location, x, y, z);
+	if (location != -1) {
+		this->UseProgram(programId);
+		glUniform3f(location, x, y, z);
+	}
 }
 
 void GLFuncs::SetUniform(GLuint programId, const string &name, const vec2 & v) {
 	GLuint location = getUniformLocation(programId, name);
-	this->UseProgram(programId);
-	glUniform2f(location, v.x, v.y);
+	if (location != -1) {
+		this->UseProgram(programId);
+		glUniform2f(location, v.x, v.y);
+	}
 }
 void GLFuncs::SetUniform(GLuint programId, const string &name, const vec3 & v) {
 	GLuint location = getUniformLocation(programId, name);
-	this->UseProgram(programId);
-	glUniform3f(location, v.x, v.y, v.z);
+	if (location != -1) {
+		this->UseProgram(programId);
+		glUniform3f(location, v.x, v.y, v.z);
+	}
 }
 
 void GLFuncs::SetUniform(GLuint programId, const string &name, const vec4 & v) {
 	GLuint location = getUniformLocation(programId, name);
-	this->UseProgram(programId);
-	glUniform4f(location, v.x, v.y, v.z, v.w);
+	if (location != -1) {
+		this->UseProgram(programId);
+		glUniform4f(location, v.x, v.y, v.z, v.w);
+	}
 }
 
 void GLFuncs::SetUniform(GLuint programId, const string &name, const mat4 & m) {
 	GLuint location = getUniformLocation(programId, name);
-	this->UseProgram(programId);
-	glUniformMatrix4fv(location, 1, GL_FALSE, &(m[0][0]));
+	if (location != -1) {
+		this->UseProgram(programId);
+		glUniformMatrix4fv(location, 1, GL_FALSE, &(m[0][0]));
+	}
 }
 
 void GLFuncs::SetUniform(GLuint programId, const string &name, const mat3 & m) {
 	GLuint location = getUniformLocation(programId, name);
-	this->UseProgram(programId);
-	glUniformMatrix3fv(location, 1, GL_FALSE, &(m[0][0]));
+	if (location != -1) {
+		this->UseProgram(programId);
+		glUniformMatrix3fv(location, 1, GL_FALSE, &(m[0][0]));
+	}
 }
 
 void GLFuncs::SetUniform(GLuint programId, const string &name, float val) {
 	GLuint location = getUniformLocation(programId, name);
-	this->UseProgram(programId);
-	glUniform1f(location, val);
+	if (location != -1) {
+		this->UseProgram(programId);
+		glUniform1f(location, val);
+	}
 }
 
 void GLFuncs::SetUniform(GLuint programId, const string &name, int val) {
 	GLuint location = getUniformLocation(programId, name);
-	this->UseProgram(programId);
-	glUniform1i(location, val);
+	if (location != -1) {
+		this->UseProgram(programId);
+		glUniform1i(location, val);
+	}
 }
 
 void GLFuncs::SetUniform(GLuint programId, const string &name, bool val) {
 	GLuint location = getUniformLocation(programId, name);
-	this->UseProgram(programId);
-	glUniform1i(location, val);
+	if (location != -1) {
+		this->UseProgram(programId);
+		glUniform1i(location, val);
+	}
 }
 
 void GLFuncs::SetUniform(GLuint programId, const string &name, GLuint val) {
 	GLuint location = getUniformLocation(programId, name);
-	this->UseProgram(programId);
-	glUniform1ui(location, val);
+	if (location != -1) {
+		this->UseProgram(programId);
+		glUniform1ui(location, val);
+	}
 }
 
 GLuint GLFuncs::getUniformLocation(GLuint programId, const std::string &uniformName) {
@@ -586,7 +605,7 @@ void GLFuncs::SwapBuffers()
 		glViewport(0, 0, _screenWidth, _screenHeight);
 
 		// Clear the screen
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT);
 
 		glBindTexture(GL_TEXTURE_2D, _renderedTexture);
 
