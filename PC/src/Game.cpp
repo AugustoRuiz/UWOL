@@ -1,5 +1,7 @@
 #include "Game.h"
 
+#define ROOM_START_EVENT 0x10000
+
 Game *Game::GetInstance() {
 	return &_instance;
 }
@@ -56,6 +58,8 @@ bool Game::Initialize(int width, int height, bool fullscreen, const char* name) 
 
 	_currentStatus = "Portada";
 
+	this->_messageLine = new MessageLine();
+
 	if(this->_blitProgram->ProgramId == 0) {
 		_scanlines = new Scanlines();
 		_scanlines->setSize(width, height);
@@ -92,6 +96,8 @@ void Game::Dispose() {
 void Game::Update(Uint32 mSecs)
 {
 	string oldStatus = _currentStatus;
+
+	this->_messageLine->Update(mSecs);
 
 	if (this->_attractMode) {
 		this->updateAttractMode();
@@ -140,10 +146,18 @@ void Game::changeStatus(const string &oldStatus, const string &newStatus) {
 				this->_currentStatus = newStatus;
 			}
 		}
+
+		if (this->_currentStatus == "Stage" && this->_savingStatus) {
+			Stage* stage = (Stage*)_states[this->_currentStatus];
+			int currentRoom = stage->RoomIndex;
+			this->_eventBuffer.push_back(this->_totalTicks);
+			this->_eventBuffer.push_back(ROOM_START_EVENT + currentRoom);
+		}
 	}
 }
 
 void Game::handleInput(Event &currentEvent) {
+	stringstream ss;
 	if (currentEvent.Name == "KEY_DOWN") {
 		ActionKeys key = (ActionKeys)(currentEvent.Data["key"].asInt());
 		switch (key) {
@@ -156,6 +170,8 @@ void Game::handleInput(Event &currentEvent) {
 			break;
 		case ActionKeysAliasing:
 			aliasing = !aliasing;
+			ss << "Antialiasing is " << (aliasing ? "ON" : "OFF");
+			this->_messageLine->ShowText(ss.str(), 1500, vec3(0.9f), vec3(0.7f));
 			break;
 		case ActionKeysScanlines:
 			if(this->_scanlines == NULL && _blitPrograms.size()>0) {
@@ -173,22 +189,31 @@ void Game::handleInput(Event &currentEvent) {
 					}
 					_blitProgram = *pos;
 				}
+				ss << "Post-processing shader: " << ((_blitProgram != NULL) ? _blitProgram->ProgramId : 0);
+				this->_messageLine->ShowText(ss.str(), 1500, vec3(0.9f), vec3(0.7f));
 			} else {
 				_drawScanlines = !_drawScanlines;
+				ss << "Scanlines: " << (_drawScanlines ? "ON" : "OFF");
+				this->_messageLine->ShowText(ss.str(), 1500, vec3(0.9f), vec3(0.7f));
 			}
 			break;
 		case ActionKeysAltScanlines:
 			if(this->_scanlines != NULL) {
 				this->_scanlines->Mode ^= 1;
+				ss << "Scanline mode: " << this->_scanlines->Mode;
+				this->_messageLine->ShowText(ss.str(), 1500, vec3(0.9f), vec3(0.7f));
 			}
 			break;
 	case ActionKeysDebug:
 			debugPaint = !debugPaint;
+			ss << "Debug paint: " << (debugPaint ? "ON" : "OFF");
+			this->_messageLine->ShowText(ss.str(), 1500, vec3(0.9f), vec3(0.7f));
 			break;
 		case ActionKeysStopRecording:
 			// Dejamos de guardar después de guardar la pulsación de la tecla de grabar. Así la grabación 
 			// durará hasta el momento en el que se ha pulsado la tecla.
 			this->_savingStatus = false;
+			this->_messageLine->ShowText("Recording completed.", 1500, vec3(0.9f), vec3(0.7f));
 			break;
 		case ActionKeysNextScreen:
 			if (this->_currentStatus == "Stage") {
@@ -199,6 +224,7 @@ void Game::handleInput(Event &currentEvent) {
 					int nextIdx = s->RoomIndex + 1;
 					if (nextIdx < (int)s->Rooms.size()) {
 						s->GoToRoom(nextIdx);
+						this->_messageLine->ShowText("Next room", 1500, vec3(0.9f), vec3(0.7f));
 					}
 				}
 			}
@@ -212,6 +238,7 @@ void Game::handleInput(Event &currentEvent) {
 					int nextIdx = s->RoomIndex - 1;
 					if (nextIdx >= 0) {
 						s->GoToRoom(nextIdx);
+						this->_messageLine->ShowText("Previous room", 1500, vec3(0.9f), vec3(0.7f));
 					}
 				}
 			}
@@ -223,9 +250,14 @@ void Game::handleInput(Event &currentEvent) {
 					IGameState *state = it->second;
 					Stage* s = (Stage*)state;
 					s->Player->_coinsTaken += 1;
+					this->_messageLine->ShowText("Added coin!", 1500, vec3(0.9f), vec3(0.7f));
 				}
 			}
 			break;
+		case ActionKeysToggleInertia:
+			this->_stage->Player->toggleInertia();
+			ss << "Sissy mode: " << (this->_stage->Player->hasInertia() ? "OFF" : "ON");
+			this->_messageLine->ShowText(ss.str(), 1500, vec3(0.9f), vec3(0.7f));
 		default:
 			break;
 		}
@@ -252,19 +284,23 @@ void Game::handleInput(Event &currentEvent) {
 void Game::updateAttractMode() {
 	if (this->_evtBufferIterator != this->_eventBuffer.end()) {
 		if (this->_totalTicks >= *this->_evtBufferIterator) {
-			++this->_evtBufferIterator;
-			Uint32 keyData = *this->_evtBufferIterator++;
+			Uint32 keyData = *(this->_evtBufferIterator + 1);
+			if ((keyData & ROOM_START_EVENT) == 0) {
+				this->_evtBufferIterator += 2;
 
-			Event fakeEvent;
-
-			fakeEvent.Data["key"] = (ActionKeys)(keyData & 0x3FFF);
-			fakeEvent.Data["fake"] = true;
-			fakeEvent.Name = ((keyData & 0x4000) == 0x4000) ? "KEY_UP" : "KEY_DOWN";
-			Log::Out << "Fake event: " << fakeEvent.Name << "(" << fakeEvent.Data["key"] << ")" << endl;
-			_input->AddFakeEvent(fakeEvent);
+				Event fakeEvent;
+				fakeEvent.Data["key"] = (ActionKeys)(keyData & 0x3FFF);
+				fakeEvent.Data["fake"] = true;
+				fakeEvent.Name = ((keyData & 0x4000) == 0x4000) ? "KEY_UP" : "KEY_DOWN";
+				Log::Out << "Fake event: " << fakeEvent.Name << "(" << fakeEvent.Data["key"] << ")" << endl;
+				_input->AddFakeEvent(fakeEvent);
+			}
+			else {
+				Log::Out << "End of room - attract mode" << endl;
+				this->SetAttractMode(false);
+			}
 		}
 	} else {
-		Log::Out << "Exiting attract mode..." << endl;
 		this->SetAttractMode(false);
 	}
 }
@@ -277,6 +313,8 @@ void Game::Render() {
 		IGameState *state = it->second;
 		state->Draw();
 	}
+
+	this->_messageLine->Draw();
 
 	if (this->_drawScanlines && this->_scanlines != NULL) {
 		this->_scanlines->Draw();
@@ -345,6 +383,10 @@ void Game::LoadAttractModeData() {
 	} else {
 		this->SetAttractMode(false);
 	}
+}
+
+void Game::SetInertia(bool inertia) {
+	this->_stage->Player->setInertia(inertia);
 }
 
 void Game::ShowCursor(bool show) {

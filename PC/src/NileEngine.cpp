@@ -40,6 +40,7 @@ int main(int argc, char *argv[])
 		bool attract = false;
 		bool saveState = false;
 		bool fullScreen = true;
+		bool inertia = true;
         
 		Log::Out << "main: Initializing Engine..." << endl;
 
@@ -68,6 +69,10 @@ int main(int argc, char *argv[])
 					Log::Out << "main: Cannot use both -s and -a parameters. -a will be ignored." << endl;
 				}
 			}
+			if (!strcmp(argv[param], "-cheap") || !strcmp(argv[param], "-CHEAP") || !strcmp(argv[param], "/cheap") || !strcmp(argv[param], "/CHEAP"))
+			{
+				inertia = false;
+			}
 			if (!strcmp(argv[param], "-w") || !strcmp(argv[param], "-W") || !strcmp(argv[param], "/w") || !strcmp(argv[param], "/W"))
 			{
 				fullScreen = false;
@@ -86,6 +91,7 @@ int main(int argc, char *argv[])
 
 			game->SetAttractMode(attract);
 			game->SetSaveAttract(saveState);
+			game->SetInertia(inertia);
 
 			Log::Out << "main: Starting main loop..." << endl;
 

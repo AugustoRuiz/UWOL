@@ -31,6 +31,10 @@ public:
 	void setEstado(int estado);
 	int getEstado();
 
+	bool hasInertia();
+	void setInertia(bool inertia);
+	void toggleInertia();
+
 	void Update(Uint32 milliSec);
 
 	void Initialize();
@@ -52,6 +56,7 @@ public:
 	int GetScore();
 private:
 	int _score;
+	bool _hasInertia;
 
 	AnimationPlayer _animPlayer;
 	InputManager *_input;

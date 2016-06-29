@@ -45,6 +45,7 @@ InputManager::InputManager()
 	this->KeyMap[SDLK_PLUS] = ActionKeysNextScreen;
 	this->KeyMap[SDLK_MINUS] = ActionKeysPreviousScreen;
 	this->KeyMap[SDLK_e] = ActionKeysAddCoins;
+	this->KeyMap[SDLK_i] = ActionKeysToggleInertia;
 
 	this->SetControlMode(Keyboard);
 	this->_joystick = NULL;

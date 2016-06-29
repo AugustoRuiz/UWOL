@@ -6,10 +6,10 @@ TPlayer::TPlayer() {
 	this->_input = InputManager::GetInstance();
 	this->_map = NULL;
 
-	this->_colRect.x = 4;
-	this->_colRect.y = 4;
-	this->_colRect.width = 24;
-	this->_colRect.height = 28;
+	this->_colRect.x = 6;
+	this->_colRect.y = 8;
+	this->_colRect.width = 20;
+	this->_colRect.height = 24;
 
 	this->_posRect.x = 0;
 	this->_posRect.y = 0;
@@ -83,7 +83,7 @@ void TPlayer::AddScore(int amount) {
 	this->_score += amount;
 
 	if ((oldScore < 1000 && this->_score >= 1000) ||
-	    (oldScore < 2500 && this->_score >= 2500)) {
+		(oldScore < 2500 && this->_score >= 2500)) {
 		this->_fxExtra.PlayAsFx(false);
 		this->_vidas++;
 	}
@@ -277,8 +277,12 @@ void TPlayer::DebugPaint() {
 
 	vertexes.push_back(VECTOR2(x1, y1));
 	vertexes.push_back(VECTOR2(x2, y1));
-	vertexes.push_back(VECTOR2(x1, y2));
+	vertexes.push_back(VECTOR2(x2, y1));
 	vertexes.push_back(VECTOR2(x2, y2));
+	vertexes.push_back(VECTOR2(x2, y2));
+	vertexes.push_back(VECTOR2(x1, y2));
+	vertexes.push_back(VECTOR2(x1, y2));
+	vertexes.push_back(VECTOR2(x1, y1));
 
 	_graphics->DrawPolyLines(vertexes, 1.0f, 1.0f, 1.0f, 1.0f);
 }
@@ -332,39 +336,56 @@ void TPlayer::checkInput(Uint32 milliSec) {
 	}
 
 	if (_input->IsKeyPressed(ActionKeysLeft)) {
-		if (this->_vx > -3.0f) {
-			this->_vx -= this->_ax * milliSec * PIX_PER_MILLISEC;
-			if (this->_facing == Right && this->_vx < 0) {
-				this->_facing = Left;
+		if (_hasInertia) {
+			if (this->_vx > -3.0f) {
+				this->_vx -= this->_ax * milliSec * PIX_PER_MILLISEC;
 			}
+		}
+		else {
+			this->_vx = -3.1f;
+		}
+
+		if (this->_facing == Right && this->_vx < 0) {
+			this->_facing = Left;
 		}
 		horizKeyPressed = true;
 	}
 
 	if (_input->IsKeyPressed(ActionKeysRight)) {
-		if (this->_vx < 3.0f) {
-			this->_vx += this->_ax * milliSec * PIX_PER_MILLISEC;
-			if (this->_facing == Left && this->_vx > 0) {
-				this->_facing = Right;
+		if (_hasInertia) {
+			if (this->_vx < 3.0f) {
+				this->_vx += this->_ax * milliSec * PIX_PER_MILLISEC;
 			}
+		}
+		else {
+			this->_vx = 3.1f;
+		}
+
+		if (this->_facing == Left && this->_vx > 0) {
+			this->_facing = Right;
 		}
 		horizKeyPressed = true;
 	}
 
 	if (!horizKeyPressed) {
-		if (this->_vx > 0) {
-			this->_vx -= this->_rx * milliSec * PIX_PER_MILLISEC;
-			if (this->_vx < 0) {
-				this->_vx = 0;
-			}
-		}
-		else {
-			if (this->_vx < 0) {
-				this->_vx += this->_rx * milliSec * PIX_PER_MILLISEC;
-				if (this->_vx > 0) {
+		if (this->_hasInertia) {
+			if (this->_vx > 0) {
+				this->_vx -= this->_rx * milliSec * PIX_PER_MILLISEC;
+				if (this->_vx < 0) {
 					this->_vx = 0;
 				}
 			}
+			else {
+				if (this->_vx < 0) {
+					this->_vx += this->_rx * milliSec * PIX_PER_MILLISEC;
+					if (this->_vx > 0) {
+						this->_vx = 0;
+					}
+				}
+			}
+		}
+		else {
+			this->_vx = 0;
 		}
 	}
 
@@ -430,6 +451,18 @@ void TPlayer::setAnimation(string name) {
 		ss << "_naked";
 	}
 	this->_animPlayer.setAnimation(Animation::Get(ss.str()));
+}
+
+void TPlayer::setInertia(bool inertia) {
+	this->_hasInertia = inertia;
+}
+
+void TPlayer::toggleInertia() {
+	this->_hasInertia = !this->_hasInertia;
+}
+
+bool TPlayer::hasInertia() {
+	return this->_hasInertia;
 }
 
 bool TPlayer::ShouldChase()

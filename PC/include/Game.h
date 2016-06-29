@@ -13,6 +13,7 @@
 #include "GameOver.h"
 #include "Credits.h"
 #include "Scanlines.h"
+#include "MessageLine.h"
 #include <string>
 #include <iostream>
 #include <iterator>
@@ -38,6 +39,7 @@ public:
 
 	void SetAttractMode(bool attract);
 	void SetSaveAttract(bool save);
+	void SetInertia(bool inertia);
 
 	void LoadAttractModeData();
 	void SaveAttractModeData();
@@ -80,4 +82,5 @@ private:
 	void SwapBuffers();
 
 	Stage* _stage;
+	MessageLine *_messageLine;
 };

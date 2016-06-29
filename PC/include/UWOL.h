@@ -75,7 +75,8 @@ enum ActionKeys
 	ActionKeysAliasing = 11,
 	ActionKeysNextScreen = 12,
 	ActionKeysPreviousScreen = 13,
-	ActionKeysAddCoins = 14
+	ActionKeysAddCoins = 14,
+	ActionKeysToggleInertia = 15
 };
 
 enum ControlMode
