@@ -1,5 +1,8 @@
 #include "Player.h"
 
+#define UWOL_MAX_SPEED_X 3.1f
+#define UWOL_MAX_SPEED_Y 32.0f
+
 TPlayer::TPlayer() {
 	this->_graphics = Graphics::GetInstance();
 	this->_animPlayer.setAnimation(Animation::Get("uwol_stand_right"));
@@ -7,9 +10,9 @@ TPlayer::TPlayer() {
 	this->_map = NULL;
 
 	this->_colRect.x = 6;
-	this->_colRect.y = 8;
+	this->_colRect.y = 10;
 	this->_colRect.width = 20;
-	this->_colRect.height = 24;
+	this->_colRect.height = 22;
 
 	this->_posRect.x = 0;
 	this->_posRect.y = 0;
@@ -54,6 +57,7 @@ void TPlayer::initializePlayerData() {
 	this->_facing = Right;
 	this->_estado = Normal;
 	this->_alpha = 1.0f;
+	this->setAnimation("uwol_stand_right");
 }
 
 void TPlayer::Dispose() {
@@ -337,12 +341,12 @@ void TPlayer::checkInput(Uint32 milliSec) {
 
 	if (_input->IsKeyPressed(ActionKeysLeft)) {
 		if (_hasInertia) {
-			if (this->_vx > -3.0f) {
+			if (this->_vx > -UWOL_MAX_SPEED_X) {
 				this->_vx -= this->_ax * milliSec * PIX_PER_MILLISEC;
 			}
 		}
 		else {
-			this->_vx = -3.1f;
+			this->_vx = -UWOL_MAX_SPEED_X;
 		}
 
 		if (this->_facing == Right && this->_vx < 0) {
@@ -353,12 +357,12 @@ void TPlayer::checkInput(Uint32 milliSec) {
 
 	if (_input->IsKeyPressed(ActionKeysRight)) {
 		if (_hasInertia) {
-			if (this->_vx < 3.0f) {
+			if (this->_vx < UWOL_MAX_SPEED_X) {
 				this->_vx += this->_ax * milliSec * PIX_PER_MILLISEC;
 			}
 		}
 		else {
-			this->_vx = 3.1f;
+			this->_vx = UWOL_MAX_SPEED_X;
 		}
 
 		if (this->_facing == Left && this->_vx > 0) {
@@ -391,12 +395,12 @@ void TPlayer::checkInput(Uint32 milliSec) {
 
 	this->_vy += this->_g * milliSec * PIX_PER_MILLISEC;
 
-	if (this->_vy < -32.0f) {
-		this->_vy = -32.0f;
+	if (this->_vy < -UWOL_MAX_SPEED_Y) {
+		this->_vy = -UWOL_MAX_SPEED_Y;
 	}
 
-	if (this->_vy > 32.0f) {
-		this->_vy = 32.0f;
+	if (this->_vy > UWOL_MAX_SPEED_Y) {
+		this->_vy = UWOL_MAX_SPEED_Y;
 	}
 }
 
