@@ -19,9 +19,10 @@ public:
 	// Implementación de IGameState.
 	virtual void OnEnter(void) override;
 	virtual void OnExit(void) override;
-	string Update(Uint32 milliSec, Event & inputEvent) override;
-	void Draw(void) override;
-	void Dispose(void) override;
+	virtual string Update(Uint32 milliSec, Event & inputEvent) override;
+	virtual void Draw(void) override;
+	virtual void Dispose(void) override;
+	virtual Program * GetProgram(void) override;
 
 private:
 
@@ -41,5 +42,6 @@ private:
 	Uint32 _currentTick;
 
 	void UpdateCurrentTexture();
+
 };
 

@@ -21,6 +21,7 @@ public:
 	string Update(Uint32 milliSec, Event & inputEvent) override;
 	void Draw(void) override;
 	void Dispose(void) override;
+	virtual Program * GetProgram(void) override;
 
 private:
 
@@ -40,6 +41,5 @@ private:
 	int _incrFactor;
 
 	Uint32 _currentTick;
-
 };
 

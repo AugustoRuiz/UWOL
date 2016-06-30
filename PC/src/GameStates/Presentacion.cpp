@@ -1,7 +1,7 @@
 #include "Presentacion.h"
 
 #define NUM_COINS 100
-#define INCR_FACTOR 1
+#define INCR_FACTOR 2
 
 Presentacion::Presentacion() {
 	this->Name = "Presentacion";
@@ -23,7 +23,7 @@ Presentacion::Presentacion() {
 		Frame colorCycle("data/warpCycle.png");
 		prog->Textures.push_back(this->_bg.Texture);
 		prog->Textures.push_back(colorCycle.Texture);
-		this->_bg.SetProgram(prog);		
+		this->_bg.SetProgram(prog);
 	} else {
 		this->_bg = Frame("data/warp_original.png");
 	}
@@ -77,17 +77,33 @@ void Presentacion::Dispose()
 	}
 }
 
+Program * Presentacion::GetProgram(void)
+{
+	return nullptr;
+}
+
 void Presentacion::Draw() {
 	for (int i = 0; i < NUM_COINS/2; i++) {
-		this->_coins[i]->DrawInPos(this->_coins[i]->_x, (int) round(this->_coins[i]->_y), 0.5f);
+		this->_coins[i]->DrawInPos(this->_coins[i]->_x, (int) round(this->_coins[i]->_y), 0.5f * this->_currentAlpha);
 	}
 
-	Program* prog = this->_bg.GetProgram();
-	if(prog != NULL) {
-		prog->SetUniform("iGlobalTime", -(float)this->_totalTicks);		
+	int bgW = _bg.Texture->width * 2;
+	int bgH = _bg.Texture->height * 2;
+	int bgX = (_g->WorldWidth - bgW) / 2;
+	int bgY = 41 + (_g->WorldHeight - bgH) / 2;
+
+	Program* prog = _bg.GetProgram();
+	if (prog != NULL) {
+		prog->SetUniform("iGlobalTime", (this->_currentAlpha < 1.0f ? 0.0f : -(float)this->_totalTicks));
 	}
-	_g->BlitFrameAlpha(_bg, _g->WorldWidth/2 - _bg.Texture->width, _g->WorldHeight/2 - _bg.Texture->height + 48, _bg.Texture->width * 2, _bg.Texture->height * 2, this->_currentAlpha, false, false);
-	_g->BlitCenteredFrameAlpha(_portada, _portada.Texture->width * 2, _portada.Texture->height * 2, this->_currentAlpha, false, false);
+	_g->BlitFrameAlpha(_bg, bgX, bgY, bgW, bgH, this->_currentAlpha, false, false);
+	
+	int pW = _portada.Texture->width * 2;
+	int pH = _portada.Texture->height * 2;
+	int x = (_g->WorldWidth - pW) / 2;
+	int y = -8 + (_g->WorldHeight - pH) / 2;
+
+	_g->BlitFrameAlpha(_portada, x, y, pW, pH, this->_currentAlpha, false, false);
 
 	string text = "PUSH JUMP TO START";
 	int posX = (int)((_g->WorldWidth - (text.size() * 16)) / 2);
@@ -97,7 +113,7 @@ void Presentacion::Draw() {
 	_g->DrawStringAlpha(posX, posY, text, _rTextTop, _gTextTop, _bTextTop, _rTextBot, _gTextBot, _bTextBot, _textAlpha);
 
 	for (int i = NUM_COINS/2; i < NUM_COINS; i++) {
-		this->_coins[i]->DrawInPos(this->_coins[i]->_x, (int)round(this->_coins[i]->_y), 1.0f);
+		this->_coins[i]->DrawInPos(this->_coins[i]->_x, (int)round(this->_coins[i]->_y), 1.0f * this->_currentAlpha);
 	}
 
 	// Cortamos por las bravas...
@@ -171,7 +187,7 @@ string Presentacion::Update(Uint32 milliSec, Event & inputEvent) {
 	}
 
 	if (this->_goNext) {
-		return "Credits";
+		return "Attract";
 	}
 
 	return this->Name;

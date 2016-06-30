@@ -84,6 +84,11 @@ void Stage::DrawTime() {
 	}
 }
 
+Program * Stage::GetProgram(void)
+{
+	return nullptr;
+}
+
 string Stage::Update(Uint32 milliSec, Event & inputEvent) {
 	this->StatsDrawer->Update(milliSec);
 

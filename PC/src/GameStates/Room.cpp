@@ -445,6 +445,11 @@ void Room::drawCamiseta() {
 	_g->BlitFrame(this->_textureCamiseta, this->_camisetaX * 32, this->_camisetaY * 32, 32, 32, false, false);
 }
 
+Program * Room::GetProgram(void)
+{
+	return nullptr;
+}
+
 void Room::Dispose(void) {
 	if (!this->_disposed) {
 		int i;

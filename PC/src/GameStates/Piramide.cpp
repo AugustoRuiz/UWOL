@@ -43,10 +43,15 @@ string Piramide::Update(Uint32 milliSec, Event & inputEvent)
 
 void Piramide::Draw(void)
 {
-	int logoW = this->_frameLogo.Texture->width * 2, logoH = this->_frameLogo.Texture->height * 2;
-	int arrowW = this->_frameFlecha.Texture->width * 2, arrowH = this->_frameFlecha.Texture->height * 2;
+	int logoW = this->_frameLogo.Texture->width * 2; 
+	int logoH = this->_frameLogo.Texture->height * 2;
+	int arrowW = this->_frameFlecha.Texture->width * 2;
+	int arrowH = this->_frameFlecha.Texture->height * 2;
 
-	_g->BlitFrameAlpha(this->_frameLogo, (_g->WorldWidth - logoW) / 2, -32, logoW, logoH, 0.33f, false, false);
+	int logoX = (_g->WorldWidth - logoW) / 2;
+	int logoY = -32;
+
+	_g->BlitFrameAlpha(this->_frameLogo, logoX, logoY, logoW, logoH, 0.33f, false, false);
 
 	this->_stage.StatsDrawer->DrawLives(0, -32, this->_stage.Player->_vidas);
 	this->_stage.StatsDrawer->DrawCoins(288, -32, this->_stage.Player->_coinsTaken);
@@ -93,4 +98,9 @@ void Piramide::Draw(void)
 
 void Piramide::Dispose(void)
 {
+}
+
+Program * Piramide::GetProgram(void)
+{
+	return nullptr;
 }

@@ -42,3 +42,8 @@ void GameOver::Draw(void)
 void GameOver::Dispose(void)
 {
 }
+
+Program * GameOver::GetProgram(void)
+{
+	return nullptr;
+}

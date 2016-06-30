@@ -2,6 +2,7 @@
 
 #include "GameData.h"
 #include "Event.h"
+#include "Program.h"
 
 struct IGameState {
 	string Name;
@@ -12,6 +13,7 @@ struct IGameState {
 	virtual string Update(Uint32 milliSec, Event & inputEvent) = 0;
 	virtual void Draw(void) = 0;
 	virtual void Dispose(void) = 0;
-	
+	virtual Program* GetProgram(void) = 0;
+
 	virtual ~IGameState() { };
 };

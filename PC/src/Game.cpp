@@ -1,6 +1,6 @@
 #include "Game.h"
 
-#define ROOM_START_EVENT 0x10000
+#define ATTRACT_TIMES 3
 
 Game *Game::GetInstance() {
 	return &_instance;
@@ -27,13 +27,15 @@ bool Game::Initialize(int width, int height, bool fullscreen, const char* name) 
 	Log::Out << "Game: Initializing screen (" << width << " x " << height << ")..." << endl;
 
 	_running = _g->Initialize(width, height, 384, 320, fullscreen, name);
+	this->ShowCursor(false);
 
 	_g->LightPosition.x = _g->WorldWidth / 2;
 	_g->LightPosition.y = 0;
 
 	if (_running) {
 		Log::Out << "Game: Initialization OK." << endl;
-	} else {
+	}
+	else {
 		Log::Out << "Game: Error initializing." << endl;
 	}
 
@@ -47,8 +49,14 @@ bool Game::Initialize(int width, int height, bool fullscreen, const char* name) 
 
 	this->_stage = new Stage();
 
+	this->_attract = new Attract();
+	this->_attract->SetAttractData(this->LoadAttractModeData());
+	this->_attract->SetRooms(this->_stage->Rooms);
+	this->_attract->SetPlayer(this->_stage->Player);
+
 	this->AddState(new Portada());
 	this->AddState(new Presentacion());
+	this->AddState(this->_attract);
 	this->AddState(new Credits());
 	this->AddState(new Piramide((*(this->_stage))));
 	this->AddState(this->_stage);
@@ -60,20 +68,21 @@ bool Game::Initialize(int width, int height, bool fullscreen, const char* name) 
 
 	this->_messageLine = new MessageLine();
 
-	if(this->_blitProgram->ProgramId == 0) {
+	if (this->_blitProgram->ProgramId == 0) {
 		_scanlines = new Scanlines();
 		_scanlines->setSize(width, height);
 		_drawScanlines = true;
-	} else {
+	}
+	else {
 		_scanlines = NULL;
 		_drawScanlines = false;
 	}
 
 	this->_savingStatus = false;
 	this->_statusSaved = false;
-	this->_attractMode = false;
 
 	this->_totalTicks = 0;
+	this->_attractTimes = 0;
 
 	return _running;
 }
@@ -86,7 +95,7 @@ void Game::Dispose() {
 		delete pairState.second;
 	}
 
-	if(this->_scanlines != NULL) {
+	if (this->_scanlines != NULL) {
 		delete _scanlines;
 	}
 
@@ -98,10 +107,6 @@ void Game::Update(Uint32 mSecs)
 	string oldStatus = _currentStatus;
 
 	this->_messageLine->Update(mSecs);
-
-	if (this->_attractMode) {
-		this->updateAttractMode();
-	}
 
 	Event currentEvent = InputManager::GetInstance()->Update(mSecs);
 	this->handleInput(currentEvent);
@@ -126,7 +131,8 @@ void Game::Update(Uint32 mSecs)
 			if (oldStatus != newStatus) {
 				this->changeStatus(oldStatus, newStatus);
 			}
-		} else {
+		}
+		else {
 			stringstream ss;
 			ss << "No status found with name '" << _currentStatus << "'" << endl;
 			Log::Out << ss.str() << endl;
@@ -136,14 +142,23 @@ void Game::Update(Uint32 mSecs)
 }
 
 void Game::changeStatus(const string &oldStatus, const string &newStatus) {
+	string realNewStatus = newStatus;
 	if (oldStatus != newStatus) {
+		
+		if (newStatus == "Attract") {
+			this->_attractTimes = (this->_attractTimes + 1) % ATTRACT_TIMES;
+			if (this->_attractTimes == 0) {
+				realNewStatus = "Credits";
+			}
+		}
+
 		map<string, IGameState*>::iterator it = _states.find(oldStatus);
 		if (it != _states.end()) {
 			IGameState *state = it->second;
 			state->OnExit();
-			if (_states.find(newStatus) != _states.end()) {
-				_states[newStatus]->OnEnter();
-				this->_currentStatus = newStatus;
+			if (_states.find(realNewStatus) != _states.end()) {
+				_states[realNewStatus]->OnEnter();
+				this->_currentStatus = realNewStatus;
 			}
 		}
 
@@ -160,54 +175,63 @@ void Game::handleInput(Event &currentEvent) {
 	stringstream ss;
 	if (currentEvent.Name == "KEY_DOWN") {
 		ActionKeys key = (ActionKeys)(currentEvent.Data["key"].asInt());
+		if (this->_savingStatus) {
+			this->_statusSaved = true;
+			this->_eventBuffer.push_back(this->_totalTicks);
+			this->_eventBuffer.push_back((Uint32)(0x3FFF & key));
+		}
+	}
+	if (currentEvent.Name == "KEY_UP") {
+		ActionKeys key = (ActionKeys)(currentEvent.Data["key"].asInt());
 		switch (key) {
 		case ActionKeysExit:
-			if (this->_attractMode) {
-				this->SetAttractMode(false);
-			} else {
-				_running = false;
-			}
+			_running = false;
 			break;
-		case ActionKeysAliasing:
-			aliasing = !aliasing;
-			ss << "Antialiasing is " << (aliasing ? "ON" : "OFF");
-			this->_messageLine->ShowText(ss.str(), 1500, vec3(0.9f), vec3(0.7f));
-			break;
-		case ActionKeysScanlines:
-			if(this->_scanlines == NULL && _blitPrograms.size()>0) {
-				if (_blitProgram == NULL) {
-					_blitProgram = _blitPrograms[0];
-				} else {
-					vector<Program*>::iterator pos = std::find(_blitPrograms.begin(), _blitPrograms.end(), _blitProgram);
-					if (pos == _blitPrograms.end()) {
-						_blitProgram = _blitPrograms[0];
-					} else {
-						pos++;
-						if (pos == _blitPrograms.end()) {
-							pos = _blitPrograms.begin();
-						}
-					}
-					_blitProgram = *pos;
-				}
-				ss << "Post-processing shader: " << ((_blitProgram != NULL) ? _blitProgram->ProgramId : 0);
-				this->_messageLine->ShowText(ss.str(), 1500, vec3(0.9f), vec3(0.7f));
-			} else {
-				_drawScanlines = !_drawScanlines;
-				ss << "Scanlines: " << (_drawScanlines ? "ON" : "OFF");
-				this->_messageLine->ShowText(ss.str(), 1500, vec3(0.9f), vec3(0.7f));
-			}
-			break;
-		case ActionKeysAltScanlines:
-			if(this->_scanlines != NULL) {
-				this->_scanlines->Mode ^= 1;
-				ss << "Scanline mode: " << this->_scanlines->Mode;
-				this->_messageLine->ShowText(ss.str(), 1500, vec3(0.9f), vec3(0.7f));
-			}
-			break;
-	case ActionKeysDebug:
-			debugPaint = !debugPaint;
-			ss << "Debug paint: " << (debugPaint ? "ON" : "OFF");
-			this->_messageLine->ShowText(ss.str(), 1500, vec3(0.9f), vec3(0.7f));
+			//case ActionKeysAliasing:
+			//	aliasing = !aliasing;
+			//	ss << "Antialiasing is " << (aliasing ? "ON" : "OFF");
+			//	this->_messageLine->ShowText(ss.str(), 1500, vec3(0.9f), vec3(0.7f));
+			//	break;
+			//case ActionKeysScanlines:
+			//	if (this->_scanlines == NULL && _blitPrograms.size() > 0) {
+			//		if (_blitProgram == NULL) {
+			//			_blitProgram = _blitPrograms[0];
+			//		}
+			//		else {
+			//			vector<Program*>::iterator pos = std::find(_blitPrograms.begin(), _blitPrograms.end(), _blitProgram);
+			//			if (pos == _blitPrograms.end()) {
+			//				_blitProgram = _blitPrograms[0];
+			//			}
+			//			else {
+			//				pos++;
+			//				if (pos == _blitPrograms.end()) {
+			//					pos = _blitPrograms.begin();
+			//				}
+			//			}
+			//			_blitProgram = *pos;
+			//		}
+			//		ss << "Post-processing shader: " << ((_blitProgram != NULL) ? _blitProgram->ProgramId : 0);
+			//		this->_messageLine->ShowText(ss.str(), 1500, vec3(0.9f), vec3(0.7f));
+			//	}
+			//	else {
+			//		_drawScanlines = !_drawScanlines;
+			//		ss << "Scanlines: " << (_drawScanlines ? "ON" : "OFF");
+			//		this->_messageLine->ShowText(ss.str(), 1500, vec3(0.9f), vec3(0.7f));
+			//	}
+			//	break;
+			//case ActionKeysAltScanlines:
+			//	if (this->_scanlines != NULL) {
+			//		this->_scanlines->Mode ^= 1;
+			//		ss << "Scanline mode: " << this->_scanlines->Mode;
+			//		this->_messageLine->ShowText(ss.str(), 1500, vec3(0.9f), vec3(0.7f));
+			//	}
+			//	break;
+		case ActionKeysDebug:
+			//debugPaint = !debugPaint;
+			//ss << "Debug paint: " << (debugPaint ? "ON" : "OFF");
+			//this->_messageLine->ShowText(ss.str(), 1500, vec3(0.9f), vec3(0.7f));
+			this->changeStatus(this->_currentStatus, "Portada");
+			this->_attractTimes = 0;
 			break;
 		case ActionKeysStopRecording:
 			// Dejamos de guardar después de guardar la pulsación de la tecla de grabar. Así la grabación 
@@ -258,6 +282,7 @@ void Game::handleInput(Event &currentEvent) {
 			this->_stage->Player->toggleInertia();
 			ss << "Sissy mode: " << (this->_stage->Player->hasInertia() ? "OFF" : "ON");
 			this->_messageLine->ShowText(ss.str(), 1500, vec3(0.9f), vec3(0.7f));
+			break;
 		default:
 			break;
 		}
@@ -265,53 +290,25 @@ void Game::handleInput(Event &currentEvent) {
 		if (this->_savingStatus) {
 			this->_statusSaved = true;
 			this->_eventBuffer.push_back(this->_totalTicks);
-			this->_eventBuffer.push_back((Uint32)(0x3FFF & key));
-		}
-	}
-	if (currentEvent.Name == "KEY_UP") {
-		ActionKeys key = (ActionKeys)(currentEvent.Data["key"].asInt());
-		if (this->_savingStatus) {
-			this->_statusSaved = true;
-			this->_eventBuffer.push_back(this->_totalTicks);
 			this->_eventBuffer.push_back((Uint32)(0x4000 | (0x3FFF & key)));
 		}
-		if (this->_attractMode && (!currentEvent.Data["fake"].asBool())) {
-			this->SetAttractMode(false);
-		}
-	}
-}
-
-void Game::updateAttractMode() {
-	if (this->_evtBufferIterator != this->_eventBuffer.end()) {
-		if (this->_totalTicks >= *this->_evtBufferIterator) {
-			Uint32 keyData = *(this->_evtBufferIterator + 1);
-			if ((keyData & ROOM_START_EVENT) == 0) {
-				this->_evtBufferIterator += 2;
-
-				Event fakeEvent;
-				fakeEvent.Data["key"] = (ActionKeys)(keyData & 0x3FFF);
-				fakeEvent.Data["fake"] = true;
-				fakeEvent.Name = ((keyData & 0x4000) == 0x4000) ? "KEY_UP" : "KEY_DOWN";
-				Log::Out << "Fake event: " << fakeEvent.Name << "(" << fakeEvent.Data["key"] << ")" << endl;
-				_input->AddFakeEvent(fakeEvent);
-			}
-			else {
-				Log::Out << "End of room - attract mode" << endl;
-				this->SetAttractMode(false);
-			}
-		}
-	} else {
-		this->SetAttractMode(false);
 	}
 }
 
 void Game::Render() {
+	Program* currentProgram = this->_blitProgram;
+
 	_g->Clear();
 
 	map<string, IGameState*>::iterator it = _states.find(_currentStatus);
 	if (it != _states.end()) {
 		IGameState *state = it->second;
 		state->Draw();
+
+		Program* p = state->GetProgram();
+		if (p != nullptr) {
+			this->_blitProgram = p;
+		}
 	}
 
 	this->_messageLine->Draw();
@@ -321,45 +318,17 @@ void Game::Render() {
 	}
 
 	this->SwapBuffers();
+
+	this->_blitProgram = currentProgram;
 }
 
 void Game::Restart() {
 	this->_stage->Restart();
 }
 
-void Game::SetAttractMode(bool attract) {
-	this->_attractMode = attract;
-	//_input->Enabled = !attract;
-
-	Log::Out << "SetAttractMode(" << (attract ? "true" : "false") << ")" << endl;
-
-	if (attract) {
-		this->_savingStatus = false;
-		this->_totalTicks = 0;
-		this->LoadAttractModeData();
-		this->_evtBufferIterator = this->_eventBuffer.begin();
-	} else {
-		this->_currentStatus = "Portada";
-	}
-
-	if (_currentStatus == "Stage") {
-		map<string, IGameState*>::iterator it = _states.find(_currentStatus);
-		if (it != _states.end()) {
-			((Stage*)it->second)->GoToRoom(0);
-			this->_totalTicks = 0;
-		}
-	}
-}
-
 void Game::SetSaveAttract(bool save) {
 	Log::Out << "SetSaveAttract(" << (save ? "true" : "false") << ")" << endl;
-
 	this->_savingStatus = save;
-
-	if (save) {
-		this->_attractMode = false;
-		this->_totalTicks = 0;
-	}
 }
 
 void Game::SaveAttractModeData() {
@@ -367,22 +336,22 @@ void Game::SaveAttractModeData() {
 	if (this->_statusSaved) {
 		ofstream output("status.dat", ios::binary);
 		for (Uint32 data : this->_eventBuffer) {
-			output.write((char*) &data, sizeof(Uint32));;
+			output.write((char*)&data, sizeof(Uint32));;
 		}
 	}
 }
 
-void Game::LoadAttractModeData() {
+vector<Uint32> Game::LoadAttractModeData() {
+	vector<Uint32> result;
 	ifstream input("status.dat", ios::binary);
 	if (input.good()) {
 		while (!input.eof()) {
 			Uint32 data;
 			input.read((char*)&data, sizeof(Uint32));
-			this->_eventBuffer.push_back(data);
+			result.push_back(data);
 		}
-	} else {
-		this->SetAttractMode(false);
 	}
+	return result;
 }
 
 void Game::SetInertia(bool inertia) {
@@ -406,7 +375,7 @@ void Game::drawStatusMsg(const string& str) {
 	Log::Out << str << endl;
 
 	_g->Clear();
-	_g->DrawString(0, _g->WorldHeight - 32, fontSize, 
+	_g->DrawString(0, _g->WorldHeight - 32, fontSize,
 		str, grayValue, grayValue, grayValue, grayValue, grayValue, grayValue);
 
 	this->SwapBuffers();
@@ -440,7 +409,7 @@ void Game::loadResources() {
 				stringstream ss;
 				ss << "Loading " << ((shaderType == Vertex) ? "vertex" : "fragment") << " shader: " << shaderFile;
 				drawStatusMsg(ss.str());
-				shaderPtrs.push_back(shaderMgr->LoadShader(shaderFile, shaderType));				
+				shaderPtrs.push_back(shaderMgr->LoadShader(shaderFile, shaderType));
 			}
 			Program* p = new Program(shaderPtrs);
 			if (p->ProgramId != 0) {

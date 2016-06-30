@@ -9,26 +9,26 @@
 
 int main(int argc, char *argv[])
 {
-    Log::Initialize();
+	Log::Initialize();
 
-    // ----------------------------------------------------------------------------
-    // This makes relative paths work in C++ in Xcode by changing directory to the Resources folder inside the .app bundle
+	// ----------------------------------------------------------------------------
+	// This makes relative paths work in C++ in Xcode by changing directory to the Resources folder inside the .app bundle
 #ifdef __APPLE__
-    CFBundleRef mainBundle = CFBundleGetMainBundle();
-    CFURLRef resourcesURL = CFBundleCopyResourcesDirectoryURL(mainBundle);
-    char path[PATH_MAX];
-    if (!CFURLGetFileSystemRepresentation(resourcesURL, TRUE, (UInt8 *)path, PATH_MAX))
-    {
-        // error!
-        Log::Out << "Couldn't get file system representation! " << std::endl;
-    }
-    CFRelease(resourcesURL);
-    
-    chdir(path);
-    Log::Out << "Current Path: " << path << endl;
+	CFBundleRef mainBundle = CFBundleGetMainBundle();
+	CFURLRef resourcesURL = CFBundleCopyResourcesDirectoryURL(mainBundle);
+	char path[PATH_MAX];
+	if (!CFURLGetFileSystemRepresentation(resourcesURL, TRUE, (UInt8 *)path, PATH_MAX))
+	{
+		// error!
+		Log::Out << "Couldn't get file system representation! " << std::endl;
+	}
+	CFRelease(resourcesURL);
+
+	chdir(path);
+	Log::Out << "Current Path: " << path << endl;
 #endif
-    // ----------------------------------------------------------------------------
-    
+	// ----------------------------------------------------------------------------
+
 	try {
 		Game *game = Game::GetInstance();
 		MusicManager *musicMgr = MusicManager::GetInstance();
@@ -37,41 +37,17 @@ int main(int argc, char *argv[])
 		Uint32 delta;
 		Uint32 accum = 0;
 
-		bool attract = false;
 		bool saveState = false;
 		bool fullScreen = true;
-		bool inertia = true;
-        
+
 		Log::Out << "main: Initializing Engine..." << endl;
 
 		Log::Out << "Parsing parameters..." << endl;
 		for (int param = 1; param < argc; param++)
 		{
-			if (!strcmp(argv[param], "-a") || !strcmp(argv[param], "-A") || !strcmp(argv[param], "/a") || !strcmp(argv[param], "/A"))
-			{
-				if (!saveState)
-				{
-					attract = true;
-				}
-				else
-				{
-					Log::Out << "main: Cannot use both -a and -s parameters. -s will be ignored." << endl;
-				}
-			}
 			if (!strcmp(argv[param], "-s") || !strcmp(argv[param], "-S") || !strcmp(argv[param], "/s") || !strcmp(argv[param], "/S"))
 			{
-				if (!attract)
-				{
-					saveState = true;
-				}
-				else
-				{
-					Log::Out << "main: Cannot use both -s and -a parameters. -a will be ignored." << endl;
-				}
-			}
-			if (!strcmp(argv[param], "-cheap") || !strcmp(argv[param], "-CHEAP") || !strcmp(argv[param], "/cheap") || !strcmp(argv[param], "/CHEAP"))
-			{
-				inertia = false;
+				saveState = true;
 			}
 			if (!strcmp(argv[param], "-w") || !strcmp(argv[param], "-W") || !strcmp(argv[param], "/w") || !strcmp(argv[param], "/W"))
 			{
@@ -87,11 +63,8 @@ int main(int argc, char *argv[])
 		// 512 x 384
 		if (game->Initialize(640, 480, fullScreen, "UWOL, The Quest for Money"))
 		{
-			game->ShowCursor(false);
-
-			game->SetAttractMode(attract);
+			game->SetInertia(true);
 			game->SetSaveAttract(saveState);
-			game->SetInertia(inertia);
 
 			Log::Out << "main: Starting main loop..." << endl;
 

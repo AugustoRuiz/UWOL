@@ -186,6 +186,11 @@ VECTOR2F Credits::GetPosition()
 	return VECTOR2F(_uwolX - _g->OffsetX, _g->ScreenHeight - (_g->ScreenHeight - _g->WorldHeight) / 2 - _g->OffsetY - 64);
 }
 
+Program* Credits::GetProgram(void)
+{
+	return nullptr;
+}
+
 
 void Credits::drawCentered(int y, const string &str) {
 	string strCopy(str);

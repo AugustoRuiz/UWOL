@@ -13,11 +13,12 @@ public:
 	~Credits(void);
 
 	// Implementación de IGameState.
-	void OnEnter(void) override;
-	void OnExit(void) override;
-	string Update(Uint32 milliSec, Event & inputEvent) override;
-	void Draw(void) override;
-	void Dispose(void) override;
+	virtual void OnEnter(void) override;
+	virtual void OnExit(void) override;
+	virtual string Update(Uint32 milliSec, Event & inputEvent) override;
+	virtual void Draw(void) override;
+	virtual void Dispose(void) override;
+	virtual Program* GetProgram(void) override;
 
 private:
 	void drawCentered(int y, const string &str);
@@ -43,13 +44,6 @@ private:
 	Frame _uwolIcon, _sdlIcon, _openGlIcon, _glmIcon, _glewIcon;
 	Frame _shadow;
 
-	//TextRenderer* _textRenderer;
-
-	//float _currentAlpha;
-	//int _incrFactor;
-
-	//Uint32 _currentTick;
-
 	AnimationPlayer _uwolAnimPlayer;
 	float _uwolX;
 	float _uwolVX;
@@ -57,5 +51,4 @@ private:
 	// Inherited via IChaseable
 	virtual bool ShouldChase() override;
 	virtual VECTOR2F GetPosition() override;
-
 };

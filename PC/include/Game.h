@@ -14,6 +14,7 @@
 #include "Credits.h"
 #include "Scanlines.h"
 #include "MessageLine.h"
+#include "Attract.h"
 #include <string>
 #include <iostream>
 #include <iterator>
@@ -41,7 +42,7 @@ public:
 	void SetSaveAttract(bool save);
 	void SetInertia(bool inertia);
 
-	void LoadAttractModeData();
+	vector<Uint32> LoadAttractModeData();
 	void SaveAttractModeData();
 
 	void AddState(IGameState* state);
@@ -53,14 +54,14 @@ protected:
 	static Game _instance;
 
 private:
+	Uint8 _attractTimes;
+
 	bool _running;
 
-	bool _attractMode;
 	bool _savingStatus;
 	bool _statusSaved;
 	Uint32 _totalTicks;
 	vector<Uint32> _eventBuffer;
-	vector<Uint32>::iterator _evtBufferIterator;
 
 	Graphics *_g;
 	Program* _blitProgram;
@@ -75,12 +76,13 @@ private:
 
 	void loadResources();
 	void handleInput(Event &currentEvent);
-	void updateAttractMode();
+	//void updateAttractMode();
 	void changeStatus(const string &oldStatus, const string &newStatus);
 
 	void drawStatusMsg(const string& str);
 	void SwapBuffers();
 
 	Stage* _stage;
+	Attract* _attract;
 	MessageLine *_messageLine;
 };

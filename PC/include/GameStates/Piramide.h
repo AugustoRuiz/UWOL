@@ -34,6 +34,8 @@ public:
 	virtual string Update(Uint32 milliSec, Event &inputEvent) override;
 	virtual void Draw(void) override;
 	virtual void Dispose(void) override;
+	virtual Program * GetProgram(void) override;
 
 	int NumFase;
+
 };

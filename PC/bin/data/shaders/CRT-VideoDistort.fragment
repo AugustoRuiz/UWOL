@@ -175,15 +175,6 @@ float stripes(vec2 uv) {
 
 vec4 getVideo(vec2 uv) {
 	vec2 look = uv;
-	//float window = 1./(1.+20.*(look.y-mod(iGlobalTime/4.,1.))*(look.y-mod(iGlobalTime/4.,1.)));
-	// Movimiento horizontal
-	//look.x = look.x + sin(look.y*10. + iGlobalTime)/50.*onOff(4.,4.,.3)*(1.+cos(iGlobalTime*80.))*window;
-	//float vShift = 0.04*onOff(2.,3.,.9)*(sin(iGlobalTime)*sin(iGlobalTime*20.) + 
-	//									 (0.5 + 0.1*sin(iGlobalTime*200.)*cos(iGlobalTime)));
-	// Movimiento en vertical.
-	// look.y = mod(look.y + vShift, 1.);
-	// vec3 video = vec3(texture2D(iChannel0,look));
-
     look = Warp(look);
     vec3 video = Tri(look) * Mask(gl_FragCoord.xy);
 	vec4 result = vec4(video, 1.0);

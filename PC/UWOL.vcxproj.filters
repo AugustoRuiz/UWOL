@@ -162,6 +162,9 @@
     <ClCompile Include="src\Entities\MessageLine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\GameStates\Attract.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\CollisionMap.h">
@@ -324,6 +327,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\Entities\MessageLine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GameStates\Attract.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -19,11 +19,12 @@ public:
 	~Stage(void);
 
 	// Implementación de IGameState.
-	void OnEnter(void) override;
-	void OnExit(void) override;
-	string Update(Uint32 milliSec, Event & inputEvent) override;
-	void Draw(void) override;
-	void Dispose(void) override;
+	virtual void OnEnter(void) override;
+	virtual void OnExit(void) override;
+	virtual string Update(Uint32 milliSec, Event & inputEvent) override;
+	virtual void Draw(void) override;
+	virtual void Dispose(void) override;
+	virtual Program * GetProgram(void) override;
 
 	void GoToRoom(int roomIndex);
 	void Restart();

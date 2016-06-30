@@ -2,14 +2,13 @@
 
 #define INCR_FACTOR 1
 
-Portada::Portada()
+Portada::Portada() : _imagenes()
 {
 	this->Name = "Portada";
 	this->_g = Graphics::GetInstance();
 
 	this->_imagenes.push_back(Frame("data/logoMojon.png"));
 	//this->_imagenes.push_back(Frame("data/logoRetroworks.png"));
-	//this->_imagenes.push_back(Frame("data/credits.png"));
 
 	this->_sonido = Sound("sounds/coinPicked.ogg");
 
@@ -46,7 +45,7 @@ void Portada::Dispose()
 
 void Portada::Draw()
 {
-	Frame& current = this->_imagenes[this->_currentFrame];
+	Frame current = Frame(this->_imagenes[this->_currentFrame]);
 	int w = current.Texture->width * 2;
 	int h = current.Texture->height * 2;
 	int posX, posY;
@@ -104,4 +103,9 @@ string Portada::Update(Uint32 milliSec, Event & inputEvent)
 void Portada::UpdateCurrentTexture()
 {
 	this->_currentFrame++;
+}
+
+Program * Portada::GetProgram(void)
+{
+	return nullptr;
 }

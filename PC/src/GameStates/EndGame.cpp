@@ -52,3 +52,8 @@ void EndGame::Draw(void)
 void EndGame::Dispose(void)
 {
 }
+
+Program * EndGame::GetProgram(void)
+{
+	return nullptr;
+}

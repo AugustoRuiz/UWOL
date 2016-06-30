@@ -180,21 +180,15 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 	else {
 		// Split the color channels
 		fragColor.rgb = Tri(crtCoords); // * Mask(gl_FragCoord.xy); // sampleSplit(iChannel0, crtCoords); 
+		
+		float vigAmt = 4.+.3*sin(iGlobalTime + 5.*cos(iGlobalTime*5.));
+		float vignette = (1.-vigAmt*(fragCoord.y-.5)*(fragCoord.y-.5))*(1.-vigAmt*(fragCoord.x-.5)*(fragCoord.x-.5));
 
-		// HACK: this bend produces a shitty moire pattern.
-		// Up the bend for the scanline
-		//vec2 screenSpace = crtCoords * iResolution.xy;
-		//fragColor.rgb = scanline(screenSpace, fragColor.rgb);
+		fragColor += 0.2 * stripes(fragCoord);
+		fragColor += 0.2 * noise(2.0 * fragCoord);
+		fragColor *= vignette;
+		fragColor *= (12. + mod(fragCoord.y*30. + iGlobalTime, 1.))/13.;
 	}
-	//fragColor.a = 1;
-	
-	float vigAmt = 4.+.3*sin(iGlobalTime + 5.*cos(iGlobalTime*5.));
-	float vignette = (1.-vigAmt*(fragCoord.y-.5)*(fragCoord.y-.5))*(1.-vigAmt*(fragCoord.x-.5)*(fragCoord.x-.5));
-
-	fragColor += 0.2 * stripes(fragCoord);
-	fragColor += 0.2 * noise(2.0 * fragCoord);
-	fragColor *= vignette;
-	fragColor *= (12. + mod(fragCoord.y*30. + iGlobalTime, 1.))/13.;
 	fragColor = vec4(fragColor.rgb,1.0);
 
 }
