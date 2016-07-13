@@ -2,6 +2,7 @@
 
 #define NUM_COINS 100
 #define INCR_FACTOR 2
+#define WAIT_TIME_IN_MSECS 15400
 
 Presentacion::Presentacion() {
 	this->Name = "Presentacion";
@@ -12,23 +13,23 @@ Presentacion::Presentacion() {
 
 	this->_g = Graphics::GetInstance();
 
-	this->_portada = Frame("data/uwol_portada.png");
+	this->_portada = new Frame("data/uwol_portada.png");
 	
 	vector<string> vertexShaders = { "data/shaders/Default.150.vertex" };
 	vector<string> fragmentShaders = { "data/shaders/ColorCycle.150.fragment" };
 
 	Program *prog = new Program(vertexShaders, fragmentShaders);
 	if(prog->ProgramId != 0) {
-		this->_bg = Frame("data/warp.png");
+		this->_bg = new Frame("data/warp.png");
 		Frame colorCycle("data/warpCycle.png");
-		prog->Textures.push_back(this->_bg.Texture);
+		prog->Textures.push_back(this->_bg->Texture);
 		prog->Textures.push_back(colorCycle.Texture);
-		this->_bg.SetProgram(prog);
+		this->_bg->SetProgram(prog);
 	} else {
-		this->_bg = Frame("data/warp_original.png");
+		this->_bg = new Frame("data/warp_original.png");
 	}
 
-	this->_shadow = Frame("data/TileSombra.png");;
+	this->_shadow = new Frame("data/TileSombra.png");;
 
 	this->_disposed = false;
 
@@ -45,7 +46,7 @@ Presentacion::Presentacion() {
 		this->_coins[i]->SetTicks(rand() % TICKS_ANIM_COIN);
 		this->_coins[i]->_rotationFactor = ((rand() % 30) / 10.0f) + 0.5f;
 	}
-	this->_music = Sound("music/Money.ogg");
+	this->_music = new Sound("music/Money.ogg");
 }
 
 Presentacion::~Presentacion() {
@@ -59,7 +60,7 @@ void Presentacion::OnEnter() {
 	this->_goNext = false;
 	this->_incrFactor = INCR_FACTOR;
 
-	this->_music.PlayAsMusic(true);
+	this->_music->PlayAsMusic(true);
 }
 
 void Presentacion::OnExit() {
@@ -73,6 +74,12 @@ void Presentacion::Dispose()
 			delete this->_coins[i];
 		}
 		delete this->_coins;
+		
+		delete this->_bg;
+		delete this->_portada;
+		delete this->_music;
+		delete this->_shadow;
+
 		this->_disposed = true;
 	}
 }
@@ -87,19 +94,19 @@ void Presentacion::Draw() {
 		this->_coins[i]->DrawInPos(this->_coins[i]->_x, (int) round(this->_coins[i]->_y), 0.5f * this->_currentAlpha);
 	}
 
-	int bgW = _bg.Texture->width * 2;
-	int bgH = _bg.Texture->height * 2;
+	int bgW = _bg->Texture->width * 2;
+	int bgH = _bg->Texture->height * 2;
 	int bgX = (_g->WorldWidth - bgW) / 2;
 	int bgY = 41 + (_g->WorldHeight - bgH) / 2;
 
-	Program* prog = _bg.GetProgram();
+	Program* prog = _bg->GetProgram();
 	if (prog != NULL) {
 		prog->SetUniform("iGlobalTime", (this->_currentAlpha < 1.0f ? 0.0f : -(float)this->_totalTicks));
 	}
 	_g->BlitFrameAlpha(_bg, bgX, bgY, bgW, bgH, this->_currentAlpha, false, false);
 	
-	int pW = _portada.Texture->width * 2;
-	int pH = _portada.Texture->height * 2;
+	int pW = _portada->Texture->width * 2;
+	int pH = _portada->Texture->height * 2;
 	int x = (_g->WorldWidth - pW) / 2;
 	int y = -8 + (_g->WorldHeight - pH) / 2;
 
@@ -141,7 +148,7 @@ string Presentacion::Update(Uint32 milliSec, Event & inputEvent) {
 	if (this->_incrFactor == 0) {
 		this->_currentTick += milliSec;
 
-		if (this->_currentTick >= 30000) {
+		if (this->_currentTick >= WAIT_TIME_IN_MSECS) {
 			this->_currentTick = 0;
 			this->_incrFactor = -INCR_FACTOR;
 		}

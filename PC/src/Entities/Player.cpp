@@ -19,12 +19,11 @@ TPlayer::TPlayer() {
 	this->_posRect.width = 32;
 	this->_posRect.height = 32;
 
-	this->_fxStep = Sound("sounds/StepStone1.ogg");
-	this->_fxStep2 = Sound("sounds/StepStone2.ogg");
 	this->_fxJump = Sound("sounds/boing.ogg");
 	this->_fxDie = Sound("sounds/DeathCry.ogg");
 	this->_fxExtra = Sound("sounds/extra.ogg");
 	this->_musicDie = Sound("music/Death.ogg");
+	this->_fxExitLevel = Sound("sounds/Next_stage.ogg");
 
 	this->Initialize();
 
@@ -158,10 +157,10 @@ void TPlayer::Update(Uint32 milliSec)
 	for (Event e : evts) {
 		if (e.Name == "uwol_step" && this->_vy != 0) {
 			if (this->_lastStep == 0) {
-				this->_fxStep.PlayAsFx(false);
+				//this->_fxStep.PlayAsFx(false);
 			}
 			else {
-				this->_fxStep2.PlayAsFx(false);
+				//this->_fxStep2.PlayAsFx(false);
 			}
 		}
 	}
@@ -291,29 +290,39 @@ void TPlayer::DebugPaint() {
 	_graphics->DrawPolyLines(vertexes, 1.0f, 1.0f, 1.0f, 1.0f);
 }
 
+bool TPlayer::isOverTile(int tileX, int tileY) {
+	int tileX1, tileX2, tileY1, tileY2;
+	int posMap1, posMap2, posMap3, posMap4;
+
+	posMap1 = this->_map->cols * 9 + 1;
+	posMap2 = this->_map->cols * 8 + 1;
+	posMap3 = this->_map->cols * 9 + 10;
+	posMap4 = this->_map->cols * 8 + 10;
+
+	tileX1 = (int)((this->_x + this->_colRect.x) / this->_map->cellWidth);
+	tileX2 = (int)((this->_x + this->_colRect.x + this->_colRect.width - 1) / this->_map->cellWidth);
+	tileY1 = (int)((this->_y + this->_colRect.y + this->_colRect.height - 1) / this->_map->cellHeight);
+	tileY2 = (int)((this->_y + this->_colRect.y + this->_colRect.height) / this->_map->cellHeight);
+
+	// Comprobamos si esta encima de una salida...
+	return (this->_map->map[posMap1] == COLLISION_BLOCK && 
+		    this->_map->map[posMap2] != COLLISION_BLOCK && 
+		    (tileX1 == tileX || tileX2 == tileX) && 
+		    (tileY1 == tileY - 1 && tileY2 == tileY));
+}
+
 void TPlayer::checkInput(Uint32 milliSec) {
 	bool horizKeyPressed = false;
 
 	if (_input->IsKeyPressed(ActionKeysDown) && this->_estado & TodasMonedasCogidas) {
-		int tileX1, tileX2, tileY1, tileY2;
-
-		int posMap1, posMap2, posMap3, posMap4;
-
-		posMap1 = this->_map->cols * 9 + 1;
-		posMap2 = this->_map->cols * 8 + 1;
-		posMap3 = this->_map->cols * 9 + 10;
-		posMap4 = this->_map->cols * 8 + 10;
-
-		tileX1 = (int)((this->_x + this->_colRect.x) / this->_map->cellWidth);
-		tileX2 = (int)((this->_x + this->_colRect.x + this->_colRect.width - 1) / this->_map->cellWidth);
-		tileY1 = (int)((this->_y + this->_colRect.y + this->_colRect.height - 1) / this->_map->cellHeight);
-		tileY2 = (int)((this->_y + this->_colRect.y + this->_colRect.height) / this->_map->cellHeight);
 		// Comprobamos si esta encima de una salida...
-		if (this->_map->map[posMap1] == COLLISION_BLOCK && this->_map->map[posMap2] != COLLISION_BLOCK && (tileX1 == 1 || tileX2 == 1) && (tileY1 == 8 && tileY2 == 9)) {
+		if (isOverTile(1, 9)) {
 			this->_estado |= SalidaIzq;
+			this->_fxExitLevel.PlayAsFx(false);
 		}
-		if (this->_map->map[posMap3] == COLLISION_BLOCK && this->_map->map[posMap4] != COLLISION_BLOCK && (tileX1 == 10 || tileX2 == 10) && (tileY1 == 8 && tileY2 == 9)) {
+		if (isOverTile(10, 9)) {
 			this->_estado |= SalidaDer;
+			this->_fxExitLevel.PlayAsFx(false);
 		}
 	}
 

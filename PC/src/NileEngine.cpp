@@ -1,15 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <SDL2/SDL_main.h>
-#include "MusicManager.h"
 #include "Game.h"
-#include "TimerFuncs.h"
 #include "GameData.h"
+#include <curl/curl.h>
 
 int main(int argc, char *argv[])
 {
-	Log::Initialize();
+	curl_global_init(CURL_GLOBAL_ALL);
+
+	Log::Initialize("uwol.log");
 
 	// ----------------------------------------------------------------------------
 	// This makes relative paths work in C++ in Xcode by changing directory to the Resources folder inside the .app bundle
@@ -55,7 +55,6 @@ int main(int argc, char *argv[])
 			}
 		}
 
-		aliasing = false;
 		scanlines = true;
 		debugPaint = false;
 
@@ -106,11 +105,11 @@ int main(int argc, char *argv[])
 	}
 	catch (exception& e)
 	{
-		cout << e.what() << endl;
-		Log::Dispose();
-		return -1;
+		Log::Out << e.what() << endl;
 	}
 
 	Log::Dispose();
+	curl_global_cleanup();
+
 	return 0;
 }

@@ -1,39 +1,65 @@
 #include "Room.h"
 
-Frame Room::_texturePuerta;
-Frame Room::_textureFlechaDer;
-Frame Room::_textureFlechaIzq;
-Frame Room::_textureCamiseta;
-Frame Room::_textureSombra;
+Frame* Room::_texturePuerta;
+Frame* Room::_textureFlechaDer;
+Frame* Room::_textureFlechaIzq;
+Frame* Room::_textureCamiseta;
+Frame* Room::_textureSombra;
+Frame* Room::_textureFlecha;
 
-Sound Room::_fxGhost;
-Sound Room::_musicGhost;
-Sound Room::_fxHit;
-Sound Room::_fxCoin;
-Sound Room::_fxCamiseta;
+Sound* Room::_fxGhost;
+Sound* Room::_musicGhost;
+Sound* Room::_fxHit;
+Sound* Room::_fxCoin;
+Sound* Room::_fxCamiseta;
 
-vector<Sound> Room::_tunes;
+vector<Sound*> Room::_tunes;
 
 void Room::StaticInit() {
 	Background::StaticInit();
 	Plataforma::StaticInit();
 
-	_texturePuerta = Frame("data/Puerta.png");
-	_textureFlechaDer = Frame("data/FlechaDer.png");
-	_textureFlechaIzq = Frame("data/FlechaIzq.png");
-	_textureCamiseta = Frame("data/Camiseta.png");
-	_textureSombra = Frame("data/pixBlanco.png");
+	_texturePuerta = new Frame("data/Puerta.png");
+	_textureFlechaDer = new Frame("data/FlechaDer.png");
+	_textureFlechaIzq = new Frame("data/FlechaIzq.png");
+	_textureFlecha = new Frame("data/FlechaPeque.png");
+	_textureCamiseta = new Frame("data/Camiseta.png");
+	_textureSombra = new Frame("data/pixBlanco.png");
+	_textureFlecha = new Frame("data/Flecha.png");
 
-	_fxGhost = Sound("sounds/Bells.ogg");
-	_musicGhost = Sound("music/Ghosts3.ogg");
-	_fxHit = Sound("sounds/Hu.ogg");
-	_fxCoin = Sound("sounds/coinPicked.ogg");
-	_fxCamiseta = Sound("sounds/camiseta.ogg");
+	_fxGhost = new Sound("sounds/Bells.ogg");
+	_musicGhost = new Sound("music/Ghosts3.ogg");
+	_fxHit = new Sound("sounds/Hu.ogg");
+	_fxCoin = new Sound("sounds/coinPicked.ogg");
+	_fxCamiseta = new Sound("sounds/camiseta.ogg");
 
-	_tunes.push_back(Sound("music/Zona1.ogg"));
-	_tunes.push_back(Sound("music/Zona2.ogg"));
-	_tunes.push_back(Sound("music/Zona3.ogg"));
-	_tunes.push_back(Sound("music/Zona4.ogg"));
+	_tunes.push_back(new Sound("music/Zona1.ogg"));
+	_tunes.push_back(new Sound("music/Zona2.ogg"));
+	_tunes.push_back(new Sound("music/Zona3.ogg"));
+	_tunes.push_back(new Sound("music/Zona4.ogg"));
+}
+
+void Room::StaticDispose() {
+	delete _texturePuerta;
+	delete _textureFlechaDer;
+	delete _textureFlechaIzq;
+	delete _textureFlecha;
+	delete _textureCamiseta;
+	delete _textureSombra;
+
+	delete _fxGhost;
+	delete _musicGhost;
+	delete _fxHit;
+	delete _fxCoin;
+	delete _fxCamiseta;
+
+	for (Sound* s : _tunes) {
+		delete s;
+	}
+	_tunes.clear();
+
+	Background::StaticDispose();
+	Plataforma::StaticDispose();
 }
 
 Room::Room(void) {
@@ -138,7 +164,6 @@ void Room::SetDepth(int depth) {
 		this->_texFlechaDer = Room::_textureFlechaDer;
 		this->_texFlechaIzq = Room::_textureFlechaIzq;
 	}
-
 }
 
 int Room::GetDepth() {
@@ -147,11 +172,18 @@ int Room::GetDepth() {
 
 void Room::OnEnter(void) {
 	this->Restart();
-
-	this->_tune.PlayAsMusic(true);
+	this->_tune->PlayAsMusic(true);
 	if (this->Completada) {
 		this->_player->setEstado(this->_player->getEstado() | TodasMonedasCogidas);
 	}
+	this->_ticks = 0.0f;
+
+	this->_rand = (unsigned int)time(NULL);
+	srand(this->_rand);
+}
+
+unsigned int Room::GetRand() {
+	return this->_rand;
 }
 
 void Room::OnExit() {
@@ -197,7 +229,6 @@ string Room::Update(Uint32 milliSec, Event & inputEvent) {
 	if (!(this->_player->getEstado() & Muriendo)) {
 		this->pickCoins(tileX1, tileX2, tileY1, tileY2);
 		this->pickCamiseta(tileX1, tileX2, tileY1, tileY2);
-
 		if (!(this->_player->getEstado() & Parpadeo)) {
 			this->checkEnemies(this->_player->_posRect);
 		}
@@ -210,12 +241,12 @@ string Room::Update(Uint32 milliSec, Event & inputEvent) {
 			this->CheckTime = false;
 			this->AddFanty();
 			MusicManager::FadeOutMusic(500);
-			this->_fxGhost.PlayAsFx(false);
+			this->_fxGhost->PlayAsFx(false);
 		}
 	}
 	else {
 		if(!MusicManager::IsPlayingMusic()) {
-			this->_musicGhost.PlayAsMusic(true);
+			this->_musicGhost->PlayAsMusic(true);
 		}
 	}
 
@@ -224,6 +255,12 @@ string Room::Update(Uint32 milliSec, Event & inputEvent) {
 	}
 
 	this->_estado = this->_player->getEstado();
+
+	this->_ticks += 0.01f * milliSec;
+	while (this->_ticks > TAU) {
+		this->_ticks = (float)(this->_ticks - TAU);
+	}
+	this->_sinValue = sinf(this->_ticks);
 
 	return this->Name;
 }
@@ -251,7 +288,7 @@ void Room::checkEnemies(RECTANGLEF rect) {
 				if (this->_player->getEstado() & Normal) {
 					this->_player->setEstado((this->_player->getEstado() & !Normal) | Parpadeo | Desnudo);
 					this->colocarCamiseta();
-					this->_fxHit.PlayAsFx(false);
+					this->_fxHit->PlayAsFx(false);
 				}
 				enem->_direccion *= -1;
 			}
@@ -268,7 +305,7 @@ void Room::pickCamiseta(int tileX1, int tileX2, int tileY1, int tileY2) {
 		(this->_player->getEstado() & Desnudo)
 		) {
 		this->quitarCamiseta();
-		this->_fxCamiseta.PlayAsFx(false);
+		this->_fxCamiseta->PlayAsFx(false);
 		this->_player->AddScore(15);
 		this->_player->setEstado((this->_player->getEstado() & ~(Parpadeo | Desnudo)) | Normal);
 	}
@@ -345,7 +382,7 @@ void Room::pickCoins(int tileX1, int tileX2, int tileY1, int tileY2) {
 			this->_player->_coinsTaken++;
 			this->_player->AddScore(1);
 
-			this->_fxCoin.PlayAsFx(false);
+			this->_fxCoin->PlayAsFx(false);
 			break;
 		}
 	}
@@ -398,6 +435,7 @@ void Room::Draw(void) {
 				posMap2 = this->_map->cols * 8 + 1;
 				posMap3 = this->_map->cols * 9 + 10;
 				posMap4 = this->_map->cols * 8 + 10;
+
 				if (this->_map->map[posMap1] == COLLISION_BLOCK && this->_map->map[posMap2] != COLLISION_BLOCK) {
 					_g->BlitFrame(this->_texFlechaIzq, 32, 288, 32, 32, false, false);
 				}
@@ -411,6 +449,32 @@ void Room::Draw(void) {
 			}
 
 			_player->Draw();
+
+			if (estadoUwol & TodasMonedasCogidas) {
+				float r = 1.0f, g = 1.0f, b = 1.0f;
+				float rFlecha = (float)(sinf(this->_ticks + 0) * .5 + .5);
+				float gFlecha = (float)(sinf(this->_ticks + 2) * .5 + .5);
+				float bFlecha = (float)(sinf(this->_ticks + 4) * .5 + .5);
+				float aFlecha1 = (float)(0.3f + abs(_sinValue * 0.7f));
+				float aFlecha2 = (float)(0.3f + abs(_sinValue * 0.7f));
+
+				if (this->_player->isOverTile(1, 9)) {
+					aFlecha1 = (float)(0.2f + abs(_sinValue * 0.2f));
+				}
+
+				if (this->_player->isOverTile(10, 9)) {
+					aFlecha2 = (float)(0.2f + abs(_sinValue * 0.2f));
+				}
+
+				_g->BlitColoredFrame(this->_textureFlecha, 40, (int)(262 - 4 * _sinValue),
+					16, 16,
+					rFlecha, gFlecha, bFlecha, aFlecha1,
+					false, false, false);
+				_g->BlitColoredFrame(this->_textureFlecha, 328, (int)(262 - 4 * _sinValue),
+					16, 16,
+					rFlecha, gFlecha, bFlecha, aFlecha2,
+					false, false, false);
+			}
 
 			// Si está el fantasma por ahí, oscurecemos la escena...
 			if (this->TimeLeft <= 0) {
@@ -484,8 +548,8 @@ void Room::setTileFondo(TilesFondo tile) {
 
 Plataforma* Room::AddPlatform(TilePlataforma tipo, Direccion dir, char longitud, char tileX, char tileY, VECTOR2 tileSize) {
 	Plataforma *plat = new Plataforma();
-	plat->setTileSize(tileSize);
 	plat->setTipoPlataforma(tipo);
+	plat->setTileSize(tileSize);
 	plat->setDireccion(dir);
 	plat->setLongitud(longitud);
 	plat->setPos(tileX, tileY);

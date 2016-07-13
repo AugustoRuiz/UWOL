@@ -7,7 +7,7 @@ Game *Game::GetInstance() {
 }
 
 Game::Game(void) {
-
+	this->_blitProgramMap = map<string, Program*>();
 }
 
 Game::~Game(void) {
@@ -58,7 +58,7 @@ bool Game::Initialize(int width, int height, bool fullscreen, const char* name) 
 	this->AddState(new Presentacion());
 	this->AddState(this->_attract);
 	this->AddState(new Credits());
-	this->AddState(new Piramide((*(this->_stage))));
+	this->AddState(new Piramide(this->_stage));
 	this->AddState(this->_stage);
 	this->AddState(new EndGame(true));
 	this->AddState(new EndGame(false));
@@ -84,6 +84,8 @@ bool Game::Initialize(int width, int height, bool fullscreen, const char* name) 
 	this->_totalTicks = 0;
 	this->_attractTimes = 0;
 
+	this->_paused = false;
+
 	return _running;
 }
 
@@ -108,35 +110,38 @@ void Game::Update(Uint32 mSecs)
 
 	this->_messageLine->Update(mSecs);
 
-	Event currentEvent = InputManager::GetInstance()->Update(mSecs);
-	this->handleInput(currentEvent);
-
 	this->_totalTicks += mSecs;
+
+	Event currentEvent = InputManager::GetInstance()->Update(mSecs);
+
+	this->handleInput(currentEvent);
 
 	if (_currentStatus == "") {
 		throw "No next status!";
 	}
 
-	// Ha habido un cambio derivado de la gestión directa de la entrada de teclado?
-	if (oldStatus != _currentStatus) {
-		this->changeStatus(oldStatus, _currentStatus);
-	}
-	else {
-		map<string, IGameState*>::iterator it = _states.find(_currentStatus);
-		if (it != _states.end()) {
-			IGameState *state = it->second;
-			string oldStatus = _currentStatus;
-			string newStatus = state->Update(mSecs, currentEvent);
-			// Ha habido un cambio derivado de la actualización del estado actual?
-			if (oldStatus != newStatus) {
-				this->changeStatus(oldStatus, newStatus);
-			}
+	if (!this->_paused) {
+		// Ha habido un cambio derivado de la gestión directa de la entrada de teclado?
+		if (oldStatus != _currentStatus) {
+			this->changeStatus(oldStatus, _currentStatus);
 		}
 		else {
-			stringstream ss;
-			ss << "No status found with name '" << _currentStatus << "'" << endl;
-			Log::Out << ss.str() << endl;
-			throw ss.str();
+			map<string, IGameState*>::iterator it = _states.find(_currentStatus);
+			if (it != _states.end()) {
+				IGameState *state = it->second;
+				string oldStatus = _currentStatus;
+				string newStatus = state->Update(mSecs, currentEvent);
+				// Ha habido un cambio derivado de la actualización del estado actual?
+				if (oldStatus != newStatus) {
+					this->changeStatus(oldStatus, newStatus);
+				}
+			}
+			else {
+				stringstream ss;
+				ss << "No status found with name '" << _currentStatus << "'" << endl;
+				Log::Out << ss.str() << endl;
+				throw ss.str();
+			}
 		}
 	}
 }
@@ -144,7 +149,10 @@ void Game::Update(Uint32 mSecs)
 void Game::changeStatus(const string &oldStatus, const string &newStatus) {
 	string realNewStatus = newStatus;
 	if (oldStatus != newStatus) {
-		
+		if (newStatus == "Presentacion") {
+			this->Restart();
+		}
+
 		if (newStatus == "Attract") {
 			this->_attractTimes = (this->_attractTimes + 1) % ATTRACT_TIMES;
 			if (this->_attractTimes == 0) {
@@ -164,9 +172,12 @@ void Game::changeStatus(const string &oldStatus, const string &newStatus) {
 
 		if (this->_currentStatus == "Stage" && this->_savingStatus) {
 			Stage* stage = (Stage*)_states[this->_currentStatus];
+			this->_totalTicks = 0;
 			int currentRoom = stage->RoomIndex;
 			this->_eventBuffer.push_back(this->_totalTicks);
 			this->_eventBuffer.push_back(ROOM_START_EVENT + currentRoom);
+			this->_eventBuffer.push_back(INERTIA_STATUS + (this->_stage->Player->hasInertia() ? 1 : 0));
+			this->_eventBuffer.push_back(stage->CurrentRoom->GetRand());
 		}
 	}
 }
@@ -185,7 +196,12 @@ void Game::handleInput(Event &currentEvent) {
 		ActionKeys key = (ActionKeys)(currentEvent.Data["key"].asInt());
 		switch (key) {
 		case ActionKeysExit:
-			_running = false;
+			if (this->_currentStatus == "Presentacion") {
+				_running = false;
+			}
+			else {
+				this->_currentStatus = "Presentacion";
+			}
 			break;
 			//case ActionKeysAliasing:
 			//	aliasing = !aliasing;
@@ -226,18 +242,29 @@ void Game::handleInput(Event &currentEvent) {
 			//		this->_messageLine->ShowText(ss.str(), 1500, vec3(0.9f), vec3(0.7f));
 			//	}
 			//	break;
-		case ActionKeysDebug:
-			//debugPaint = !debugPaint;
-			//ss << "Debug paint: " << (debugPaint ? "ON" : "OFF");
-			//this->_messageLine->ShowText(ss.str(), 1500, vec3(0.9f), vec3(0.7f));
-			this->changeStatus(this->_currentStatus, "Portada");
-			this->_attractTimes = 0;
-			break;
+		//case ActionKeysDebug:
+		//	debugPaint = !debugPaint;
+		//	ss << "Debug paint: " << (debugPaint ? "ON" : "OFF");
+		//	this->_messageLine->ShowText(ss.str(), 1500, vec3(0.9f), vec3(0.7f));
+		//	this->changeStatus(this->_currentStatus, "Portada");
+		//	this->_attractTimes = 0;
+		//	break;
 		case ActionKeysStopRecording:
 			// Dejamos de guardar después de guardar la pulsación de la tecla de grabar. Así la grabación 
 			// durará hasta el momento en el que se ha pulsado la tecla.
 			this->_savingStatus = false;
 			this->_messageLine->ShowText("Recording completed.", 1500, vec3(0.9f), vec3(0.7f));
+			break;
+		case ActionKeysPause:
+			this->_paused = !this->_paused;
+
+			if (this->_paused) {
+				this->_messageLine->ShowText(("Pause! Press H to resume"), 1500, vec3(0.9f), vec3(0.7f));
+			}
+			else {
+				this->_messageLine->ShowText((""), 1, vec3(0.9f), vec3(0.7f));
+			}
+
 			break;
 		case ActionKeysNextScreen:
 			if (this->_currentStatus == "Stage") {
@@ -365,8 +392,8 @@ void Game::ShowCursor(bool show) {
 
 void Game::drawStatusMsg(const string& str) {
 	Program* currentProgram = this->_blitProgram;
-	if (this->_blitPrograms.size() > 0) {
-		this->_blitProgram = this->_blitPrograms[0];
+	if (this->_blitProgramMap.size() > 0) {
+		this->_blitProgram = this->_blitProgramMap.begin()->second;
 	}
 
 	float grayValue = 0.4f;
@@ -402,6 +429,7 @@ void Game::loadResources() {
 		for (Json::Value::iterator itShaderDesc = shaders.begin(); itShaderDesc != shaders.end(); ++itShaderDesc) {
 			vector<Shader*> shaderPtrs;
 			Json::Value child = *itShaderDesc;
+			string name = child["name"].asString();
 			Json::Value pathArray = child["shaderPaths"];
 			for (Json::Value::iterator itShaderPath = pathArray.begin(); itShaderPath != pathArray.end(); ++itShaderPath) {
 				string shaderFile = itShaderPath->asString();
@@ -420,13 +448,13 @@ void Game::loadResources() {
 				string texPath = itTexturePath->asString();
 				p->Textures.push_back(Frame(texPath).Texture);
 			}
-			this->_blitPrograms.push_back(p);
+			this->_blitProgramMap[name] = p;
 			if (child.isMember("default") && child["default"].asBool()) {
 				this->_blitProgram = p;
 			}
 		}
-		if (this->_blitProgram == NULL && this->_blitPrograms.size() > 0) {
-			this->_blitProgram = this->_blitPrograms.back();
+		if (this->_blitProgram == NULL && this->_blitProgramMap.size() > 0) {
+			this->_blitProgram = (this->_blitProgramMap.end())->second;
 		}
 	}
 
@@ -471,12 +499,21 @@ void Game::AddState(IGameState* state) {
 }
 
 void Game::SwapBuffers() {
-	if (this->_blitProgram != NULL && this->_blitProgram->ProgramId != 0) {
-		this->_blitProgram->Use();
-		this->_blitProgram->BindTextures();
-		this->_blitProgram->SetUniform("iGlobalTime", (float)this->_totalTicks);
-		this->_blitProgram->SetUniform("MVP", GLFuncs::GetInstance()->MVP);
-		this->_blitProgram->SetUniform("iResolution", vec2(this->_g->ScreenWidth, this->_g->ScreenHeight));
+	Program* p = this->_blitProgram;
+
+	if (this->_paused) {
+		p = this->_blitProgramMap["Sepia"];
+	}
+
+	if (p != NULL && p->ProgramId != 0) {
+		p->Use();
+		p->BindTextures();
+		if (this->_paused) {
+			p->SetUniform("sepiaRgb", vec3(1.2f, 1.0f, 0.8f));
+		}
+		p->SetUniform("iGlobalTime", (float)this->_totalTicks);
+		p->SetUniform("MVP", GLFuncs::GetInstance()->MVP);
+		p->SetUniform("iResolution", vec2(this->_g->ScreenWidth, this->_g->ScreenHeight));
 	}
 
 	this->_g->SwapBuffers();

@@ -1,6 +1,7 @@
 #include "Background.h"
 
-vector<Frame> Background::_frames;
+vector<Frame*> Background::_frames;
+bool Background::_staticDisposed;
 
 Background::Background(void)
 {
@@ -20,10 +21,20 @@ Background::Background(TilesFondo tileFondo,
 }
 
 void Background::StaticInit() {
-	_frames.push_back(Frame("data/TileFondo0.png"));
-	_frames.push_back(Frame("data/TileFondo1.png"));
-	_frames.push_back(Frame("data/TileFondo2.png"));
-	_frames.push_back(Frame("data/TileFondo3.png"));
+	_frames.push_back(new Frame("data/TileFondo0.png"));
+	_frames.push_back(new Frame("data/TileFondo1.png"));
+	_frames.push_back(new Frame("data/TileFondo2.png"));
+	_frames.push_back(new Frame("data/TileFondo3.png"));
+}
+
+void Background::StaticDispose() {
+	if (!_staticDisposed) {
+		_staticDisposed = true;
+		for (Frame* f : _frames) {
+			delete f;
+		}
+		_frames.clear();
+	}
 }
 
 void Background::InitBackground(TilesFondo tileFondo, 
@@ -43,16 +54,16 @@ void Background::setTileFondo(TilesFondo tileFondo)
 	switch(tileFondo)
 	{
 		case Tile0:
-			_frame = Frame(this->_frames[0]);
+			_frame = this->_frames[0];
 			break;
 		case Tile1:
-			_frame = Frame(this->_frames[1]);
+			_frame = this->_frames[1];
 			break;
 		case Tile2:
-			_frame = Frame(this->_frames[2]);
+			_frame = this->_frames[2];
 			break;
 		case Tile3:
-			_frame = Frame(this->_frames[3]);
+			_frame = this->_frames[3];
 			break;
 	}
 	updateDrawingCoords();
@@ -76,8 +87,8 @@ void Background::Draw()
 }
 
 void Background::updateDrawingCoords() {
-	this->_frame.Coords.tx1 = 0.0f;
-	this->_frame.Coords.tx2 = (float)this->_tilesX;
-	this->_frame.Coords.ty1 = 0.0f;
-	this->_frame.Coords.ty2 = (float)this->_tilesY;
+	this->_frame->Coords.tx1 = 0.0f;
+	this->_frame->Coords.tx2 = (float)this->_tilesX;
+	this->_frame->Coords.ty1 = 0.0f;
+	this->_frame->Coords.ty2 = (float)this->_tilesY;
 }

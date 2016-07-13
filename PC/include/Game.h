@@ -1,10 +1,6 @@
 #pragma once
 
 #include "GameData.h"
-#include "InputManager.h"
-#include "Event.h"
-#include "Graphics.h"
-#include "IGameState.h"
 #include "Stage.h"
 #include "Presentacion.h"
 #include "Portada.h"
@@ -12,8 +8,6 @@
 #include "EndGame.h"
 #include "GameOver.h"
 #include "Credits.h"
-#include "Scanlines.h"
-#include "MessageLine.h"
 #include "Attract.h"
 #include <string>
 #include <iostream>
@@ -56,6 +50,7 @@ protected:
 private:
 	Uint8 _attractTimes;
 
+	bool _paused;
 	bool _running;
 
 	bool _savingStatus;
@@ -65,7 +60,7 @@ private:
 
 	Graphics *_g;
 	Program* _blitProgram;
-	vector<Program*> _blitPrograms;
+	map<string, Program*> _blitProgramMap;
 	InputManager *_input;
 
 	Scanlines* _scanlines;

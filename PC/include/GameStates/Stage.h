@@ -5,9 +5,6 @@
 #include <iomanip>
 #include "GameData.h"
 #include "Room.h"
-#include "IGameState.h"
-#include "Graphics.h"
-#include "AnimationPlayer.h"
 #include "StatsDraw.h"
 
 using namespace std;
@@ -45,7 +42,7 @@ private:
 
 	Graphics *_g;
 
-	Frame _frameSombra;
+	Frame* _frameSombra;
 
 	float _fadeLevel;
 	float _fadeInc;

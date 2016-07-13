@@ -2,14 +2,6 @@
 
 #include "GameData.h"
 #include "CollisionMap.h"
-#include "IDrawable.h"
-#include "IUpdatable.h"
-#include "IChaseable.h"
-#include "Graphics.h"
-#include "AnimationPlayer.h"
-#include "InputManager.h"
-#include "MusicManager.h"
-#include "Sound.h"
 
 class TPlayer : public IDrawable, public IUpdatable, public IChaseable
 {
@@ -42,6 +34,7 @@ public:
 
 	void initializePlayerData();
 	void getTiles(int &tileX, int &tileY, int &tileX2, int &tileY2);
+	bool isOverTile(int tileX, int tileY);
 
 	void DebugPaint();
 
@@ -61,7 +54,7 @@ private:
 	AnimationPlayer _animPlayer;
 	InputManager *_input;
 
-	Sound _fxStep, _fxStep2, _fxJump, _fxDie, _musicDie, _fxExtra;
+	Sound _fxJump, _fxDie, _musicDie, _fxExtra, _fxExitLevel;
 
 	VECTOR2 _tileSize;
 	RECTANGLEF _colRect;
@@ -88,7 +81,6 @@ private:
 	bool Collides(int tileX, int tileY);
 	void checkInput(Uint32 milliSec);
 	void checkMapCollisions(Uint32 milliSec);
-
 	void setAnimation(string name);
 
 	// Inherited via IChaseable

@@ -5,7 +5,7 @@ Stage::Stage(void) {
 	_g = Graphics::GetInstance();
 
 	// Cargar los recursos...
-	this->_frameSombra = Frame("data/TileSombra.png");
+	this->_frameSombra = new Frame("data/TileSombra.png");
 
 	this->Player = new TPlayer();
 	this->StatsDrawer = new StatsDraw();
@@ -20,11 +20,13 @@ Stage::Stage(void) {
 }
 
 Stage::~Stage(void) {
+	Room::StaticDispose();
 	this->Dispose();
 }
 
 void Stage::Restart() {
 	this->RoomIndex = 0;
+	this->CurrentRoom = this->Rooms[this->RoomIndex];
 	for (Room* r : this->Rooms) {
 		r->Completada = false;
 		r->Restart();
@@ -44,6 +46,7 @@ void Stage::OnExit() {
 
 void Stage::Dispose() {
 	if (!this->_disposed) {
+		delete this->_frameSombra;
 		this->disposeRooms();
 		this->_disposed = true;
 	}
@@ -173,6 +176,7 @@ void Stage::GoToRoom(int roomIndex)
 	this->CurrentRoom = this->Rooms[this->RoomIndex];
 	this->CurrentRoom->setPlayer(this->Player);
 	this->CurrentRoom->OnEnter();
+	InputManager::GetInstance()->Reset();
 }
 
 Room* Stage::loadRooms()

@@ -1,10 +1,8 @@
 #pragma once
 
 #include <fstream>
-#include "Graphics.h"
 #include "GameData.h"
 #include "Stage.h"
-#include "IGameState.h"
 
 class Presentacion : public IGameState
 {
@@ -29,11 +27,11 @@ private:
 
 	Graphics *_g;
 
-	Sound _music;
+	Sound* _music;
 
-	Frame _bg;
-	Frame _portada;
-	Frame _shadow;
+	Frame* _bg;
+	Frame* _portada;
+	Frame* _shadow;
 
 	Coin** _coins;
 

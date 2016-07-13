@@ -1,10 +1,8 @@
 #pragma once
 
 #include <fstream>
-#include "Graphics.h"
 #include "GameData.h"
 #include "Stage.h"
-#include "IGameState.h"
 
 class Credits : public IGameState, public IChaseable
 {
@@ -22,29 +20,29 @@ public:
 
 private:
 	void drawCentered(int y, const string &str);
-	void drawFrame(int *y, const Frame& frame);
+	void drawFrame(int *y, Frame* frame);
 
 	bool _disposed; //, _goNext;
 	Graphics *_g;
-	Sound _tune;
+	Sound *_tune;
 
-	EFanty _fanty;
+	EFanty *_fanty;
 
 	//float _yOffset;
 	float _rTitleTop, _gTitleTop, _bTitleTop, _rTitleBot, _gTitleBot, _bTitleBot;
 	float _rTextTop, _gTextTop, _bTextTop, _rTextBot, _gTextBot, _bTextBot; //, _textAlpha;
 	float _rGoldTop, _gGoldTop, _bGoldTop, _rGoldBot, _gGoldBot, _bGoldBot;
 
-	float _textPosY;
+	vector<float> _textPauseY;
 
-	Uint32 _totalTicks, _textTicks;
+	Uint32 _pauseTicks, _currentPauseIdx;
 	int _textSize;
 	int _maxPosY;
 
-	Frame _uwolIcon, _sdlIcon, _openGlIcon, _glmIcon, _glewIcon;
-	Frame _shadow;
+	Frame *_uwolIcon;
+	Frame *_shadow;
 
-	AnimationPlayer _uwolAnimPlayer;
+	AnimationPlayer *_uwolAnimPlayer;
 	float _uwolX;
 	float _uwolVX;
 

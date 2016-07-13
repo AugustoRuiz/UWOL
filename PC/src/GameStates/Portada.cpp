@@ -7,10 +7,10 @@ Portada::Portada() : _imagenes()
 	this->Name = "Portada";
 	this->_g = Graphics::GetInstance();
 
-	this->_imagenes.push_back(Frame("data/logoMojon.png"));
+	this->_imagenes.push_back(new Frame("data/logoMojon.png"));
 	//this->_imagenes.push_back(Frame("data/logoRetroworks.png"));
 
-	this->_sonido = Sound("sounds/coinPicked.ogg");
+	this->_sonido = new Sound("sounds/coinPicked.ogg");
 
 	this->OnEnter();
 }
@@ -45,9 +45,9 @@ void Portada::Dispose()
 
 void Portada::Draw()
 {
-	Frame current = Frame(this->_imagenes[this->_currentFrame]);
-	int w = current.Texture->width * 2;
-	int h = current.Texture->height * 2;
+	Frame* current = this->_imagenes[this->_currentFrame];
+	int w = current->Texture->width * 2;
+	int h = current->Texture->height * 2;
 	int posX, posY;
 
 	posX = (this->_g->WorldWidth - w) >> 1;
@@ -71,7 +71,7 @@ string Portada::Update(Uint32 milliSec, Event & inputEvent)
 	else {
 		if (this->_incrFactor == 0) {
 			if (this->_currentTick == 0) {
-				this->_sonido.PlayAsFx(false);
+				this->_sonido->PlayAsFx(false);
 			}
 			this->_currentTick += milliSec;
 			if (this->_currentTick >= WAIT_TIME) {

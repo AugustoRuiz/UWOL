@@ -1,21 +1,15 @@
 #pragma once
 
 #include <fstream>
-#include "IUpdatable.h"
-#include "IDrawable.h"
 #include "GameData.h"
-#include "IGameState.h"
 #include "CollisionMap.h"
-#include "Graphics.h"
 #include "Background.h"
-#include "InputManager.h"
 #include "Plataforma.h"
 #include "Enemigo.h"
 #include "FactoriaEnemigo.h"
 #include "Coin.h"
 #include "Player.h"
 #include <cmath>
-#include "MusicManager.h"
 
 class Room : public IGameState
 {
@@ -52,28 +46,32 @@ public:
 
 	int getEstado();
 
+	unsigned int GetRand();
+
 	static void StaticInit();
+	static void StaticDispose();
 
 private:
 	int _depth;
-
+	unsigned int _rand;
 	bool _disposed;
 
 	int _initialTime;
 	int _estado;
 
-	float _valorOscuro;
+	float _valorOscuro, _ticks, _sinValue;
 
-	Frame _texFlechaIzq, _texFlechaDer;
+	Frame* _texFlechaIzq, *_texFlechaDer;
 
-	static Frame _textureCamiseta;
-	static Frame _texturePuerta;
-	static Frame _textureFlechaIzq;
-	static Frame _textureFlechaDer;
-	static Frame _textureSombra;
-	static Sound _fxCoin, _fxHit, _fxGhost, _musicGhost, _fxCamiseta;
-	static vector<Sound> _tunes;
-	Sound _tune;
+	static Frame* _textureCamiseta;
+	static Frame* _texturePuerta;
+	static Frame* _textureFlechaIzq;
+	static Frame* _textureFlechaDer;
+	static Frame* _textureSombra;
+	static Frame* _textureFlecha;
+	static Sound* _fxCoin, *_fxHit, *_fxGhost, *_musicGhost, *_fxCamiseta;
+	static vector<Sound*> _tunes;
+	Sound* _tune;
 
 	Background *_back;
 

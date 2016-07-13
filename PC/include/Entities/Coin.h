@@ -1,10 +1,6 @@
 #pragma once
 
 #include "GameData.h"
-#include "IDrawable.h"
-#include "IUpdatable.h"
-#include "AnimationPlayer.h"
-#include "Graphics.h"
 
 class Coin : public IDrawable, public IUpdatable
 {

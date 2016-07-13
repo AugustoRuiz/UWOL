@@ -1,21 +1,21 @@
 #include "Piramide.h"
 
-Piramide::Piramide(Stage& stage) : _stage(stage) {
+Piramide::Piramide(Stage* stage) : _stage(stage) {
 	this->Name = "Piramide";
 	this->_g = Graphics::GetInstance();
-	this->_frameLadrillo = Frame("data/set-piramide.png");
-	this->_frameLogo = Frame("data/texturaUWOL.png");
-	this->_frameFlecha = Frame("data/Flecha.png");
-	this->_tune = Sound("music/Piramide.ogg");
+	this->_frameLadrillo = new Frame("data/set-piramide.png");
+	this->_frameLogo = new Frame("data/texturaUWOL.png");
+	this->_frameFlecha = new Frame("data/Flecha.png");
+	this->_tune = new Sound("music/Piramide.ogg");
 }
 
 void Piramide::OnEnter() {
 	this->_currentAlpha = 0.0f;
 	this->_incrFactor = 2;
-	this->_stage.Player->initializePlayerData();
+	this->_stage->Player->initializePlayerData();
 	this->_ticks = 0;
 	this->_sinValue = 0.0f;
-	this->_tune.PlayAsMusic(true);
+	this->_tune->PlayAsMusic(true);
 }
 
 void Piramide::OnExit() {
@@ -24,7 +24,7 @@ void Piramide::OnExit() {
 
 string Piramide::Update(Uint32 milliSec, Event & inputEvent)
 {
-	this->_stage.StatsDrawer->Update(milliSec);
+	this->_stage->StatsDrawer->Update(milliSec);
 
 	this->_ticks += 0.01f * milliSec;
 	while (this->_ticks > TAU) {
@@ -43,20 +43,20 @@ string Piramide::Update(Uint32 milliSec, Event & inputEvent)
 
 void Piramide::Draw(void)
 {
-	int logoW = this->_frameLogo.Texture->width * 2; 
-	int logoH = this->_frameLogo.Texture->height * 2;
-	int arrowW = this->_frameFlecha.Texture->width * 2;
-	int arrowH = this->_frameFlecha.Texture->height * 2;
+	int logoW = this->_frameLogo->Texture->width * 2; 
+	int logoH = this->_frameLogo->Texture->height * 2;
+	int arrowW = this->_frameFlecha->Texture->width * 2;
+	int arrowH = this->_frameFlecha->Texture->height * 2;
 
 	int logoX = (_g->WorldWidth - logoW) / 2;
 	int logoY = -32;
 
 	_g->BlitFrameAlpha(this->_frameLogo, logoX, logoY, logoW, logoH, 0.33f, false, false);
 
-	this->_stage.StatsDrawer->DrawLives(0, -32, this->_stage.Player->_vidas);
-	this->_stage.StatsDrawer->DrawCoins(288, -32, this->_stage.Player->_coinsTaken);
-	this->_stage.StatsDrawer->DrawLevel(0, 320, this->_stage.CurrentRoom->GetDepth());
-	this->_stage.StatsDrawer->DrawScore(208, 320, this->_stage.Player->GetScore());
+	this->_stage->StatsDrawer->DrawLives(0, -32, this->_stage->Player->_vidas);
+	this->_stage->StatsDrawer->DrawCoins(288, -32, this->_stage->Player->_coinsTaken);
+	this->_stage->StatsDrawer->DrawLevel(0, 320, this->_stage->CurrentRoom->GetDepth());
+	this->_stage->StatsDrawer->DrawScore(208, 320, this->_stage->Player->GetScore());
 
 	int ladrilloW = 32, ladrilloH = 16;
 
@@ -72,19 +72,19 @@ void Piramide::Draw(void)
 
 	int arrowX = 0, arrowY = 0;
 
-	for (int i = 0, li = (int)this->_stage.Rooms.size(); i < li; ++i) {
+	for (int i = 0, li = (int)this->_stage->Rooms.size(); i < li; ++i) {
 		if (i == profundidad * (profundidad + 1) / 2) {
 			++profundidad;
 			posIniX -= ladrilloW / 2;
 			posX = posIniX;
 			posY += ladrilloH;
 		}
-		if (i == this->_stage.RoomIndex) {
+		if (i == this->_stage->RoomIndex) {
 			r = gFlecha; g = bFlecha; b = rFlecha;
 			arrowX = (int) (posX + ladrilloW / 2 - (arrowW / 2));
 			arrowY = (int) (posY - arrowH + (8 * this->_sinValue));
 		}
-		else if (this->_stage.Rooms[i]->Completada) {
+		else if (this->_stage->Rooms[i]->Completada) {
 			r = 1.0f; g = 0.0f; b = 0.0f;
 		}
 		else {
@@ -98,6 +98,10 @@ void Piramide::Draw(void)
 
 void Piramide::Dispose(void)
 {
+	delete this->_frameLadrillo;
+	delete this->_frameLogo;
+	delete this->_frameFlecha;
+	delete this->_tune;
 }
 
 Program * Piramide::GetProgram(void)

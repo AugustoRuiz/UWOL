@@ -1,12 +1,8 @@
 #pragma once
 
 #include <fstream>
-#include "Graphics.h"
 #include "GameData.h"
 #include "Stage.h"
-#include "IGameState.h"
-#include "InputManager.h"
-#include "Sound.h"
 
 #define WAIT_TIME 4000
 
@@ -30,11 +26,10 @@ private:
 
 	Graphics *_g;
 
-	vector<Frame> _imagenes;
-	Sound _sonido;
+	vector<Frame*> _imagenes;
+	Sound* _sonido;
 
 	unsigned int _currentFrame;
-
 
 	float _currentAlpha;
 	int _incrFactor;

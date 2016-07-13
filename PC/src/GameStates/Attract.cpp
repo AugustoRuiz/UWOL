@@ -2,11 +2,12 @@
 
 Attract::Attract() {
 	this->Name = "Attract";
-	this->_frameNoise = Frame("data/noise.png");
-	this->_frameSombra = Frame("data/TileSombra.png");
-	this->_program = Program({ "data/shaders/Default.150.vertex" }, { "data/shaders/CRT-Jasper.fragment" });
-	this->_program.Textures.push_back(Graphics::GetInstance()->GetFramebufferTexture());
-	this->_program.Textures.push_back(this->_frameNoise.Texture);
+	this->_messageLine = new MessageLine();
+	this->_frameNoise = new Frame("data/noise.png");
+	this->_frameSombra = new Frame("data/TileSombra.png");
+	this->_program = new Program({ "data/shaders/Default.150.vertex" }, { "data/shaders/CRT-Jasper.fragment" });
+	this->_program->Textures.push_back(Graphics::GetInstance()->GetFramebufferTexture());
+	this->_program->Textures.push_back(this->_frameNoise->Texture);
 	this->_eventsByRoom = vector<vector<Uint32>*>();
 }
 
@@ -19,17 +20,14 @@ void Attract::SetPlayer(TPlayer* player) {
 }
 
 Program* Attract::GetProgram() {
-	return &(this->_program);
+	return this->_program;
 }
 
-void Attract::SetAttractData(const vector<Uint32> &eventBuffer)
-{
-	for (vector<Uint32>* v : this->_eventsByRoom) {
-		delete v;
-	}
-	this->_eventsByRoom.clear();
+void Attract::SetAttractData(const vector<Uint32> &eventBuffer) {
+	this->_clearEvents();
 	vector<Uint32>* currentBuffer = nullptr;
 	Uint32 deltaTime;
+	Uint32 lastEvt = 0xFFFFFFFF;
 
 	for (Uint32 i = 0, li = eventBuffer.size() - 1; i < li; i += 2) {
 		Uint32 time = eventBuffer[i];
@@ -45,47 +43,83 @@ void Attract::SetAttractData(const vector<Uint32> &eventBuffer)
 			}
 			currentBuffer = new vector<	Uint32>();
 			currentBuffer->push_back(evt & (~ROOM_START_EVENT));
+
+			i += 2;
+			currentBuffer->push_back(eventBuffer[i]);
+			currentBuffer->push_back(eventBuffer[i + 1]);
+
 			this->_eventsByRoom.push_back(currentBuffer);
 			deltaTime = time;
+
+			if ((lastEvt != 0xFFFFFFFF) && ((lastEvt & 0x4000) == 0)) {
+				currentBuffer->push_back(0);
+				currentBuffer->push_back(lastEvt);
+			}
 		}
 		else {
 			if (currentBuffer != nullptr) {
 				currentBuffer->push_back(time - deltaTime);
 				currentBuffer->push_back(evt);
+				lastEvt = evt;
 			}
 		}
 	}
 
-	Uint32 size = currentBuffer->size();
-	if (size < 2 || currentBuffer->at(size - 2) < 2000) {
-		this->_eventsByRoom.pop_back();
-		delete currentBuffer;
+	if (currentBuffer != NULL) {
+		Uint32 size = currentBuffer->size();
+		if (size < 2 || currentBuffer->at(size - 2) < 2000) {
+			this->_eventsByRoom.pop_back();
+			delete currentBuffer;
+		}
 	}
-
 }
 
-void Attract::OnEnter()
-{
+void Attract::OnEnter() {
 	if (this->_eventsByRoom.size() > 0) {
+		this->_hadInertia = this->_player->hasInertia();
 		int attractDataIdx = rand() % this->_eventsByRoom.size();
 		this->_currentRoomEvts = *(this->_eventsByRoom[attractDataIdx]);
+		
 		Uint32 roomIndex = this->_currentRoomEvts[0];
 		this->_evtBufferIterator = this->_currentRoomEvts.begin() + 1;
+
+		// Handle inertia settings if any:
+		Uint32 inertiaPeek = *(this->_evtBufferIterator);
+		if ((inertiaPeek & INERTIA_STATUS) != 0) {
+			bool shouldHaveInertia = ((inertiaPeek & ~INERTIA_STATUS) != 0);
+			if (this->_player->hasInertia() != shouldHaveInertia) {
+				this->_player->toggleInertia();
+			}
+		}
+		this->_evtBufferIterator ++;
+
+		// Random seed
+		unsigned int roomSeed = *(this->_evtBufferIterator);
+		this->_evtBufferIterator++;
+
 		this->_totalTicks = 0;
 		this->_currentRoom = this->_rooms[roomIndex];
 		this->_currentRoom->setPlayer(this->_player);
 		this->_currentRoom->OnEnter();
+
+		// Buscamos garantizar que las camisetas salgan en el mismo sitio!
+		srand(roomSeed);
 		this->_currentAlpha = 0.0f;
 		this->_incrFactor = 1;
 	}
 }
 
-void Attract::OnExit()
-{
+void Attract::OnExit() {
+	if (this->_hadInertia != this->_player->hasInertia()) {
+		this->_player->toggleInertia();
+	}
 }
 
-string Attract::Update(Uint32 milliSec, Event & inputEvent)
-{
+string Attract::Update(Uint32 milliSec, Event & inputEvent) {
+	if (this->_eventsByRoom.size() == 0) {
+		return "Portada";
+	}
+
 	string result = this->Name;
 
 	if (inputEvent.Name == "") {
@@ -98,9 +132,8 @@ string Attract::Update(Uint32 milliSec, Event & inputEvent)
 		}
 		else {
 			Event roomEvent = inputEvent;
-			this->_totalTicks += milliSec;
 			if (this->_evtBufferIterator != this->_currentRoomEvts.end()) {
-				if (this->_totalTicks >= *this->_evtBufferIterator) {
+				if (this->_totalTicks == *(this->_evtBufferIterator)) {
 					Uint32 keyData = *(this->_evtBufferIterator + 1);
 					this->_evtBufferIterator += 2;
 
@@ -113,6 +146,13 @@ string Attract::Update(Uint32 milliSec, Event & inputEvent)
 					input->AddFakeEvent(roomEvent);
 					input->Update(0);
 				}
+
+				if (roomEvent.Name == "KEY_UP" && roomEvent.Data["key"] == ActionKeysToggleInertia) {
+					this->_player->toggleInertia();
+					this->_messageLine->ShowText("This guy is a cheater!", 1500, vec3(0.9f), vec3(0.7f));
+				}
+
+				this->_totalTicks += milliSec;
 				string roomResult = this->_currentRoom->Update(milliSec, roomEvent);
 				if (roomResult == "") {
 					this->_incrFactor = -1;
@@ -149,6 +189,20 @@ void Attract::Draw(void)
 	g->BlitFrameAlpha(this->_frameSombra, 0, 0, g->WorldWidth, g->WorldHeight, 1.0f - this->_currentAlpha, false, false);
 }
 
-void Attract::Dispose(void)
-{
+void Attract::Dispose(void) {
+	if (!this->_disposed) {
+		this->_clearEvents();
+
+		delete this->_messageLine;
+		delete this->_frameNoise;
+		delete this->_frameSombra;
+		delete this->_program;
+	}
+}
+
+void Attract::_clearEvents() {
+	for (vector<Uint32>* v : this->_eventsByRoom) {
+		delete v;
+	}
+	this->_eventsByRoom.clear();
 }

@@ -5,10 +5,6 @@
 #include <iomanip>
 #include "GameData.h"
 #include "Room.h"
-#include "IGameState.h"
-#include "Graphics.h"
-#include "AnimationPlayer.h"
-#include "StatsDraw.h"
 
 using namespace std;
 
@@ -30,10 +26,13 @@ public:
 	virtual Program* GetProgram() override;
 
 protected:
+	bool _hadInertia, _disposed;
+
 	TPlayer* _player;
-	Program _program;
+	Program* _program;
+	MessageLine* _messageLine;
 	
-	Frame _frameNoise, _frameSombra;
+	Frame *_frameNoise, *_frameSombra;
 
 	vector<vector<Uint32>*> _eventsByRoom;
 	vector<Uint32> _currentRoomEvts;
@@ -45,4 +44,6 @@ protected:
 	Uint32 _totalTicks;
 	char _incrFactor;
 	float _currentAlpha;
+
+	void _clearEvents();
 };
