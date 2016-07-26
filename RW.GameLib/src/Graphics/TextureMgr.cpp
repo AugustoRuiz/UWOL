@@ -166,6 +166,8 @@ TEXTUREINFO* TextureMgr::GL_LoadTexture(SDL_Surface *textureSurf)
 
 void TextureMgr::dumpTextureInfo(GLuint texNumber) {
 	GLint value;
+ 	glBindTexture(GL_TEXTURE_2D, texNumber);
+
 	Log::Out << "Texture info:" << endl << "-------------" << endl;
 	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &value);
 	Log::Out << "Size: (" << value << ", ";
@@ -191,6 +193,8 @@ void TextureMgr::dumpTextureInfo(GLuint texNumber) {
 	Log::Out << value << endl << "Buffer offset: ";
 	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_BUFFER_OFFSET, &value);
 	Log::Out << value << endl << "-------------" << endl;
+
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 string TextureMgr::getInternalFormatString(GLint value) {

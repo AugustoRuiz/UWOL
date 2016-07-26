@@ -74,8 +74,8 @@
     <IntDir>obj\</IntDir>
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(IncludePath)</IncludePath>
-    <TargetName>Game</TargetName>
-    <TargetExt>.bin</TargetExt>
+    <TargetName>UWOL</TargetName>
+    <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>

@@ -29,7 +29,7 @@ void Attract::SetAttractData(const vector<Uint32> &eventBuffer) {
 	Uint32 deltaTime;
 	Uint32 lastEvt = 0xFFFFFFFF;
 
-	for (Uint32 i = 0, li = eventBuffer.size() - 1; i < li; i += 2) {
+	for (int i = 0, li = eventBuffer.size() - 1; i < li; i += 2) {
 		Uint32 time = eventBuffer[i];
 		Uint32 evt = eventBuffer[i + 1];
 
@@ -101,6 +101,7 @@ void Attract::OnEnter() {
 		this->_currentRoom = this->_rooms[roomIndex];
 		this->_currentRoom->setPlayer(this->_player);
 		this->_currentRoom->OnEnter();
+		this->_currentRoom->Restart();
 
 		// Buscamos garantizar que las camisetas salgan en el mismo sitio!
 		srand(roomSeed);
@@ -117,7 +118,7 @@ void Attract::OnExit() {
 
 string Attract::Update(Uint32 milliSec, Event & inputEvent) {
 	if (this->_eventsByRoom.size() == 0) {
-		return "Portada";
+		return "Credits";
 	}
 
 	string result = this->Name;
@@ -132,8 +133,9 @@ string Attract::Update(Uint32 milliSec, Event & inputEvent) {
 		}
 		else {
 			Event roomEvent = inputEvent;
+			this->_totalTicks += milliSec;
 			if (this->_evtBufferIterator != this->_currentRoomEvts.end()) {
-				if (this->_totalTicks == *(this->_evtBufferIterator)) {
+				if (this->_totalTicks >= *(this->_evtBufferIterator)) {
 					Uint32 keyData = *(this->_evtBufferIterator + 1);
 					this->_evtBufferIterator += 2;
 
@@ -144,7 +146,7 @@ string Attract::Update(Uint32 milliSec, Event & inputEvent) {
 
 					InputManager* input = InputManager::GetInstance();
 					input->AddFakeEvent(roomEvent);
-					input->Update(0);
+					input->Update(milliSec);
 				}
 
 				if (roomEvent.Name == "KEY_UP" && roomEvent.Data["key"] == ActionKeysToggleInertia) {
@@ -152,7 +154,6 @@ string Attract::Update(Uint32 milliSec, Event & inputEvent) {
 					this->_messageLine->ShowText("This guy is a cheater!", 1500, vec3(0.9f), vec3(0.7f));
 				}
 
-				this->_totalTicks += milliSec;
 				string roomResult = this->_currentRoom->Update(milliSec, roomEvent);
 				if (roomResult == "") {
 					this->_incrFactor = -1;
@@ -176,17 +177,19 @@ string Attract::Update(Uint32 milliSec, Event & inputEvent) {
 
 void Attract::Draw(void)
 {
-	Graphics* g = Graphics::GetInstance();
+	if (this->_eventsByRoom.size() > 0) {
+		Graphics* g = Graphics::GetInstance();
 
-	this->_currentRoom->Draw();
+		this->_currentRoom->Draw();
 
-	// Cortamos por las bravas...
-	g->BlitFrameAbs(this->_frameSombra, 0, 0, g->ScreenWidth, (int)g->OffsetY - 1, false, false);
-	g->BlitFrameAbs(this->_frameSombra, 0, g->ScreenHeight - (int)g->OffsetY, g->ScreenWidth, (int)g->OffsetY, false, false);
-	g->BlitFrameAbs(this->_frameSombra, 0, 0, (int)g->OffsetX, g->ScreenHeight, false, false);
-	g->BlitFrameAbs(this->_frameSombra, g->ScreenWidth - (int)g->OffsetX, 0, (int)g->OffsetX, g->ScreenHeight, false, false);
+		// Cortamos por las bravas...
+		g->BlitFrameAbs(this->_frameSombra, 0, 0, g->ScreenWidth, (int)g->OffsetY - 1, false, false);
+		g->BlitFrameAbs(this->_frameSombra, 0, g->ScreenHeight - (int)g->OffsetY, g->ScreenWidth, (int)g->OffsetY, false, false);
+		g->BlitFrameAbs(this->_frameSombra, 0, 0, (int)g->OffsetX, g->ScreenHeight, false, false);
+		g->BlitFrameAbs(this->_frameSombra, g->ScreenWidth - (int)g->OffsetX, 0, (int)g->OffsetX, g->ScreenHeight, false, false);
 
-	g->BlitFrameAlpha(this->_frameSombra, 0, 0, g->WorldWidth, g->WorldHeight, 1.0f - this->_currentAlpha, false, false);
+		g->BlitFrameAlpha(this->_frameSombra, 0, 0, g->WorldWidth, g->WorldHeight, 1.0f - this->_currentAlpha, false, false);
+	}
 }
 
 void Attract::Dispose(void) {

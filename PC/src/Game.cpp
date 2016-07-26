@@ -266,45 +266,45 @@ void Game::handleInput(Event &currentEvent) {
 			}
 
 			break;
-		case ActionKeysNextScreen:
-			if (this->_currentStatus == "Stage") {
-				map<string, IGameState*>::iterator it = _states.find(_currentStatus);
-				if (it != _states.end()) {
-					IGameState *state = it->second;
-					Stage* s = (Stage*)state;
-					int nextIdx = s->RoomIndex + 1;
-					if (nextIdx < (int)s->Rooms.size()) {
-						s->GoToRoom(nextIdx);
-						this->_messageLine->ShowText("Next room", 1500, vec3(0.9f), vec3(0.7f));
-					}
-				}
-			}
-			break;
-		case ActionKeysPreviousScreen:
-			if (this->_currentStatus == "Stage") {
-				map<string, IGameState*>::iterator it = _states.find(_currentStatus);
-				if (it != _states.end()) {
-					IGameState *state = it->second;
-					Stage* s = (Stage*)state;
-					int nextIdx = s->RoomIndex - 1;
-					if (nextIdx >= 0) {
-						s->GoToRoom(nextIdx);
-						this->_messageLine->ShowText("Previous room", 1500, vec3(0.9f), vec3(0.7f));
-					}
-				}
-			}
-			break;
-		case ActionKeysAddCoins:
-			if (this->_currentStatus == "Stage") {
-				map<string, IGameState*>::iterator it = _states.find(_currentStatus);
-				if (it != _states.end()) {
-					IGameState *state = it->second;
-					Stage* s = (Stage*)state;
-					s->Player->_coinsTaken += 1;
-					this->_messageLine->ShowText("Added coin!", 1500, vec3(0.9f), vec3(0.7f));
-				}
-			}
-			break;
+		//case ActionKeysNextScreen:
+		//	if (this->_currentStatus == "Stage") {
+		//		map<string, IGameState*>::iterator it = _states.find(_currentStatus);
+		//		if (it != _states.end()) {
+		//			IGameState *state = it->second;
+		//			Stage* s = (Stage*)state;
+		//			int nextIdx = s->RoomIndex + 1;
+		//			if (nextIdx < (int)s->Rooms.size()) {
+		//				s->GoToRoom(nextIdx);
+		//				this->_messageLine->ShowText("Next room", 1500, vec3(0.9f), vec3(0.7f));
+		//			}
+		//		}
+		//	}
+		//	break;
+		//case ActionKeysPreviousScreen:
+		//	if (this->_currentStatus == "Stage") {
+		//		map<string, IGameState*>::iterator it = _states.find(_currentStatus);
+		//		if (it != _states.end()) {
+		//			IGameState *state = it->second;
+		//			Stage* s = (Stage*)state;
+		//			int nextIdx = s->RoomIndex - 1;
+		//			if (nextIdx >= 0) {
+		//				s->GoToRoom(nextIdx);
+		//				this->_messageLine->ShowText("Previous room", 1500, vec3(0.9f), vec3(0.7f));
+		//			}
+		//		}
+		//	}
+		//	break;
+		//case ActionKeysAddCoins:
+		//	if (this->_currentStatus == "Stage") {
+		//		map<string, IGameState*>::iterator it = _states.find(_currentStatus);
+		//		if (it != _states.end()) {
+		//			IGameState *state = it->second;
+		//			Stage* s = (Stage*)state;
+		//			s->Player->_coinsTaken += 1;
+		//			this->_messageLine->ShowText("Added coin!", 1500, vec3(0.9f), vec3(0.7f));
+		//		}
+		//	}
+		//	break;
 		case ActionKeysToggleInertia:
 			this->_stage->Player->toggleInertia();
 			ss << "Sissy mode: " << (this->_stage->Player->hasInertia() ? "OFF" : "ON");

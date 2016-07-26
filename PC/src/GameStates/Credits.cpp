@@ -131,18 +131,20 @@ void Credits::Draw(void)
 
 	drawCentered(posY, "*@ 2006 - 2016 The Mojon Twins"); posY += 128;
 
-	this->_textPauseY.push_back((float)posY - ofsY - 32);
+	this->_textPauseY.push_back((float)posY - ofsY - 48);
 
 	drawCentered(posY, "^UWOL, The Quest For Money"); posY += 16;
 	drawCentered(posY, "_PC, Mac, Linux"); posY += 16;
-	drawCentered(posY, "_and Raspberry Pi"); posY += 40;
+	drawCentered(posY, "_and Raspberry Pi"); posY += 32;
 
-	drawCentered(posY, "^Code and Music: _Augusto Ruiz"); posY += 40;
-	drawCentered(posY, "^Linux support: _utopian"); posY += 16;
+	drawCentered(posY, "^Code and Music: _Augusto Ruiz"); posY += 16;
+	drawCentered(posY, "^Sound FX: _WYZ"); posY += 16;
+	drawCentered(posY, "^Linux support: _utopian"); posY += 48;
+
 	drawCentered(posY, "^Testers: _Imanok, Guillian,"); posY += 16;
-	drawCentered(posY, "_utopian, pagantipaco,"); posY += 16;
-	drawCentered(posY, "_Metalbrain, Sejuan,"); posY += 16;
-	drawCentered(posY, "_Anjuel"); posY += 48;
+	drawCentered(posY, "_WYZ, utopian, pagantipaco,"); posY += 16;
+	drawCentered(posY, "_Metalbrain, Sejuan"); posY += 48;
+	
 	drawCentered(posY, "*@ 2006 - 2016 Retroworks"); posY += 64;
 
 	this->_textPauseY.push_back((float)posY - ofsY);
