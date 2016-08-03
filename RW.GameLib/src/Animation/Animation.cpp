@@ -37,15 +37,16 @@ void Animation::Dispose()
 }
 
 void Animation::LoadAnimations(const string &filePath) {
-	ifstream file(filePath, ifstream::binary);
-	Json::Value root;
-	file >> root;
-
-	if (!file.good()) {
+	istream* file = Pack::GetInstance()->GetStream(filePath);
+	if (!file->good()) {
 		stringstream errorMsg;
 		errorMsg << "El fichero '" << filePath << "' no se ha podido abrir correctamente";
 		throw errorMsg.str();
 	}
+
+	Json::Value root;
+	(*file) >> root;
+	delete file;
 
 	if (root == Json::Value::null) {
 		stringstream errorMsg;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Utils/Log.h"
+#include "../Utils/Pack.h"
 #include "GLFuncs.h"
 #include "Shader.h"
 #include <vector>

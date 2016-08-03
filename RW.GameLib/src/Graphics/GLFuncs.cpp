@@ -5,6 +5,10 @@ GLFuncs *GLFuncs::GetInstance()
 	return &_instance;
 }
 
+void GLFuncs::SetPack(Pack* pack) {
+	this->_pack = pack;
+}
+
 SDL_Window *GLFuncs::Initialize(int screenWidth, int screenHeight, GLboolean fullscreen, const char* name)
 {
 	Uint32 flags;
@@ -38,7 +42,7 @@ SDL_Window *GLFuncs::Initialize(int screenWidth, int screenHeight, GLboolean ful
 		checkSDLError(__LINE__);
 	}
 
-	SDL_Surface *icon = IMG_Load("data/UWOLIcon.png");
+	SDL_Surface *icon = Pack::GetInstance()->GetImg("data/UWOLIcon.png");
 	SDL_SetWindowIcon(_window, icon);
 
 	_mainContext = SDL_GL_CreateContext(_window);

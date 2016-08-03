@@ -220,6 +220,7 @@
     <ClInclude Include="include\Utils\FileFuncs.h" />
     <ClInclude Include="include\Entities\IUpdatable.h" />
     <ClInclude Include="include\Utils\Log.h" />
+    <ClInclude Include="include\Utils\Pack.h" />
     <ClInclude Include="include\Utils\TimerFuncs.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
@@ -245,6 +246,7 @@
     <ClCompile Include="src\Utils\Log.cpp" />
     <ClCompile Include="src\Sound\MusicManager.cpp" />
     <ClCompile Include="src\Sound\Sound.cpp" />
+    <ClCompile Include="src\Utils\Pack.cpp" />
     <ClCompile Include="src\Utils\TimerFuncs.cpp" />
   </ItemGroup>
   <ItemGroup>

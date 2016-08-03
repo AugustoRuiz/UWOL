@@ -1,5 +1,7 @@
 #pragma once
 
+#include <RW.PackLib/PackLib.h>
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_mixer.h>

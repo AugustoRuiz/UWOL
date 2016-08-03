@@ -111,80 +111,80 @@ Event InputManager::Update(int milliSecs)
 		}
 	}
 	else {
-		SDL_PollEvent(&event);
+		while (SDL_PollEvent(&event) && result.Name=="") {
+			if (SDL_NumJoysticks() > 0 && (this->_joystick == NULL)) {
+				this->_joystick = SDL_JoystickOpen(0);
+			}
 
-		if (SDL_NumJoysticks() > 0 && (this->_joystick == NULL)) {
-			this->_joystick = SDL_JoystickOpen(0);
-		}
+			switch (event.type) {
+				// Look for a keypress 
+			case SDL_KEYDOWN:
+				if (this->Enabled) {
+					int key = event.key.keysym.sym;
+					if (this->KeyMap.find(key) != this->KeyMap.end()) {
+						result.Name = "KEY_DOWN";
+						result.Data["key"] = this->KeyMap[key];
+						if (this->_controlMode == Keyboard) {
+							this->SetKeyPressedState(result);
+						}
+					}
+				}
+				break;
+			case SDL_KEYUP:
+				if (this->Enabled) {
+					int key = event.key.keysym.sym;
+					if (this->KeyMap.find(key) != this->KeyMap.end()) {
+						result.Name = "KEY_UP";
+						result.Data["key"] = this->KeyMap[key];
+						if (this->_controlMode == Keyboard) {
+							this->SetKeyPressedState(result);
+						}
+					}
+				}
+				break;
+			case SDL_JOYBUTTONDOWN:
+				if (this->Enabled) {
+					if (event.jbutton.which == 0 && event.jbutton.button >= 0 && event.jbutton.button <= 4) {
+						if (this->_controlMode == Joystick) {
+							this->setKeyFromJoyEvent(1, 1, ActionKeysUp);
+						}
+						result.Name = "JOY_DOWN";
+						result.Data["button"] = event.jbutton.button;
+					}
+				}
+				break;
+			case SDL_JOYBUTTONUP:
+				if (this->Enabled) {
+					if (event.jbutton.which == 0 && event.jbutton.button >= 0 && event.jbutton.button <= 4) {
+						if (this->_controlMode == Joystick) {
+							this->setKeyFromJoyEvent(0, 0, ActionKeysUp);
+						}
+						result.Name = "JOY_UP";
+						result.Data["button"] = event.jbutton.button;
+					}
+				}
+				break;
+			case SDL_QUIT:
+				//Log::WriteLog("Received SDL_QUIT... Ignoring...\n");
+				// _running = false;
+				break;
+			default:
+				break;
+			}
 
-		switch (event.type) {
-			// Look for a keypress 
-		case SDL_KEYDOWN:
-			if (this->Enabled) {
-				int key = event.key.keysym.sym;
-				if (this->KeyMap.find(key) != this->KeyMap.end()) {
-					result.Name = "KEY_DOWN";
-					result.Data["key"] = this->KeyMap[key];
-					if (this->_controlMode == Keyboard) {
-						this->SetKeyPressedState(result);
-					}
+			if (this->_joystick != NULL) {
+				Uint8 hatStatus = SDL_JoystickGetHat(this->_joystick, 0);
+				if (hatStatus != _previousHatStatus) {
+					result.Name = "JOY_HAT";
+					result.Data["hat"] = hatStatus;
 				}
-			}
-			break;
-		case SDL_KEYUP:
-			if (this->Enabled) {
-				int key = event.key.keysym.sym;
-				if (this->KeyMap.find(key) != this->KeyMap.end()) {
-					result.Name = "KEY_UP";
-					result.Data["key"] = this->KeyMap[key];
-					if (this->_controlMode == Keyboard) {
-						this->SetKeyPressedState(result);
-					}
+				if (this->_controlMode == Joystick) {
+					this->setKeyFromJoyEvent(hatStatus, HAT_LEFT, ActionKeysLeft);
+					this->setKeyFromJoyEvent(hatStatus, HAT_RIGHT, ActionKeysRight);
+					this->setKeyFromJoyEvent(hatStatus, HAT_DOWN, ActionKeysDown);
 				}
+				_previousHatStatus = hatStatus;
 			}
-			break;
-		case SDL_JOYBUTTONDOWN:
-			if (this->Enabled) {
-				if (event.jbutton.which == 0 && event.jbutton.button >= 0 && event.jbutton.button <= 4) {
-					if (this->_controlMode == Joystick) {
-						this->setKeyFromJoyEvent(1, 1, ActionKeysUp);
-					}
-					result.Name = "JOY_DOWN";
-					result.Data["button"] = event.jbutton.button;
-				}
-			}
-			break;
-		case SDL_JOYBUTTONUP:
-			if (this->Enabled) {
-				if (event.jbutton.which == 0 && event.jbutton.button >= 0 && event.jbutton.button <= 4) {
-					if (this->_controlMode == Joystick) {
-						this->setKeyFromJoyEvent(0, 0, ActionKeysUp);
-					}
-					result.Name = "JOY_UP";
-					result.Data["button"] = event.jbutton.button;
-				}
-			}
-			break;
-		case SDL_QUIT:
-			//Log::WriteLog("Received SDL_QUIT... Ignoring...\n");
-			// _running = false;
-			break;
-		default:
-			break;
-		}
-
-		if (this->_joystick != NULL) {
-			Uint8 hatStatus = SDL_JoystickGetHat(this->_joystick, 0);
-			if (hatStatus != _previousHatStatus) {
-				result.Name = "JOY_HAT";
-				result.Data["hat"] = hatStatus;
-			}
-			if (this->_controlMode == Joystick) {
-				this->setKeyFromJoyEvent(hatStatus, HAT_LEFT, ActionKeysLeft);
-				this->setKeyFromJoyEvent(hatStatus, HAT_RIGHT, ActionKeysRight);
-				this->setKeyFromJoyEvent(hatStatus, HAT_DOWN, ActionKeysDown);
-			}
-			_previousHatStatus = hatStatus;
 		}
 	}
 

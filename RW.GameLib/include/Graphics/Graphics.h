@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../Utils/Pack.h"
 #include "Program.h"
 #include "../Animation/Frame.h"
 #include "Shader.h"
@@ -10,6 +11,8 @@ class Graphics
 {
 	GLFuncs *_gl;
 	TextRenderer _textRenderer;
+
+	Pack* _pack;
 
 	static Graphics _instance;
 
@@ -33,6 +36,8 @@ public:
 	VECTOR2 MaxShadowOffset;
 
 	Program *DefaultProgram, *DefaultLineProgram;
+
+	void SetPack(Pack* pack);
 
 	void ResetMVP();
 	void OffsetMVP(float offsetX, float offsetY);

@@ -21,6 +21,8 @@ bool Game::Running() {
 bool Game::Initialize(int width, int height, bool fullscreen, const char* name) {
 	Log::Out << "Game: Initializing..." << endl;
 
+	Pack::GetInstance()->Initialize("UWOL.pak");
+
 	_g = Graphics::GetInstance();
 	_input = InputManager::GetInstance();
 
@@ -191,6 +193,18 @@ void Game::handleInput(Event &currentEvent) {
 			this->_eventBuffer.push_back(this->_totalTicks);
 			this->_eventBuffer.push_back((Uint32)(0x3FFF & key));
 		}
+
+		if (key == ActionKeysAddCoins) {
+			if (this->_currentStatus == "Stage") {
+				map<string, IGameState*>::iterator it = _states.find(_currentStatus);
+				if (it != _states.end()) {
+					IGameState *state = it->second;
+					Stage* s = (Stage*)state;
+					s->Player->_coinsTaken += 1;
+					this->_messageLine->ShowText("Added coin!", 1500, vec3(0.9f), vec3(0.7f));
+				}
+			}
+		}
 	}
 	if (currentEvent.Name == "KEY_UP") {
 		ActionKeys key = (ActionKeys)(currentEvent.Data["key"].asInt());
@@ -266,45 +280,34 @@ void Game::handleInput(Event &currentEvent) {
 			}
 
 			break;
-		//case ActionKeysNextScreen:
-		//	if (this->_currentStatus == "Stage") {
-		//		map<string, IGameState*>::iterator it = _states.find(_currentStatus);
-		//		if (it != _states.end()) {
-		//			IGameState *state = it->second;
-		//			Stage* s = (Stage*)state;
-		//			int nextIdx = s->RoomIndex + 1;
-		//			if (nextIdx < (int)s->Rooms.size()) {
-		//				s->GoToRoom(nextIdx);
-		//				this->_messageLine->ShowText("Next room", 1500, vec3(0.9f), vec3(0.7f));
-		//			}
-		//		}
-		//	}
-		//	break;
-		//case ActionKeysPreviousScreen:
-		//	if (this->_currentStatus == "Stage") {
-		//		map<string, IGameState*>::iterator it = _states.find(_currentStatus);
-		//		if (it != _states.end()) {
-		//			IGameState *state = it->second;
-		//			Stage* s = (Stage*)state;
-		//			int nextIdx = s->RoomIndex - 1;
-		//			if (nextIdx >= 0) {
-		//				s->GoToRoom(nextIdx);
-		//				this->_messageLine->ShowText("Previous room", 1500, vec3(0.9f), vec3(0.7f));
-		//			}
-		//		}
-		//	}
-		//	break;
-		//case ActionKeysAddCoins:
-		//	if (this->_currentStatus == "Stage") {
-		//		map<string, IGameState*>::iterator it = _states.find(_currentStatus);
-		//		if (it != _states.end()) {
-		//			IGameState *state = it->second;
-		//			Stage* s = (Stage*)state;
-		//			s->Player->_coinsTaken += 1;
-		//			this->_messageLine->ShowText("Added coin!", 1500, vec3(0.9f), vec3(0.7f));
-		//		}
-		//	}
-		//	break;
+		case ActionKeysNextScreen:
+			if (this->_currentStatus == "Stage") {
+				map<string, IGameState*>::iterator it = _states.find(_currentStatus);
+				if (it != _states.end()) {
+					IGameState *state = it->second;
+					Stage* s = (Stage*)state;
+					int nextIdx = s->RoomIndex + 1;
+					if (nextIdx < (int)s->Rooms.size()) {
+						s->GoToRoom(nextIdx);
+						this->_messageLine->ShowText("Next room", 1500, vec3(0.9f), vec3(0.7f));
+					}
+				}
+			}
+			break;
+		case ActionKeysPreviousScreen:
+			if (this->_currentStatus == "Stage") {
+				map<string, IGameState*>::iterator it = _states.find(_currentStatus);
+				if (it != _states.end()) {
+					IGameState *state = it->second;
+					Stage* s = (Stage*)state;
+					int nextIdx = s->RoomIndex - 1;
+					if (nextIdx >= 0) {
+						s->GoToRoom(nextIdx);
+						this->_messageLine->ShowText("Previous room", 1500, vec3(0.9f), vec3(0.7f));
+					}
+				}
+			}
+			break;
 		case ActionKeysToggleInertia:
 			this->_stage->Player->toggleInertia();
 			ss << "Sissy mode: " << (this->_stage->Player->hasInertia() ? "OFF" : "ON");
@@ -412,15 +415,16 @@ void Game::drawStatusMsg(const string& str) {
 
 void Game::loadResources() {
 	Log::Out << "Game: Loading resources..." << endl;
-	ifstream resourcesFile("resources.json", ios::binary);
+	istream* resourcesFile = Pack::GetInstance()->GetStream("resources.json");
 
-	if (!resourcesFile.good()) {
+	if (!resourcesFile->good()) {
 		Log::Out << "Couldn't load file resources.json" << endl;
 		return;
 	}
 
 	Json::Value root;
-	resourcesFile >> root;
+	(*resourcesFile) >> root;
+	delete resourcesFile;
 
 	Log::Out << "Game: Initializing Scanlines..." << endl;
 	Json::Value shaders = root["outputShaders"];

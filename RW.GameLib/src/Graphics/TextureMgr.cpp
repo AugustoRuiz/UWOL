@@ -1,20 +1,16 @@
 #include "Graphics/TextureMgr.h"
 
-TextureMgr::TextureMgr(void)
-{
+TextureMgr::TextureMgr(void) {
 }
 
-TextureMgr::~TextureMgr(void)
-{
+TextureMgr::~TextureMgr(void) {
 }
 
-TextureMgr * TextureMgr::GetInstance()
-{
+TextureMgr* TextureMgr::GetInstance() {
 	return &_instance;
 }
 
-TEXTUREINFO* TextureMgr::LoadTexture(const string &sFileName)
-{
+TEXTUREINFO* TextureMgr::LoadTexture(const string &sFileName) {
 	TEXTUREINFO* result = NULL;
 
 	//Log::Out << "TextureMgr: Loading texture '" << sFileName << "'...";
@@ -26,10 +22,9 @@ TEXTUREINFO* TextureMgr::LoadTexture(const string &sFileName)
 	}
 	else
 	{
-		SDL_Surface *textureSurf = IMG_Load(sFileName.c_str());
+		SDL_Surface *textureSurf = Pack::GetInstance()->GetImg(sFileName);
 
-		if (textureSurf != NULL)
-		{
+		if (textureSurf != NULL) {
 			int originalWidth = textureSurf->w;
 			int originalHeight = textureSurf->h;
 
@@ -46,8 +41,7 @@ TEXTUREINFO* TextureMgr::LoadTexture(const string &sFileName)
 
 			result = this->GL_LoadTexture(textureSurf);
 
-			if (result != NULL)
-			{
+			if (result != NULL) {
 				//Log::Out << "texture #" << result->texture << endl;
 				result->width = originalWidth;
 				result->height = originalHeight;
@@ -76,34 +70,12 @@ TEXTUREINFO* TextureMgr::LoadTexture(const string &sFileName)
 	return result;
 }
 
-//TEXTUREINFO* TextureMgr::LoadTexture(SDL_RWops *rw)
-//{
-//	TEXTUREINFO* result = NULL;
-//
-//	SDL_Surface *textureSurf = IMG_Load_RW(rw, 0);
-//
-//	if(textureSurf != NULL)
-//	{
-//		result = this->GL_LoadTexture(textureSurf);
-//
-//		if(result != NULL)
-//		{
-//		    result->width = textureSurf->w;
-//		    result->height = textureSurf->h;
-//		}
-//		SDL_FreeSurface(textureSurf);
-//	}
-//
-//	return result;
-//}
-
 void TextureMgr::DeleteTextures()
 {
 	TEXTUREMAP::iterator iter;
 
 	iter = cache.begin();
-	while (iter != cache.end())
-	{
+	while (iter != cache.end()) {
 		//Log::Out << "TextureMgr: Deleting texture #" << iter->second->texture << "." << endl;
 		glDeleteTextures(1, &iter->second->texture);
 		iter++;
@@ -111,8 +83,7 @@ void TextureMgr::DeleteTextures()
 	cache.clear();
 }
 
-TEXTUREINFO* TextureMgr::GL_LoadTexture(SDL_Surface *textureSurf)
-{
+TEXTUREINFO* TextureMgr::GL_LoadTexture(SDL_Surface *textureSurf) {
 	GLuint texNumber = 0;
 	TEXTUREINFO *result = NULL;
 

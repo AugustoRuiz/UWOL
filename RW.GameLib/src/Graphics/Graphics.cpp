@@ -1,34 +1,34 @@
 #include "Graphics/Graphics.h"
 
-Graphics *Graphics::GetInstance()
-{
+Graphics *Graphics::GetInstance() {
 	return &_instance;
 }
 
-Graphics::Graphics()
-{
+Graphics::Graphics() {
 	this->_gl = GLFuncs::GetInstance();
 
 	this->MaxShadowOffset.x = 16;
 	this->MaxShadowOffset.y = 20;
+	this->_pack = NULL;
 }
 
-Graphics::~Graphics()
-{
+Graphics::~Graphics() {
 }
 
-TEXTUREINFO* Graphics::GetFramebufferTexture()
-{
+void Graphics::SetPack(Pack* pack) {
+	this->_pack = pack;
+	this->_gl->SetPack(pack);
+}
+
+TEXTUREINFO* Graphics::GetFramebufferTexture() {
 	return this->_framebufferTexture;
 }
 
-void Graphics::ResetMVP()
-{
+void Graphics::ResetMVP() {
 	this->_gl->ResetMVP();
 }
 
-void Graphics::OffsetMVP(float offsetX, float offsetY)
-{
+void Graphics::OffsetMVP(float offsetX, float offsetY) {
 	this->_gl->OffsetMVP(offsetX, offsetY);
 }
 

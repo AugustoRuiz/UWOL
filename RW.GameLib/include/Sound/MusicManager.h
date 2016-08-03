@@ -2,6 +2,7 @@
 
 #include "../Common.h"
 #include "../Utils/Log.h"
+#include "../Utils/Pack.h"
 #include <map>
 #include <string>
 
@@ -16,6 +17,7 @@ public:
 	~MusicManager(void);
 
 	Mix_Chunk* LoadMusic(const string &fileName);
+		
 	void DeleteMusic();
 	void Initialize();
 	void Dispose();
@@ -35,7 +37,6 @@ public:
 
 protected:
 	static MusicManager _instance;
-
 private:
 	MUSICMAP cache;
 };

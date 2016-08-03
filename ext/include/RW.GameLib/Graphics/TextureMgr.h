@@ -2,6 +2,7 @@
 
 #include "../Common.h"
 #include "../Utils/Log.h"
+#include "../Utils/Pack.h"
 #include <map>
 #include <string>
 #include <sstream>

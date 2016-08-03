@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{08b47c63-5170-4703-aab3-4fca10e611bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{291de778-ad5b-4434-b5e5-03ed8950b463}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\DirUtils.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\FixedEndian.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PackEntries.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PackEntry.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Packer.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PackLib.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PackUtils.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\StringUtils.h">
+      <Filter>include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\DirUtils.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PackEntries.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PackEntry.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Packer.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PackUtils.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\StringUtils.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="PAKformat.txt" />
+  </ItemGroup>
+</Project>

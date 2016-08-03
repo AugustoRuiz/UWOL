@@ -611,7 +611,7 @@ Coin* Room::AddCoin(char tileX, char tileY, VECTOR2 tileSize) {
 	return coin;
 }
 
-bool Room::loadRoom(ifstream &roomsFile) {
+bool Room::loadRoom(istream *roomsFile) {
 	unsigned char tileFondo;
 	unsigned char moreData = 0x00;
 	VECTOR2 vect;
@@ -624,14 +624,14 @@ bool Room::loadRoom(ifstream &roomsFile) {
 	this->_fanty = FactoriaEnemigo::Create(Fanty);
 
 	// Leemos el tile de fondo.
-	roomsFile.read(reinterpret_cast<char*>(&tileFondo), sizeof(unsigned char));
+	roomsFile->read(reinterpret_cast<char*>(&tileFondo), sizeof(unsigned char));
 	this->_back = new Background();
 	this->_back->setTileFondo((TilesFondo)tileFondo);
 
 	Log::Out << "   - Background: " << tileFondo << endl;
 
 	// Leemos las plataformas:
-	moreData = (unsigned char)roomsFile.peek();
+	moreData = (unsigned char)roomsFile->peek();
 	while (moreData != 0xFF) {
 		unsigned char tipo;
 		unsigned char dir;
@@ -639,21 +639,21 @@ bool Room::loadRoom(ifstream &roomsFile) {
 		unsigned char tileX;
 		unsigned char tileY;
 
-		roomsFile.read(reinterpret_cast<char*>(&lon), sizeof(unsigned char));
-		roomsFile.read(reinterpret_cast<char*>(&tipo), sizeof(unsigned char));
-		roomsFile.read(reinterpret_cast<char*>(&dir), sizeof(unsigned char));
-		roomsFile.read(reinterpret_cast<char*>(&tileX), sizeof(unsigned char));
-		roomsFile.read(reinterpret_cast<char*>(&tileY), sizeof(unsigned char));
+		roomsFile->read(reinterpret_cast<char*>(&lon), sizeof(unsigned char));
+		roomsFile->read(reinterpret_cast<char*>(&tipo), sizeof(unsigned char));
+		roomsFile->read(reinterpret_cast<char*>(&dir), sizeof(unsigned char));
+		roomsFile->read(reinterpret_cast<char*>(&tileX), sizeof(unsigned char));
+		roomsFile->read(reinterpret_cast<char*>(&tileY), sizeof(unsigned char));
 		this->AddPlatform((TilePlataforma)tipo, (Direccion)dir, lon, tileX, tileY, vect);
 
-		moreData = (unsigned char)roomsFile.peek();
+		moreData = (unsigned char)roomsFile->peek();
 		Log::Out << "Adding platform..." << endl;
 	}
 	// Saltamos el siguiente caracter...
-	roomsFile.seekg(1, ios_base::cur);
+	roomsFile->seekg(1, ios_base::cur);
 
 	// Enemigos.
-	moreData = (unsigned char)roomsFile.peek();
+	moreData = (unsigned char)roomsFile->peek();
 	while (moreData != 0xFF) {
 		unsigned char tileVert;
 		unsigned char tipoEnemigo;
@@ -661,46 +661,43 @@ bool Room::loadRoom(ifstream &roomsFile) {
 		unsigned char tileIzq;
 		unsigned char tileDer;
 
-		roomsFile.read(reinterpret_cast<char*>(&tileVert), sizeof(unsigned char));
-		roomsFile.read(reinterpret_cast<char*>(&tipoEnemigo), sizeof(unsigned char));
-		roomsFile.read(reinterpret_cast<char*>(&velocidad), sizeof(unsigned char));
-		roomsFile.read(reinterpret_cast<char*>(&tileIzq), sizeof(unsigned char));
-		roomsFile.read(reinterpret_cast<char*>(&tileDer), sizeof(unsigned char));
+		roomsFile->read(reinterpret_cast<char*>(&tileVert), sizeof(unsigned char));
+		roomsFile->read(reinterpret_cast<char*>(&tipoEnemigo), sizeof(unsigned char));
+		roomsFile->read(reinterpret_cast<char*>(&velocidad), sizeof(unsigned char));
+		roomsFile->read(reinterpret_cast<char*>(&tileIzq), sizeof(unsigned char));
+		roomsFile->read(reinterpret_cast<char*>(&tileDer), sizeof(unsigned char));
 
 		this->AddEnemy((TipoEnemigo)tipoEnemigo, (Velocidad)velocidad, tileIzq, tileDer, tileVert, vect);
 
-		moreData = (unsigned char)roomsFile.peek();
+		moreData = (unsigned char)roomsFile->peek();
 		Log::Out << "Adding Enemy: " << (int)tipoEnemigo << endl;
 	}
 
 	// Saltamos el siguiente caracter...
-	roomsFile.seekg(1, ios_base::cur);
+	roomsFile->seekg(1, ios_base::cur);
 
 	// Monedas.
-	moreData = (unsigned char)roomsFile.peek();
-
-	this->_initialTime = 0;
+	moreData = (unsigned char)roomsFile->peek();
 
 	while (moreData != 0xFF) {
 		unsigned char tileX;
 		unsigned char tileY;
 
-		roomsFile.read(reinterpret_cast<char*>(&tileX), sizeof(unsigned char));
-		roomsFile.read(reinterpret_cast<char*>(&tileY), sizeof(unsigned char));
+		roomsFile->read(reinterpret_cast<char*>(&tileX), sizeof(unsigned char));
+		roomsFile->read(reinterpret_cast<char*>(&tileY), sizeof(unsigned char));
 		this->AddCoin(tileX, tileY, vect);
 
-		this->_initialTime += 2000;
-
-		moreData = (unsigned char)roomsFile.peek();
+		moreData = (unsigned char)roomsFile->peek();
 		Log::Out << "Adding coin..." << endl;
 	}
 
+	this->_initialTime = 2000 * this->_monedas.size();
 	this->TimeLeft = this->_initialTime;
 
 	// Saltamos el siguiente caracter...
-	roomsFile.seekg(1, ios_base::cur);
+	roomsFile->seekg(1, ios_base::cur);
 
-	moreData = (unsigned char)roomsFile.peek();
+	moreData = (unsigned char)roomsFile->peek();
 
 	return (moreData != 0xFF);
 }

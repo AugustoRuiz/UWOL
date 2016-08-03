@@ -42,7 +42,7 @@ public:
         
 	TPlayer *_player;
 
-	bool loadRoom(ifstream &roomsFile);
+	bool loadRoom(istream *roomsFile);
 
 	int getEstado();
 

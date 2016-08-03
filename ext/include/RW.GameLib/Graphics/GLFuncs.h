@@ -2,6 +2,7 @@
 
 #include "../Common.h"
 #include "../Utils/Log.h"
+#include "../Utils/Pack.h"
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 #include <string>
@@ -22,6 +23,8 @@ class GLFuncs
 {
 public:
 	static GLFuncs * GetInstance();
+
+	void SetPack(Pack* pack);
 
 	glm::mat4 MVP;
 
@@ -79,7 +82,8 @@ public:
 	GLuint GetFramebufferTexture();
 
 protected :
-	GLFuncs(void){};
+	GLFuncs(void) { this->_pack = NULL; };
+
 	virtual ~GLFuncs(void) {
 		glDeleteTextures(1, &_renderedTexture);
 		if (this->_useFramebuffer) {
@@ -100,6 +104,8 @@ protected :
 	bool initFramebuffer();
 
 	string getGLSLVersion();
+
+	Pack* _pack;
 
 	bool _useVBO;
 	bool _useFramebuffer;

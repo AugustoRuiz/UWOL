@@ -5,6 +5,7 @@
 #include "Utils/FileFuncs.h"
 #include "Utils/Log.h"
 #include "Utils/TimerFuncs.h"
+#include "Utils/Pack.h"
 
 #include "Graphics/IDrawable.h"
 #include "Graphics/TextureMgr.h"

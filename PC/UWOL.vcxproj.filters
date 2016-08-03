@@ -203,12 +203,6 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <None Include="animations.json">
-      <Filter>resources</Filter>
-    </None>
-    <None Include="resources.json">
-      <Filter>resources</Filter>
-    </None>
     <None Include="bin\data\shaders\fragmentShader.template" />
     <None Include="bin\data\shaders\TexturedColored.fragment" />
     <None Include="bin\data\shaders\Default.vertex" />
@@ -224,5 +218,20 @@
     <None Include="bin\data\shaders\CRT-Jasper.fragment" />
     <None Include="bin\data\shaders\CRT-VideoDistort.fragment" />
     <None Include="bin\data\shaders\TexturedSepia.150.fragment" />
+    <None Include="bin\animations.json">
+      <Filter>resources</Filter>
+    </None>
+    <None Include="bin\resources.json">
+      <Filter>resources</Filter>
+    </None>
+    <None Include="binFiles\SDL.dll" />
+    <None Include="binFiles\smpeg.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="binFiles\copying.glm.txt" />
+    <Text Include="binFiles\COPYING.SDL_Image.txt" />
+    <Text Include="binFiles\COPYING.SDL_Mixer.txt" />
+    <Text Include="binFiles\COPYING.SDL2.txt" />
+    <Text Include="binFiles\LICENSE.glew.txt" />
   </ItemGroup>
 </Project>

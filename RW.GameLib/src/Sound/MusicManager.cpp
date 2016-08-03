@@ -3,8 +3,7 @@
 #define DEFAULT_MUSIC_VOLUME 128
 #define DEFAULT_FX_VOLUME 96
 
-MusicManager::MusicManager(void)
-{
+MusicManager::MusicManager(void){
 }
 
 MusicManager::~MusicManager(void)
@@ -24,7 +23,8 @@ Mix_Chunk* MusicManager::LoadMusic(const string &sFileName)
 	}
 	else
 	{
-		result = Mix_LoadWAV(sFileName.c_str());
+		result = Pack::GetInstance()->GetMusicChunk(sFileName);
+
 		if(result == NULL)
 		{
 			Log::Out << "SDL couldn't load sound " << sFileName << endl;

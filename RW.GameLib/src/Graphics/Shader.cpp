@@ -2,13 +2,8 @@
 
 void Shader::LoadFile(const std::string & shaderFile, ShaderType shaderType)
 {
-	ifstream file(shaderFile);
-	if (file.good()) {
-		std::string fileStr(
-			(std::istreambuf_iterator<char>(file)), 
-			std::istreambuf_iterator<char>());
-		this->Load(fileStr, shaderType);
-	}
+	std::string fileStr = Pack::GetInstance()->GetString(shaderFile);
+	this->Load(fileStr, shaderType);
 }
 
 void Shader::Load(const std::string & shaderText, ShaderType shaderType)

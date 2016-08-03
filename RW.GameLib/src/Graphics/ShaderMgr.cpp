@@ -1,31 +1,25 @@
 #include "Graphics/ShaderMgr.h"
 
-ShaderMgr::ShaderMgr(void)
-{
+ShaderMgr::ShaderMgr(void) {
 }
 
-ShaderMgr::~ShaderMgr(void)
-{
+ShaderMgr::~ShaderMgr(void) {
 }
 
-ShaderMgr * ShaderMgr::GetInstance()
-{
+ShaderMgr * ShaderMgr::GetInstance() {
 	return &_instance;
 }
 
-Shader* ShaderMgr::LoadShader(const string &sFileName, ShaderType shaderType)
-{
+Shader* ShaderMgr::LoadShader(const string &sFileName, ShaderType shaderType) {
 	Shader* result = NULL;
 
 	Log::Out << "ShaderMgr: Loading shader '" << sFileName << "'..." << endl;
 
-	if (cache.find(sFileName) != cache.end())
-	{
+	if (cache.find(sFileName) != cache.end()) {
 		Log::Out << "IN CACHE!" << endl;
 		result = cache[sFileName];
 	}
-	else
-	{
+	else {
 		result = new Shader();
 		result->LoadFile(sFileName, shaderType);
 		cache[sFileName] = result;

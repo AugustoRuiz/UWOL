@@ -28,7 +28,7 @@ void EndGame::OnExit() {
 }
 
 string EndGame::Update(Uint32 milliSec, Event & inputEvent) {
-	if (inputEvent.Name == "KEY_DOWN" || inputEvent.Name == "JOY_DOWN") {
+	if (inputEvent.Name == "KEY_UP" || inputEvent.Name == "JOY_UP") {
 		if (this->_ok) {
 			return "GameOver";
 		}

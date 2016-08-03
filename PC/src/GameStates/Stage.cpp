@@ -185,7 +185,7 @@ Room* Stage::loadRooms()
 
 	Room *tmpRoom = NULL;
 
-	ifstream roomsFile("data/rooms.dat", ifstream::binary);
+	istream *roomsFile = Pack::GetInstance()->GetStream("data/rooms.dat");
 	VECTOR2 vect;
 
 	vect.x = 32;
@@ -194,7 +194,7 @@ Room* Stage::loadRooms()
 	int roomDepth = 1;
 	int roomCount = 0;
 
-	if (roomsFile)
+	if (roomsFile->good())
 	{
 		bool more = true;
 		while (more)
@@ -210,12 +210,13 @@ Room* Stage::loadRooms()
 
 			this->Rooms.push_back(room);
 		}
-		roomsFile.close();
 	}
 	else
 	{
 		Log::Out << "Couldn't open file data/rooms.dat" << endl;
 	}
+
+	delete roomsFile;
 
 	if (this->Rooms.size() == 0)
 	{

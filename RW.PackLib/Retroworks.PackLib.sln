@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Retroworks.PackLib", "Retroworks.PackLib.vcxproj", "{DA2BE1AB-B08A-4DEC-A02E-7572FBC73FAB}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Pack", "Pack\Pack.vcxproj", "{A085FBEE-5D02-4F4F-A5EB-12DEA5719C9B}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UnPack", "Unpack\UnPack.vcxproj", "{2EAB5B82-B0BD-43DB-98AF-314615683CD7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DA2BE1AB-B08A-4DEC-A02E-7572FBC73FAB}.Debug|Win32.ActiveCfg = Debug|Win32
+		{DA2BE1AB-B08A-4DEC-A02E-7572FBC73FAB}.Debug|Win32.Build.0 = Debug|Win32
+		{DA2BE1AB-B08A-4DEC-A02E-7572FBC73FAB}.Release|Win32.ActiveCfg = Release|Win32
+		{DA2BE1AB-B08A-4DEC-A02E-7572FBC73FAB}.Release|Win32.Build.0 = Release|Win32
+		{A085FBEE-5D02-4F4F-A5EB-12DEA5719C9B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A085FBEE-5D02-4F4F-A5EB-12DEA5719C9B}.Debug|Win32.Build.0 = Debug|Win32
+		{A085FBEE-5D02-4F4F-A5EB-12DEA5719C9B}.Release|Win32.ActiveCfg = Release|Win32
+		{A085FBEE-5D02-4F4F-A5EB-12DEA5719C9B}.Release|Win32.Build.0 = Release|Win32
+		{2EAB5B82-B0BD-43DB-98AF-314615683CD7}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2EAB5B82-B0BD-43DB-98AF-314615683CD7}.Debug|Win32.Build.0 = Debug|Win32
+		{2EAB5B82-B0BD-43DB-98AF-314615683CD7}.Release|Win32.ActiveCfg = Release|Win32
+		{2EAB5B82-B0BD-43DB-98AF-314615683CD7}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

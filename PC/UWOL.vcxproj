@@ -106,7 +106,7 @@
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>RW.GameLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>RW.PackLib.lib;RW.GameLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>$(SolutionDir)ext\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreAllDefaultLibraries>
@@ -120,7 +120,8 @@
       <ImportLibrary>$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y /e "$(ProjectDir)bin\*" $(OutDir)</Command>
+      <Command>xcopy /y /e "$(ProjectDir)binFiles\*" $(OutDir)
+$(SolutionDir)tools\pack.exe $(ProjectDir)bin $(SolutionDir)bin\UWOL.pak</Command>
       <Message>Copying resources...</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -163,7 +164,7 @@
       <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>RW.GameLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>RW.PackLib.lib;RW.GameLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ShowProgress>NotSet</ShowProgress>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>$(SolutionDir)ext\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -180,7 +181,8 @@
       <ImportLibrary>$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y /e "$(ProjectDir)bin\*" $(OutDir)</Command>
+      <Command>xcopy /y /e "$(ProjectDir)binFiles\*" $(OutDir)
+$(SolutionDir)tools\pack.exe $(ProjectDir)bin $(SolutionDir)bin\UWOL.pak</Command>
       <Message>Copying resources...</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -279,15 +281,9 @@
     <Image Include="resources\UWOL.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="resources.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="animations.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="animations.json" />
+    <None Include="binFiles\SDL.dll" />
+    <None Include="binFiles\smpeg.dll" />
+    <None Include="bin\animations.json" />
     <None Include="bin\data\shaders\Color.150.fragment" />
     <None Include="bin\data\shaders\Color.fragment" />
     <None Include="bin\data\shaders\ColorCycle.150.fragment" />
@@ -303,7 +299,14 @@
     <None Include="bin\data\shaders\TexturedColored.150.fragment" />
     <None Include="bin\data\shaders\TexturedColored.fragment" />
     <None Include="bin\data\shaders\TexturedSepia.150.fragment" />
-    <None Include="resources.json" />
+    <None Include="bin\resources.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="binFiles\copying.glm.txt" />
+    <Text Include="binFiles\COPYING.SDL2.txt" />
+    <Text Include="binFiles\COPYING.SDL_Image.txt" />
+    <Text Include="binFiles\COPYING.SDL_Mixer.txt" />
+    <Text Include="binFiles\LICENSE.glew.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
