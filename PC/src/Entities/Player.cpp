@@ -305,10 +305,10 @@ bool TPlayer::isOverTile(int tileX, int tileY) {
 	tileY2 = (int)((this->_y + this->_colRect.y + this->_colRect.height) / this->_map->cellHeight);
 
 	// Comprobamos si esta encima de una salida...
-	return (this->_map->map[posMap1] == COLLISION_BLOCK && 
-		    this->_map->map[posMap2] != COLLISION_BLOCK && 
-		    (tileX1 == tileX || tileX2 == tileX) && 
-		    (tileY1 == tileY - 1 && tileY2 == tileY));
+	return (this->_map->map[posMap1] == COLLISION_BLOCK &&
+		this->_map->map[posMap2] != COLLISION_BLOCK &&
+		(tileX1 == tileX || tileX2 == tileX) &&
+		(tileY1 == tileY - 1 && tileY2 == tileY));
 }
 
 void TPlayer::checkInput(Uint32 milliSec) {
@@ -348,69 +348,48 @@ void TPlayer::checkInput(Uint32 milliSec) {
 		this->_saltando = false;
 	}
 
+	int xDir = 0;
+	
 	if (_input->IsKeyPressed(ActionKeysLeft)) {
-		if (_hasInertia) {
-			if (this->_vx > -UWOL_MAX_SPEED_X) {
-				this->_vx -= this->_ax * milliSec * PIX_PER_MILLISEC;
-			}
-		}
-		else {
-			this->_vx = -UWOL_MAX_SPEED_X;
-		}
-
-		if (this->_facing == Right && this->_vx < 0) {
-			this->_facing = Left;
-		}
-		horizKeyPressed = true;
+		xDir = -1;
+	}
+	if (_input->IsKeyPressed(ActionKeysRight)) {
+		xDir = 1;
 	}
 
-	if (_input->IsKeyPressed(ActionKeysRight)) {
-		if (_hasInertia) {
-			if (this->_vx < UWOL_MAX_SPEED_X) {
-				this->_vx += this->_ax * milliSec * PIX_PER_MILLISEC;
-			}
-		}
-		else {
-			this->_vx = UWOL_MAX_SPEED_X;
-		}
+	horizKeyPressed = (xDir != 0);
 
-		if (this->_facing == Left && this->_vx > 0) {
-			this->_facing = Right;
-		}
-		horizKeyPressed = true;
+	if (_hasInertia) {
+		this->_vx += xDir * this->_ax * milliSec * PIX_PER_MILLISEC;
+	}
+	else {
+		this->_vx = xDir * UWOL_MAX_SPEED_X;
+	}
+
+	this->_vx = glm::clamp(this->_vx, -UWOL_MAX_SPEED_X, UWOL_MAX_SPEED_X);
+
+	if (this->_facing == Right && this->_vx < 0) {
+		this->_facing = Left;
+	}
+	if (this->_facing == Left && this->_vx > 0) {
+		this->_facing = Right;
 	}
 
 	if (!horizKeyPressed) {
-		if (this->_hasInertia) {
-			if (this->_vx > 0) {
-				this->_vx -= this->_rx * milliSec * PIX_PER_MILLISEC;
-				if (this->_vx < 0) {
-					this->_vx = 0;
-				}
-			}
-			else {
-				if (this->_vx < 0) {
-					this->_vx += this->_rx * milliSec * PIX_PER_MILLISEC;
-					if (this->_vx > 0) {
-						this->_vx = 0;
-					}
-				}
-			}
+		if (this->_hasInertia && this->_vx != 0) {
+			int sign = (this->_vx > 0) ? 1 : -1;
+			float vAbs = abs(this->_vx);
+			float delta = (this->_rx * milliSec * PIX_PER_MILLISEC);
+			float newV = sign * glm::clamp(vAbs - delta, 0.0f, UWOL_MAX_SPEED_X);
+			this->_vx = newV;
 		}
 		else {
-			this->_vx = 0;
+			this->_vx = 0.0f;
 		}
 	}
 
 	this->_vy += this->_g * milliSec * PIX_PER_MILLISEC;
-
-	if (this->_vy < -UWOL_MAX_SPEED_Y) {
-		this->_vy = -UWOL_MAX_SPEED_Y;
-	}
-
-	if (this->_vy > UWOL_MAX_SPEED_Y) {
-		this->_vy = UWOL_MAX_SPEED_Y;
-	}
+	this->_vy = glm::clamp(this->_vy, -UWOL_MAX_SPEED_Y, UWOL_MAX_SPEED_Y);
 }
 
 void TPlayer::setEstado(int estado) {
