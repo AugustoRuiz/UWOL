@@ -5,22 +5,28 @@
 
 using namespace std;
 
+#ifdef WIN32
 int _tmain(int argc, _TCHAR* argv[])
+#else
+int main(int argc, char* argv[])
+#endif
 {
-	wstring exePath (argv[0]);
+	string arg = string(argv[0]);
+	wstring exePath (arg.begin(), arg.end());
 
-	if(argc != 3)
-	{
+	if(argc != 3) {
 		cout << "Usage: pack <directory> <outputPath>" << endl;
 		return -1;
 	}
 
-	wstring dirName (argv[1]);
+	arg = string(argv[1]);
+	wstring dirName (arg.begin(), arg.end());
 	dirName = DirUtils::GetDirectoryName(dirName);
 	Packer* packer = new Packer();	
 	packer->AddDirectory(dirName);
 
-	wstring outPath(argv[2]);
+	arg = string(argv[2]);
+	wstring outPath(arg.begin(), arg.end());
 	cout << "Writing package... " << string(outPath.begin(), outPath.end())  << endl;
 	packer->WritePack(outPath);
 	delete packer;

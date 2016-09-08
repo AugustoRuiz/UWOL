@@ -451,7 +451,7 @@ void Room::Draw(void) {
 			_player->Draw();
 
 			if (estadoUwol & TodasMonedasCogidas) {
-				float r = 1.0f, g = 1.0f, b = 1.0f;
+				//float r = 1.0f, g = 1.0f, b = 1.0f;
 				float rFlecha = (float)(sinf(this->_ticks + 0) * .5 + .5);
 				float gFlecha = (float)(sinf(this->_ticks + 2) * .5 + .5);
 				float bFlecha = (float)(sinf(this->_ticks + 4) * .5 + .5);

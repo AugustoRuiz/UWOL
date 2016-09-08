@@ -92,6 +92,17 @@ public:
 		WideCharToMultiByte(CP_UTF8, 0, &wstr[0], (int)wstr.size(), &strTo[0], size_needed, NULL, NULL);
 		return strTo;
 	};
+#else
+	static wstring ToWideStr(const string &str) {
+		wstring result = wstring(str.begin(), str.end());
+		return result;
+	};
+
+	static string ToThinStr(const wstring &wstr) {
+		string result = string(wstr.begin(), wstr.end());
+		return result;
+	};
+
 #endif
 
 	static void CopyFiles(const string &srcDir, const string &dstDir, const string &exclude) {

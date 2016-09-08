@@ -11,7 +11,8 @@ EWolfy::~EWolfy()
 
 void EWolfy::Initialize()
 {
-	this->_animPlayer.setAnimation(Animation::Get("wolfy_float"));
+	Animation* wolfyFloat = Animation::Get("wolfy_float");
+	this->_animPlayer.setAnimation(wolfyFloat);
 	Enemigo::Initialize();
 	this->setTipoEnemigo(Wolfy);
 }

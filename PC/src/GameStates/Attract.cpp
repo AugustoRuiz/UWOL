@@ -151,7 +151,9 @@ string Attract::Update(Uint32 milliSec, Event & inputEvent) {
 
 				if (roomEvent.Name == "KEY_UP" && roomEvent.Data["key"] == ActionKeysToggleInertia) {
 					this->_player->toggleInertia();
-					this->_messageLine->ShowText("This guy is a cheater!", 1500, vec3(0.9f), vec3(0.7f));
+					glm::vec3 v1 = vec3(0.9f);
+					glm::vec3 v2 = vec3(0.7f);
+					this->_messageLine->ShowText("This guy is a cheater!", 1500, v1, v2);
 				}
 
 				string roomResult = this->_currentRoom->Update(milliSec, roomEvent);

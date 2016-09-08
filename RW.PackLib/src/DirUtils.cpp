@@ -88,7 +88,7 @@ vector<wstring> DirUtils::GetFileList(const wstring& path)
 #ifdef WIN32
 		DirUtils::getWin32FileList(normalizedPath, result);
 #else
-		DirUtils::getGekkoFileList(normalizedPath, result);
+		DirUtils::getFileList(normalizedPath, result);
 #endif
 	}
 
@@ -156,10 +156,8 @@ void DirUtils::getWin32FileList(const wstring& path, vector<wstring>& result)
 		} while (FindNextFile(hFind, &info) != 0);
 	}
 }
-#endif
-
-#ifdef GEKKO
-void DirUtils::getGekkoFileList(const wstring& path, vector<wstring>& result)
+#else
+void DirUtils::getFileList(const wstring& path, vector<wstring>& result)
 {
 	DIR *directory;
 	struct dirent *directoryEntry;
@@ -179,7 +177,7 @@ void DirUtils::getGekkoFileList(const wstring& path, vector<wstring>& result)
 			{
 				if(nonUnicodeEntryName != "." && nonUnicodeEntryName != "..")
 				{
-					DirUtils::getGekkoFileList(fullPath, result);
+					DirUtils::getFileList(fullPath, result);
 				}
 			}
 			else

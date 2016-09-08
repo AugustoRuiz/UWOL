@@ -4,12 +4,17 @@
 #include "FileFuncs.h"
 #include <RW.PackLib/PackLib.h>
 
+#ifndef TRUE
+#define TRUE 1
+#endif
+
 class Pack {
 public:
 	static Pack* GetInstance() { return &(Pack::_instance); };
 
 	void Initialize(const string& packPath) {
-		this->_packer = Packer::ReadPack(FileFuncs::ToWideStr(packPath));
+		wstring pPath = FileFuncs::ToWideStr(packPath);
+		this->_packer = Packer::ReadPack(pPath);
 	};
 
 	Mix_Chunk* GetMusicChunk(const string &fileName) {
@@ -74,18 +79,21 @@ private:
 	Pack() { this->_packer = NULL; }
 
 	SDL_RWops* getRWops(const string& fileName) {
-		PackEntry* entry = this->_packer->GetEntry(FileFuncs::ToWideStr(fileName));
+		wstring fName = FileFuncs::ToWideStr(fileName);
+		PackEntry* entry = this->_packer->GetEntry(fName);
 		SDL_RWops* result = SDL_RWFromConstMem((const void *)(this->_packer->GetUncompressedData(entry)), (int)(entry->GetUncompressedSize()));
 		return result;
 	};
 
 	void* getData(const string& fileName) {
-		PackEntry* entry = this->_packer->GetEntry(FileFuncs::ToWideStr(fileName));
+		wstring fName = FileFuncs::ToWideStr(fileName);
+		PackEntry* entry = this->_packer->GetEntry(fName);
 		return this->_packer->GetUncompressedData(entry);
 	}
 
 	unsigned int getSize(const string& fileName) {
-		return (unsigned int) (this->_packer->GetEntry(FileFuncs::ToWideStr(fileName))->GetUncompressedSize());
+		wstring fName = FileFuncs::ToWideStr(fileName);
+		return (unsigned int) (this->_packer->GetEntry(fName)->GetUncompressedSize());
 	}
 
 	Packer* _packer;

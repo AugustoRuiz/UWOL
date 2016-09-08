@@ -186,6 +186,8 @@ void Game::changeStatus(const string &oldStatus, const string &newStatus) {
 
 void Game::handleInput(Event &currentEvent) {
 	stringstream ss;
+	vec3 color1 = vec3(0.9f);
+	vec3 color2 = vec3(0.7f);
 	if (currentEvent.Name == "KEY_DOWN") {
 		ActionKeys key = (ActionKeys)(currentEvent.Data["key"].asInt());
 		if (this->_savingStatus) {
@@ -201,7 +203,9 @@ void Game::handleInput(Event &currentEvent) {
 					IGameState *state = it->second;
 					Stage* s = (Stage*)state;
 					s->Player->_coinsTaken += 1;
-					this->_messageLine->ShowText("Added coin!", 1500, vec3(0.9f), vec3(0.7f));
+					vec3 color1 = vec3(0.9f);
+					vec3 color2 = vec3(0.7f);
+					this->_messageLine->ShowText("Added coin!", 1500, color1, color2);
 				}
 			}
 		}
@@ -267,16 +271,15 @@ void Game::handleInput(Event &currentEvent) {
 			// Dejamos de guardar después de guardar la pulsación de la tecla de grabar. Así la grabación 
 			// durará hasta el momento en el que se ha pulsado la tecla.
 			this->_savingStatus = false;
-			this->_messageLine->ShowText("Recording completed.", 1500, vec3(0.9f), vec3(0.7f));
+			this->_messageLine->ShowText("Recording completed.", 1500, color1, color2);
 			break;
 		case ActionKeysPause:
 			this->_paused = !this->_paused;
-
-			if (this->_paused) {
-				this->_messageLine->ShowText(("Pause! Press H to resume"), 1500, vec3(0.9f), vec3(0.7f));
+			if (this->_paused) {				
+				this->_messageLine->ShowText(("Pause! Press H to resume"), 1500, color1, color2);
 			}
 			else {
-				this->_messageLine->ShowText((""), 1, vec3(0.9f), vec3(0.7f));
+				this->_messageLine->ShowText((""), 1, color1, color2);
 			}
 
 			break;
@@ -289,7 +292,7 @@ void Game::handleInput(Event &currentEvent) {
 					int nextIdx = s->RoomIndex + 1;
 					if (nextIdx < (int)s->Rooms.size()) {
 						s->GoToRoom(nextIdx);
-						this->_messageLine->ShowText("Next room", 1500, vec3(0.9f), vec3(0.7f));
+						this->_messageLine->ShowText("Next room", 1500, color1, color2);
 					}
 				}
 			}
@@ -303,7 +306,7 @@ void Game::handleInput(Event &currentEvent) {
 					int nextIdx = s->RoomIndex - 1;
 					if (nextIdx >= 0) {
 						s->GoToRoom(nextIdx);
-						this->_messageLine->ShowText("Previous room", 1500, vec3(0.9f), vec3(0.7f));
+						this->_messageLine->ShowText("Previous room", 1500, color1, color2);
 					}
 				}
 			}
@@ -311,7 +314,7 @@ void Game::handleInput(Event &currentEvent) {
 		case ActionKeysToggleInertia:
 			this->_stage->Player->toggleInertia();
 			ss << "Sissy mode: " << (this->_stage->Player->hasInertia() ? "OFF" : "ON");
-			this->_messageLine->ShowText(ss.str(), 1500, vec3(0.9f), vec3(0.7f));
+			this->_messageLine->ShowText(ss.str(), 1500, color1, color2);
 			break;
 		default:
 			break;

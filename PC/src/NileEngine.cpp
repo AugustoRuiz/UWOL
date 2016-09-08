@@ -3,11 +3,11 @@
 #include <time.h>
 #include "Game.h"
 #include "GameData.h"
-#include <curl/curl.h>
+//#include <curl/curl.h>
 
 int main(int argc, char *argv[])
 {
-	curl_global_init(CURL_GLOBAL_ALL);
+//	curl_global_init(CURL_GLOBAL_ALL);
 
 	Log::Initialize("uwol.log");
 
@@ -109,7 +109,7 @@ int main(int argc, char *argv[])
 	}
 
 	Log::Dispose();
-	curl_global_cleanup();
+//	curl_global_cleanup();
 
 	return 0;
 }

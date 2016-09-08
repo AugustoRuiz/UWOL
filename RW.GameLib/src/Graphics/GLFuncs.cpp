@@ -548,7 +548,7 @@ void GLFuncs::UseProgram(GLuint programId) {
 
 void GLFuncs::SetUniform(GLuint programId, const string &name, float x, float y, float z) {
 	if (programId != 0) {
-		GLuint location = getUniformLocation(programId, name);
+		GLint location = getUniformLocation(programId, name);
 		if (location != -1) {
 			this->UseProgram(programId);
 			glUniform3f(location, x, y, z);
@@ -558,7 +558,7 @@ void GLFuncs::SetUniform(GLuint programId, const string &name, float x, float y,
 
 void GLFuncs::SetUniform(GLuint programId, const string &name, const vec2 & v) {
 	if (programId != 0) {
-		GLuint location = getUniformLocation(programId, name);
+		GLint location = getUniformLocation(programId, name);
 		if (location != -1) {
 			this->UseProgram(programId);
 			glUniform2f(location, v.x, v.y);
@@ -568,7 +568,7 @@ void GLFuncs::SetUniform(GLuint programId, const string &name, const vec2 & v) {
 
 void GLFuncs::SetUniform(GLuint programId, const string &name, const vec3 & v) {
 	if (programId != 0) {
-		GLuint location = getUniformLocation(programId, name);
+		GLint location = getUniformLocation(programId, name);
 		if (location != -1) {
 			this->UseProgram(programId);
 			glUniform3f(location, v.x, v.y, v.z);
@@ -578,7 +578,7 @@ void GLFuncs::SetUniform(GLuint programId, const string &name, const vec3 & v) {
 
 void GLFuncs::SetUniform(GLuint programId, const string &name, const vec4 & v) {
 	if (programId != 0) {
-		GLuint location = getUniformLocation(programId, name);
+		GLint location = getUniformLocation(programId, name);
 		if (location != -1) {
 			this->UseProgram(programId);
 			glUniform4f(location, v.x, v.y, v.z, v.w);
@@ -588,7 +588,7 @@ void GLFuncs::SetUniform(GLuint programId, const string &name, const vec4 & v) {
 
 void GLFuncs::SetUniform(GLuint programId, const string &name, const mat4 & m) {
 	if (programId != 0) {
-		GLuint location = getUniformLocation(programId, name);
+		GLint location = getUniformLocation(programId, name);
 		if (location != -1) {
 			this->UseProgram(programId);
 			glUniformMatrix4fv(location, 1, GL_FALSE, &(m[0][0]));
@@ -598,7 +598,7 @@ void GLFuncs::SetUniform(GLuint programId, const string &name, const mat4 & m) {
 
 void GLFuncs::SetUniform(GLuint programId, const string &name, const mat3 & m) {
 	if (programId != 0) {
-		GLuint location = getUniformLocation(programId, name);
+		GLint location = getUniformLocation(programId, name);
 		if (location != -1) {
 			this->UseProgram(programId);
 			glUniformMatrix3fv(location, 1, GL_FALSE, &(m[0][0]));
@@ -608,7 +608,7 @@ void GLFuncs::SetUniform(GLuint programId, const string &name, const mat3 & m) {
 
 void GLFuncs::SetUniform(GLuint programId, const string &name, float val) {
 	if (programId != 0) {
-		GLuint location = getUniformLocation(programId, name);
+		GLint location = getUniformLocation(programId, name);
 		if (location != -1) {
 			this->UseProgram(programId);
 			glUniform1f(location, val);
@@ -618,7 +618,7 @@ void GLFuncs::SetUniform(GLuint programId, const string &name, float val) {
 
 void GLFuncs::SetUniform(GLuint programId, const string &name, int val) {
 	if (programId != 0) {
-		GLuint location = getUniformLocation(programId, name);
+		GLint location = getUniformLocation(programId, name);
 		if (location != -1) {
 			this->UseProgram(programId);
 			glUniform1i(location, val);
@@ -628,7 +628,7 @@ void GLFuncs::SetUniform(GLuint programId, const string &name, int val) {
 
 void GLFuncs::SetUniform(GLuint programId, const string &name, bool val) {
 	if (programId != 0) {
-		GLuint location = getUniformLocation(programId, name);
+		GLint location = getUniformLocation(programId, name);
 		if (location != -1) {
 			this->UseProgram(programId);
 			glUniform1i(location, val);
@@ -638,7 +638,7 @@ void GLFuncs::SetUniform(GLuint programId, const string &name, bool val) {
 
 void GLFuncs::SetUniform(GLuint programId, const string &name, GLuint val) {
 	if (programId != 0) {
-		GLuint location = getUniformLocation(programId, name);
+		GLint location = getUniformLocation(programId, name);
 		if (location != -1) {
 			this->UseProgram(programId);
 			glUniform1ui(location, val);
@@ -646,7 +646,7 @@ void GLFuncs::SetUniform(GLuint programId, const string &name, GLuint val) {
 	}
 }
 
-GLuint GLFuncs::getUniformLocation(GLuint programId, const std::string &uniformName) {
+GLint GLFuncs::getUniformLocation(GLuint programId, const std::string &uniformName) {
 	if (programId != 0) {
 		map<string, int> programCache = this->_uniformLocationCache[programId];
 		map<string, int>::iterator pos;

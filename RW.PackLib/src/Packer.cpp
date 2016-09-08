@@ -1,23 +1,19 @@
 #include "Packer.h"
 
-Packer::Packer(void)
-{
+Packer::Packer(void) {
 	this->entries = new PackEntries();
 	this->currentOffset = 0;
 }
 
-Packer::~Packer(void)
-{
+Packer::~Packer(void) {
 	delete this->entries;
 }
 
-void Packer::AddDirectory(wstring& directory)
-{
+void Packer::AddDirectory(wstring& directory) {
 	wstring normalizedDir = DirUtils::NormalizePath(directory);
 	vector<wstring> files = DirUtils::GetFileList(normalizedDir);
 	
-	for(vector<wstring>::iterator it = files.begin(); it != files.end(); ++it)
-	{
+	for(vector<wstring>::iterator it = files.begin(); it != files.end(); ++it) {
 		wstring fullPath (*it);
 		
 		wstring relativePath (*it);
@@ -26,19 +22,21 @@ void Packer::AddDirectory(wstring& directory)
 	}
 }
 
-void Packer::AddFile(wstring& key, wstring& filePath)
-{
+void Packer::AddFile(wstring& key, wstring& filePath) {
 	wstring lowerCaseKey(key); 
 	transform(key.begin(), key.end(), lowerCaseKey.begin(), ::tolower);
 
 	cout << "Adding file " << string(filePath.begin(), filePath.end()) << endl;
 
-	PackEntry *result = this->entries->AddEntry(lowerCaseKey, filePath);
+	this->entries->AddEntry(lowerCaseKey, filePath);
 }
 
-void Packer::WritePack(wstring& fileName)
-{
-	ofstream outputFile(fileName.c_str(), ofstream::binary);
+void Packer::WritePack(wstring& fileName) {
+#ifdef WIN32
+	ofstream outputFile(fileName.c_str(), ios::binary);
+#else
+	ofstream outputFile(string(fileName.begin(), fileName.end()).c_str(), ios::binary);
+#endif
 
 	map<wstring, PackEntry*>::iterator it;
 	map<wstring, PackEntry*>::iterator itEnd = this->entries->GetIteratorEnd();
@@ -46,35 +44,31 @@ void Packer::WritePack(wstring& fileName)
 	uint64_t headerOffset = (uint64_t) sizeof(uint64_t);
 	uint64_t offs = 0;
 
-	for(it = this->entries->GetIterator(); it!=itEnd; ++it)
-	{
+	for(it = this->entries->GetIterator(); it!=itEnd; ++it) {
 		headerOffset += it->second->GetHeaderSize();
 
 		it->second->SetOffset(offs);
 		offs += it->second->GetCompressedSize();
 	}
 	
-	for(it = this->entries->GetIterator(); it!=itEnd; ++it)
-	{
+	for(it = this->entries->GetIterator(); it!=itEnd; ++it) {
 		it->second->SetOffset(it->second->GetOffset() + headerOffset);
 		it->second->WriteHeader(outputFile);
 	}
 
 	BigEndian<uint64_t> endOfHeader;
-	endOfHeader = PackEntry::END_OF_HEADER;
+	endOfHeader = END_OF_HEADER;
 	outputFile.write(endOfHeader.GetChars(), sizeof(uint64_t));
 	outputFile.flush();
 
-	for(it = this->entries->GetIterator(); it!=itEnd; ++it)
-	{
+	for(it = this->entries->GetIterator(); it!=itEnd; ++it) {
 		it->second->WriteData(outputFile);
 	}
 	outputFile.flush();
 	outputFile.close();
 }
 
-Packer* Packer::ReadPack(wstring& fileName)
-{
+Packer* Packer::ReadPack(wstring& fileName) {
 	Packer* result = new Packer();
 
 #ifdef WIN32
@@ -83,15 +77,10 @@ Packer* Packer::ReadPack(wstring& fileName)
 	ifstream inputFile(string(fileName.begin(), fileName.end()).c_str(), ifstream::binary);
 #endif
 
-	uint64_t bufSize = sizeof(uint64_t);
-	char* buffer = new char[(unsigned int)bufSize];
-
 	PackEntry *entry = NULL;
-	do
-	{
+	do {
 		entry = PackEntry::ReadHeader(inputFile);
-		if(entry != NULL)
-		{
+		if(entry != NULL) {
 			result->entries->AddEntry(entry);
 		}
 	}while(entry != NULL);
@@ -103,19 +92,16 @@ Packer* Packer::ReadPack(wstring& fileName)
 	return result;
 }
 
-PackEntries* Packer::GetEntries()
-{
+PackEntries* Packer::GetEntries() {
 	return this->entries;
 }
 
-PackEntry* Packer::GetEntry(wstring& key)
-{
+PackEntry* Packer::GetEntry(wstring& key) {
 	wstring lowerCaseKey(key); 
 	transform(key.begin(), key.end(), lowerCaseKey.begin(), ::tolower);
 
 	PackEntry* entry = this->entries->GetEntry(lowerCaseKey);
-	if(entry != NULL)
-	{
+	if(entry != NULL) {
 #ifdef WIN32
 		ifstream file(this->fileName.c_str(), fstream::binary);
 #else
@@ -127,8 +113,7 @@ PackEntry* Packer::GetEntry(wstring& key)
 	return entry;
 }
 
-void* Packer::GetUncompressedData(PackEntry *entry)
-{
+void* Packer::GetUncompressedData(PackEntry *entry) {
 #ifdef WIN32
 	ifstream file(this->fileName.c_str(), fstream::binary);
 #else
@@ -145,5 +130,3 @@ void* Packer::GetUncompressedData(PackEntry *entry)
 	memStream.read(result, entry->GetUncompressedSize());
 	return result;
 }
-
-
