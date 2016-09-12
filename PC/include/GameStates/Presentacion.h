@@ -1,10 +1,8 @@
 #pragma once
 
 #include <fstream>
-#include "Graphics.h"
 #include "GameData.h"
 #include "Stage.h"
-#include "IGameState.h"
 
 class Presentacion : public IGameState
 {
@@ -21,6 +19,7 @@ public:
 	string Update(Uint32 milliSec, Event & inputEvent) override;
 	void Draw(void) override;
 	void Dispose(void) override;
+	virtual Program * GetProgram(void) override;
 
 private:
 
@@ -28,11 +27,11 @@ private:
 
 	Graphics *_g;
 
-	Sound _music;
+	Sound* _music;
 
-	Frame _bg;
-	Frame _portada;
-	Frame _shadow;
+	Frame* _bg;
+	Frame* _portada;
+	Frame* _shadow;
 
 	Coin** _coins;
 
@@ -40,6 +39,5 @@ private:
 	int _incrFactor;
 
 	Uint32 _currentTick;
-
 };
 

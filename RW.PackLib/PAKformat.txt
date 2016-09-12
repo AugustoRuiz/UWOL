@@ -1,0 +1,31 @@
+Description of PAK format:
+--------------------------
+
+All numeric information is stored as big-endian. All strings will be stored as 
+unicode strings.
+
+A PAK file is made of two different sections:
+
+	Header section
+	Body section
+
+HEADER SECTION:
+---------------
+
+Collection of entries with the following format:
+
+Offset	Length	Data
+------------------------------
+0		8		Offset of data in bytes, from beginning of body section.
+8		8		Compressed size in bytes.
+16		8		Uncompressed size in bytes.
+24      8       EntryName length.
+32		NN      EntryName (Unicode).
+
+The collection of entries ends when a -1 value is found in the offset value. The next byte 
+would be the body of the file.
+
+BODY SECTION:
+-------------
+
+Collection of compressed data for each file in the header.

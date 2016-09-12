@@ -1,9 +1,6 @@
 #pragma once
 
 #include "GameData.h"
-#include "IDrawable.h"
-#include "IUpdatable.h"
-#include "AnimationPlayer.h"
 #include "Player.h"
 
 class Enemigo : public IDrawable, public IUpdatable

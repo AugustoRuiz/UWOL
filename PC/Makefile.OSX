@@ -7,8 +7,8 @@ MKDIR=mkdir
 
 CC=gcc
 CXX=g++
-CXXFLAGS=-std=c++11 -I/usr/local/include/SDL -D_GNU_SOURCE=1 -D_THREAD_SAFE -O3 -Werror -Wall -fsigned-char
-LDLIBS=-L/usr/local/lib -lSDLmain -lSDL -lSDL_Image -lSDL_Mixer -logg -lvorbis -Wl,-framework,Cocoa -framework OpenGL
+CXXFLAGS=-std=c++11 -I/usr/local/include -D_GNU_SOURCE=1 -D_THREAD_SAFE -O3 -Werror -Wall -fsigned-char -g
+LDLIBS=-L/usr/local/lib -lSDL2 -lSDL2_image -lSDL2_mixer -logg -lvorbis -lGLEW -Wl,-framework,Cocoa -framework OpenGL
 
 vpath %.h $(INCDIR)
 vpath %.cpp $(SRCDIR)

@@ -1,0 +1,23 @@
+#if __VERSION__ >= 140
+in vec2 vertexPosition;
+#else
+attribute vec2 vertexPosition;
+#endif
+
+// Output data ; will be interpolated for each fragment.
+#if __VERSION__ >= 140
+out vec4 vertColor;
+#else
+varying vec4 vertColor;
+#endif
+
+uniform mat4 MVP;
+uniform vec4 vertexColor;
+
+void main(){
+	// Output position of the vertex, in clip space : MVP * position
+	gl_Position = MVP * vec4(vertexPosition.x, vertexPosition.y, 0.0, 1.0);
+
+	// Vertex color.
+	vertColor = vertexColor;
+}

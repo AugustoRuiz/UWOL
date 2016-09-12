@@ -1,24 +1,11 @@
 #pragma once
 
 #include <vector>
-
-#include <GL/glew.h>
-#include <SDL/SDL.h>
-#include <GL/freeglut.h>
-
-#ifdef __APPLE__
-#include <SDL_image/SDL_image.h>
-#include <SDL_mixer/SDL_mixer.h>
-#include "CoreFoundation/CoreFoundation.h"
-#else
-#include <SDL/SDL_image.h>
-#include <SDL/SDL_mixer.h>
-#endif
+#include <RW.GameLib/RW.GameLib.h>
 #include "UWOL.h"
-#include "Log.h"
 
-#define PI 3.14159265358979323846
-#define TAU 2 * PI
+#define ROOM_START_EVENT 0x10000
+#define INERTIA_STATUS 0x20000
 
 #define COLLISION_TYPE_NONE 0
 #define COLLISION_TYPE_UP 1
@@ -57,57 +44,9 @@
 
 typedef int CollisionType;
 
-typedef struct rect
-{
-	int x;
-	int y;
-	int width;
-	int height;
-} RECTANGLE;
-
-typedef struct rectF
-{
-	float x;
-	float y;
-	float width;
-	float height;
-} RECTANGLEF;
-
-typedef struct vector2
-{
-	int x;
-	int y;
-	vector2() : x(0), y(0) {};
-	vector2(int vx, int vy) : x(vx), y(vy) {};
-} VECTOR2;
-
-typedef struct vector2f
-{
-	float x;
-	float y;
-	vector2f() : x(0.0f), y(0.0f) {};
-	vector2f(float vx, float vy) : x(vx), y(vy) {};
-} VECTOR2F;
-
-typedef struct textureInfo
-{
-	GLuint texture;
-	int width;
-	int height;
-} TEXTUREINFO;
-
-typedef struct textureRect
-{
-	float tx1;
-	float tx2;
-	float ty1;
-	float ty2;
-} TEXTURERECT;
-
 #ifndef _GLOBAL_VARS_
 #define _GLOBAL_VARS_
 
-extern bool aliasing;
 extern bool scanlines;
 extern bool debugPaint;
 

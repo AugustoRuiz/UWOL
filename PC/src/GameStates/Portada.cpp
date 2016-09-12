@@ -2,16 +2,15 @@
 
 #define INCR_FACTOR 1
 
-Portada::Portada()
+Portada::Portada() : _imagenes()
 {
 	this->Name = "Portada";
 	this->_g = Graphics::GetInstance();
 
-	this->_imagenes.push_back(Frame("data/logoMojon.png"));
+	this->_imagenes.push_back(new Frame("data/logoMojon.png"));
 	//this->_imagenes.push_back(Frame("data/logoRetroworks.png"));
-	//this->_imagenes.push_back(Frame("data/credits.png"));
 
-	this->_sonido = Sound("sounds/coinPicked.ogg");
+	this->_sonido = new Sound("sounds/coinPicked.ogg");
 
 	this->OnEnter();
 }
@@ -46,16 +45,16 @@ void Portada::Dispose()
 
 void Portada::Draw()
 {
-	Frame& current = this->_imagenes[this->_currentFrame];
-	int w = current.Texture->width * 2;
-	int h = current.Texture->height * 2;
+	Frame* current = this->_imagenes[this->_currentFrame];
+	int w = current->Texture->width * 2;
+	int h = current->Texture->height * 2;
 	int posX, posY;
 
 	posX = (this->_g->WorldWidth - w) >> 1;
 	posY = (this->_g->WorldHeight - h) >> 1;
 
 	_g->BlitColoredFrame(current, posX, posY, w, h,
-		this->_currentAlpha, this->_currentAlpha, 1.0f, this->_currentAlpha, false,
+		this->_currentAlpha, this->_currentAlpha, this->_currentAlpha, this->_currentAlpha, false,
 		false, false);
 }
 
@@ -63,7 +62,7 @@ string Portada::Update(Uint32 milliSec, Event & inputEvent)
 {
 	this->_currentAlpha += ((float)this->_incrFactor) *  milliSec * 0.001f;
 
-	if (inputEvent.Name == "KEY_DOWN" || inputEvent.Name == "JOY_DOWN") {
+	if (inputEvent.Name == "KEY_UP" || inputEvent.Name == "JOY_UP") {
 		this->_incrFactor = 0;
 		this->_currentTick = 0;
 		this->_currentAlpha = 1.0f;
@@ -72,7 +71,7 @@ string Portada::Update(Uint32 milliSec, Event & inputEvent)
 	else {
 		if (this->_incrFactor == 0) {
 			if (this->_currentTick == 0) {
-				this->_sonido.PlayAsFx(false);
+				this->_sonido->PlayAsFx(false);
 			}
 			this->_currentTick += milliSec;
 			if (this->_currentTick >= WAIT_TIME) {
@@ -104,4 +103,9 @@ string Portada::Update(Uint32 milliSec, Event & inputEvent)
 void Portada::UpdateCurrentTexture()
 {
 	this->_currentFrame++;
+}
+
+Program * Portada::GetProgram(void)
+{
+	return nullptr;
 }

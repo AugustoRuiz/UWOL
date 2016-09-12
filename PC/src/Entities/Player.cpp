@@ -1,26 +1,29 @@
 #include "Player.h"
 
+#define UWOL_MAX_SPEED_X 3.1f
+#define UWOL_MAX_SPEED_Y 32.0f
+
 TPlayer::TPlayer() {
 	this->_graphics = Graphics::GetInstance();
 	this->_animPlayer.setAnimation(Animation::Get("uwol_stand_right"));
 	this->_input = InputManager::GetInstance();
 	this->_map = NULL;
 
-	this->_colRect.x = 4;
-	this->_colRect.y = 4;
-	this->_colRect.width = 24;
-	this->_colRect.height = 28;
+	this->_colRect.x = 6;
+	this->_colRect.y = 10;
+	this->_colRect.width = 20;
+	this->_colRect.height = 22;
 
 	this->_posRect.x = 0;
 	this->_posRect.y = 0;
 	this->_posRect.width = 32;
 	this->_posRect.height = 32;
 
-	this->_fxStep = Sound("sounds/StepStone1.ogg");
-	this->_fxStep2 = Sound("sounds/StepStone2.ogg");
 	this->_fxJump = Sound("sounds/boing.ogg");
 	this->_fxDie = Sound("sounds/DeathCry.ogg");
+	this->_fxExtra = Sound("sounds/extra.ogg");
 	this->_musicDie = Sound("music/Death.ogg");
+	this->_fxExitLevel = Sound("sounds/Next_stage.ogg");
 
 	this->Initialize();
 
@@ -53,6 +56,7 @@ void TPlayer::initializePlayerData() {
 	this->_facing = Right;
 	this->_estado = Normal;
 	this->_alpha = 1.0f;
+	this->setAnimation("uwol_stand_right");
 }
 
 void TPlayer::Dispose() {
@@ -82,7 +86,8 @@ void TPlayer::AddScore(int amount) {
 	this->_score += amount;
 
 	if ((oldScore < 1000 && this->_score >= 1000) ||
-	    (oldScore < 2500 && this->_score >= 2500)) {
+		(oldScore < 2500 && this->_score >= 2500)) {
+		this->_fxExtra.PlayAsFx(false);
 		this->_vidas++;
 	}
 }
@@ -112,7 +117,7 @@ void TPlayer::Update(Uint32 milliSec)
 			this->_contParpadeo += milliSec;
 			this->_visibleParpadeo = (this->_contParpadeo / TICKS_PARPADEO) & 1;
 			if (this->_contParpadeo > TICKS_INVULNERABLE) {
-				this->_estado = this->_estado & ~(Parpadeo);
+				this->setEstado(this->_estado & ~(Parpadeo));
 			}
 		}
 
@@ -152,10 +157,10 @@ void TPlayer::Update(Uint32 milliSec)
 	for (Event e : evts) {
 		if (e.Name == "uwol_step" && this->_vy != 0) {
 			if (this->_lastStep == 0) {
-				this->_fxStep.PlayAsFx(false);
+				//this->_fxStep.PlayAsFx(false);
 			}
 			else {
-				this->_fxStep2.PlayAsFx(false);
+				//this->_fxStep2.PlayAsFx(false);
 			}
 		}
 	}
@@ -275,35 +280,49 @@ void TPlayer::DebugPaint() {
 
 	vertexes.push_back(VECTOR2(x1, y1));
 	vertexes.push_back(VECTOR2(x2, y1));
-	vertexes.push_back(VECTOR2(x1, y2));
+	vertexes.push_back(VECTOR2(x2, y1));
 	vertexes.push_back(VECTOR2(x2, y2));
+	vertexes.push_back(VECTOR2(x2, y2));
+	vertexes.push_back(VECTOR2(x1, y2));
+	vertexes.push_back(VECTOR2(x1, y2));
+	vertexes.push_back(VECTOR2(x1, y1));
 
 	_graphics->DrawPolyLines(vertexes, 1.0f, 1.0f, 1.0f, 1.0f);
+}
+
+bool TPlayer::isOverTile(int tileX, int tileY) {
+	int tileX1, tileX2, tileY1, tileY2;
+	int posMap1, posMap2; //, posMap3, posMap4;
+
+	posMap1 = this->_map->cols * 9 + 1;
+	posMap2 = this->_map->cols * 8 + 1;
+//	posMap3 = this->_map->cols * 9 + 10;
+//	posMap4 = this->_map->cols * 8 + 10;
+
+	tileX1 = (int)((this->_x + this->_colRect.x) / this->_map->cellWidth);
+	tileX2 = (int)((this->_x + this->_colRect.x + this->_colRect.width - 1) / this->_map->cellWidth);
+	tileY1 = (int)((this->_y + this->_colRect.y + this->_colRect.height - 1) / this->_map->cellHeight);
+	tileY2 = (int)((this->_y + this->_colRect.y + this->_colRect.height) / this->_map->cellHeight);
+
+	// Comprobamos si esta encima de una salida...
+	return (this->_map->map[posMap1] == COLLISION_BLOCK &&
+		this->_map->map[posMap2] != COLLISION_BLOCK &&
+		(tileX1 == tileX || tileX2 == tileX) &&
+		(tileY1 == tileY - 1 && tileY2 == tileY));
 }
 
 void TPlayer::checkInput(Uint32 milliSec) {
 	bool horizKeyPressed = false;
 
 	if (_input->IsKeyPressed(ActionKeysDown) && this->_estado & TodasMonedasCogidas) {
-		int tileX1, tileX2, tileY1, tileY2;
-
-		int posMap1, posMap2, posMap3, posMap4;
-
-		posMap1 = this->_map->cols * 9 + 1;
-		posMap2 = this->_map->cols * 8 + 1;
-		posMap3 = this->_map->cols * 9 + 10;
-		posMap4 = this->_map->cols * 8 + 10;
-
-		tileX1 = (int)((this->_x + this->_colRect.x) / this->_map->cellWidth);
-		tileX2 = (int)((this->_x + this->_colRect.x + this->_colRect.width - 1) / this->_map->cellWidth);
-		tileY1 = (int)((this->_y + this->_colRect.y + this->_colRect.height - 1) / this->_map->cellHeight);
-		tileY2 = (int)((this->_y + this->_colRect.y + this->_colRect.height) / this->_map->cellHeight);
 		// Comprobamos si esta encima de una salida...
-		if (this->_map->map[posMap1] == COLLISION_BLOCK && this->_map->map[posMap2] != COLLISION_BLOCK && (tileX1 == 1 || tileX2 == 1) && (tileY1 == 8 && tileY2 == 9)) {
+		if (isOverTile(1, 9)) {
 			this->_estado |= SalidaIzq;
+			this->_fxExitLevel.PlayAsFx(false);
 		}
-		if (this->_map->map[posMap3] == COLLISION_BLOCK && this->_map->map[posMap4] != COLLISION_BLOCK && (tileX1 == 10 || tileX2 == 10) && (tileY1 == 8 && tileY2 == 9)) {
+		if (isOverTile(10, 9)) {
 			this->_estado |= SalidaDer;
+			this->_fxExitLevel.PlayAsFx(false);
 		}
 	}
 
@@ -329,70 +348,66 @@ void TPlayer::checkInput(Uint32 milliSec) {
 		this->_saltando = false;
 	}
 
+	int xDir = 0;
+	
 	if (_input->IsKeyPressed(ActionKeysLeft)) {
-		if (this->_vx > -3.0f) {
-			this->_vx -= this->_ax * milliSec * PIX_PER_MILLISEC;
-			if (this->_facing == Right && this->_vx < 0) {
-				this->_facing = Left;
-			}
-		}
-		horizKeyPressed = true;
+		xDir = -1;
+	}
+	if (_input->IsKeyPressed(ActionKeysRight)) {
+		xDir = 1;
 	}
 
-	if (_input->IsKeyPressed(ActionKeysRight)) {
-		if (this->_vx < 3.0f) {
-			this->_vx += this->_ax * milliSec * PIX_PER_MILLISEC;
-			if (this->_facing == Left && this->_vx > 0) {
-				this->_facing = Right;
-			}
-		}
-		horizKeyPressed = true;
+	horizKeyPressed = (xDir != 0);
+
+	if (_hasInertia) {
+		this->_vx += xDir * this->_ax * milliSec * PIX_PER_MILLISEC;
+	}
+	else {
+		this->_vx = xDir * UWOL_MAX_SPEED_X;
+	}
+
+	this->_vx = glm::clamp(this->_vx, -UWOL_MAX_SPEED_X, UWOL_MAX_SPEED_X);
+
+	if (this->_facing == Right && this->_vx < 0) {
+		this->_facing = Left;
+	}
+	if (this->_facing == Left && this->_vx > 0) {
+		this->_facing = Right;
 	}
 
 	if (!horizKeyPressed) {
-		if (this->_vx > 0) {
-			this->_vx -= this->_rx * milliSec * PIX_PER_MILLISEC;
-			if (this->_vx < 0) {
-				this->_vx = 0;
-			}
+		if (this->_hasInertia && this->_vx != 0) {
+			int sign = (this->_vx > 0) ? 1 : -1;
+			float vAbs = abs(this->_vx);
+			float delta = (this->_rx * milliSec * PIX_PER_MILLISEC);
+			float newV = sign * glm::clamp(vAbs - delta, 0.0f, UWOL_MAX_SPEED_X);
+			this->_vx = newV;
 		}
 		else {
-			if (this->_vx < 0) {
-				this->_vx += this->_rx * milliSec * PIX_PER_MILLISEC;
-				if (this->_vx > 0) {
-					this->_vx = 0;
-				}
-			}
+			this->_vx = 0.0f;
 		}
 	}
 
 	this->_vy += this->_g * milliSec * PIX_PER_MILLISEC;
-
-	if (this->_vy < -32.0f) {
-		this->_vy = -32.0f;
-	}
-
-	if (this->_vy > 32.0f) {
-		this->_vy = 32.0f;
-	}
+	this->_vy = glm::clamp(this->_vy, -UWOL_MAX_SPEED_Y, UWOL_MAX_SPEED_Y);
 }
 
 void TPlayer::setEstado(int estado) {
-	this->_estado = estado;
-
 	if (estado & Parpadeo) {
-		_visibleParpadeo = true;
-		_contParpadeo = 0;
+		if (!(this->_estado & (Parpadeo | Muriendo))) {
+			_visibleParpadeo = true;
+			_contParpadeo = 0;
 
-		if (this->_facing == Left) {
-			this->_vx = 5.0f;
-		}
-		else {
-			this->_vx = -5.0f;
-		}
+			if (this->_facing == Left) {
+				this->_vx = 5.0f;
+			}
+			else {
+				this->_vx = -5.0f;
+			}
 
-		this->_vy = -7.5f;
-		this->_saltando = false;
+			this->_vy = -7.5f;
+			this->_saltando = false;
+		}
 	}
 
 	if (estado & Muriendo) {
@@ -401,6 +416,7 @@ void TPlayer::setEstado(int estado) {
 		this->_musicDie.PlayAsMusic(false);
 		this->_vy = -10.0f;
 	}
+	this->_estado = estado;
 }
 
 int TPlayer::getEstado() {
@@ -427,6 +443,18 @@ void TPlayer::setAnimation(string name) {
 		ss << "_naked";
 	}
 	this->_animPlayer.setAnimation(Animation::Get(ss.str()));
+}
+
+void TPlayer::setInertia(bool inertia) {
+	this->_hasInertia = inertia;
+}
+
+void TPlayer::toggleInertia() {
+	this->_hasInertia = !this->_hasInertia;
+}
+
+bool TPlayer::hasInertia() {
+	return this->_hasInertia;
 }
 
 bool TPlayer::ShouldChase()

@@ -1,18 +1,9 @@
 #pragma once
 
-#include "IGameState.h"
 #include "GameData.h"
-#include "Graphics.h"
-#include "InputManager.h"
-#include "MusicManager.h"
-#include "Sound.h"
 
 class EndGame : public IGameState
 {
-	bool _ok;
-	Frame _currentFrame;
-	Sound _tune;
-	Graphics *_g;
 public:
 	EndGame(bool ok);
 	~EndGame();
@@ -23,5 +14,12 @@ public:
 	virtual string Update(Uint32 milliSec, Event & inputEvent) override;
 	virtual void Draw(void) override;
 	virtual void Dispose(void) override;
+	virtual Program * GetProgram(void) override;
+private:
+	bool _ok;
+	bool _disposed;
+	Frame* _currentFrame;
+	Sound* _tune;
+	Graphics *_g;
 };
 

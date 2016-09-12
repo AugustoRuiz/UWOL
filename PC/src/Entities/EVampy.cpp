@@ -11,7 +11,8 @@ EVampy::~EVampy()
 
 void EVampy::Initialize()
 {
-	this->_animPlayer.setAnimation(Animation::Get("vampy_float"));
+	Animation* a = Animation::Get("vampy_float");
+	this->_animPlayer.setAnimation(a);
 	Enemigo::Initialize();
 	this->setTipoEnemigo(Vampy);
 }

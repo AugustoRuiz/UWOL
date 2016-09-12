@@ -1,8 +1,6 @@
 #pragma once
 
 #include "GameData.h"
-#include "IDrawable.h"
-#include "Graphics.h"
 
 class Plataforma : public IDrawable
 {
@@ -23,13 +21,15 @@ public:
 	void DrawShadow(void);
 
 	static void StaticInit();
+	static void StaticDispose();
+
 	void Initialize();
 	void Dispose();
 
 private:
 
-	static vector<Frame> _frames;
-	Frame _currentFrame;
+	static vector<Frame*> _frames;
+	Frame* _currentFrame;
 	VECTOR2 _tileSize;
 
 	Graphics *_g;
@@ -46,6 +46,7 @@ private:
 	int _finY;
 
 	bool _disposed;
+	static bool _staticDisposed;
 
 	void updateDrawingCoords();
 };

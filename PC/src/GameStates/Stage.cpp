@@ -5,7 +5,7 @@ Stage::Stage(void) {
 	_g = Graphics::GetInstance();
 
 	// Cargar los recursos...
-	this->_frameSombra = Frame("data/TileSombra.png");
+	this->_frameSombra = new Frame("data/TileSombra.png");
 
 	this->Player = new TPlayer();
 	this->StatsDrawer = new StatsDraw();
@@ -20,11 +20,13 @@ Stage::Stage(void) {
 }
 
 Stage::~Stage(void) {
+	Room::StaticDispose();
 	this->Dispose();
 }
 
 void Stage::Restart() {
 	this->RoomIndex = 0;
+	this->CurrentRoom = this->Rooms[this->RoomIndex];
 	for (Room* r : this->Rooms) {
 		r->Completada = false;
 		r->Restart();
@@ -44,6 +46,7 @@ void Stage::OnExit() {
 
 void Stage::Dispose() {
 	if (!this->_disposed) {
+		delete this->_frameSombra;
 		this->disposeRooms();
 		this->_disposed = true;
 	}
@@ -82,6 +85,11 @@ void Stage::DrawTime() {
 	else {
 		_g->DrawString(208, -16, ss.str(), 1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f);
 	}
+}
+
+Program * Stage::GetProgram(void)
+{
+	return nullptr;
 }
 
 string Stage::Update(Uint32 milliSec, Event & inputEvent) {
@@ -168,6 +176,7 @@ void Stage::GoToRoom(int roomIndex)
 	this->CurrentRoom = this->Rooms[this->RoomIndex];
 	this->CurrentRoom->setPlayer(this->Player);
 	this->CurrentRoom->OnEnter();
+	InputManager::GetInstance()->Reset();
 }
 
 Room* Stage::loadRooms()
@@ -176,7 +185,7 @@ Room* Stage::loadRooms()
 
 	Room *tmpRoom = NULL;
 
-	ifstream roomsFile("data/rooms.dat", ifstream::binary);
+	istream *roomsFile = Pack::GetInstance()->GetStream("data/rooms.dat");
 	VECTOR2 vect;
 
 	vect.x = 32;
@@ -185,7 +194,7 @@ Room* Stage::loadRooms()
 	int roomDepth = 1;
 	int roomCount = 0;
 
-	if (roomsFile)
+	if (roomsFile->good())
 	{
 		bool more = true;
 		while (more)
@@ -201,12 +210,13 @@ Room* Stage::loadRooms()
 
 			this->Rooms.push_back(room);
 		}
-		roomsFile.close();
 	}
 	else
 	{
 		Log::Out << "Couldn't open file data/rooms.dat" << endl;
 	}
+
+	delete roomsFile;
 
 	if (this->Rooms.size() == 0)
 	{

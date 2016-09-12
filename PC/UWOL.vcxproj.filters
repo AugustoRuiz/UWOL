@@ -21,9 +21,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Background.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\CollisionMap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -36,37 +33,16 @@
     <ClCompile Include="src\GameData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Log.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\NileEngine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Plataforma.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\stdafx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\TimerFuncs.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\jsoncpp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\StaticInitalizers.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Animation\Animation.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Animation\AnimationFrame.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Animation\AnimationPlayer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Animation\Frame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Entities\Coin.cpp">
@@ -105,30 +81,6 @@
     <ClCompile Include="src\GameStates\Stage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Graphics\GLFuncs.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Graphics\Graphics.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Graphics\Scanlines.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Graphics\TextRenderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Graphics\TextureMgr.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Input\InputManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Input\Event.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Sound\MusicManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\GameStates\EndGame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -138,14 +90,20 @@
     <ClCompile Include="src\GameStates\GameOver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Sound\Sound.cpp">
+    <ClCompile Include="src\Entities\Plataforma.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Entities\Background.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameStates\Credits.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameStates\Attract.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\Background.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\CollisionMap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -158,25 +116,10 @@
     <ClInclude Include="include\GameData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\IUpdatable.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Log.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Plataforma.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\stdafx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\TimerFuncs.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\UWOL.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\UWOL_private.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
@@ -187,9 +130,6 @@
     </ClInclude>
     <ClInclude Include="include\json\json-forwards.h">
       <Filter>Header Files\json</Filter>
-    </ClInclude>
-    <ClInclude Include="include\GameStates\IGameState.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\GameStates\Piramide.h">
       <Filter>Header Files</Filter>
@@ -204,15 +144,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\GameStates\Stage.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Animation\Animation.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Animation\AnimationFrame.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Animation\AnimationPlayer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\Entities\Coin.h">
@@ -236,36 +167,6 @@
     <ClInclude Include="include\Entities\Player.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\Animation\Frame.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Input\Event.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Input\InputManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Sound\MusicManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Graphics\IDrawable.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Graphics\TextRenderer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Graphics\TextureMgr.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Graphics\Scanlines.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Graphics\Graphics.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Graphics\GLFuncs.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\GameStates\EndGame.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -275,7 +176,19 @@
     <ClInclude Include="include\GameStates\GameOver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\Sound\Sound.h">
+    <ClInclude Include="include\Entities\Plataforma.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Entities\Background.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GameStates\Credits.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\NileEngine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GameStates\Attract.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -290,11 +203,35 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <None Include="animations.json">
+    <None Include="bin\data\shaders\fragmentShader.template" />
+    <None Include="bin\data\shaders\TexturedColored.fragment" />
+    <None Include="bin\data\shaders\Default.vertex" />
+    <None Include="bin\data\shaders\ColorCycle.fragment" />
+    <None Include="bin\data\shaders\Color.fragment" />
+    <None Include="bin\data\shaders\Line.vertex" />
+    <None Include="bin\data\shaders\Color.150.fragment" />
+    <None Include="bin\data\shaders\TexturedColored.150.fragment" />
+    <None Include="bin\data\shaders\ColorCycle.150.fragment" />
+    <None Include="bin\data\shaders\Default.150.vertex" />
+    <None Include="bin\data\shaders\Line.150.vertex" />
+    <None Include="bin\data\shaders\CRT.150.fragment" />
+    <None Include="bin\data\shaders\CRT-Jasper.fragment" />
+    <None Include="bin\data\shaders\CRT-VideoDistort.fragment" />
+    <None Include="bin\data\shaders\TexturedSepia.150.fragment" />
+    <None Include="bin\animations.json">
       <Filter>resources</Filter>
     </None>
-    <None Include="resources.json">
+    <None Include="bin\resources.json">
       <Filter>resources</Filter>
     </None>
+    <None Include="binFiles\SDL.dll" />
+    <None Include="binFiles\smpeg.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="binFiles\copying.glm.txt" />
+    <Text Include="binFiles\COPYING.SDL_Image.txt" />
+    <Text Include="binFiles\COPYING.SDL_Mixer.txt" />
+    <Text Include="binFiles\COPYING.SDL2.txt" />
+    <Text Include="binFiles\LICENSE.glew.txt" />
   </ItemGroup>
 </Project>

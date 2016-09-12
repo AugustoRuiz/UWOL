@@ -1,71 +1,53 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <SDL/SDL_main.h>
-#include "MusicManager.h"
 #include "Game.h"
-#include "TimerFuncs.h"
 #include "GameData.h"
+//#include <curl/curl.h>
 
 int main(int argc, char *argv[])
 {
-    Log::Initialize();
+//	curl_global_init(CURL_GLOBAL_ALL);
 
-    // ----------------------------------------------------------------------------
-    // This makes relative paths work in C++ in Xcode by changing directory to the Resources folder inside the .app bundle
+	Log::Initialize("uwol.log");
+
+	// ----------------------------------------------------------------------------
+	// This makes relative paths work in C++ in Xcode by changing directory to the Resources folder inside the .app bundle
 #ifdef __APPLE__
-    CFBundleRef mainBundle = CFBundleGetMainBundle();
-    CFURLRef resourcesURL = CFBundleCopyResourcesDirectoryURL(mainBundle);
-    char path[PATH_MAX];
-    if (!CFURLGetFileSystemRepresentation(resourcesURL, TRUE, (UInt8 *)path, PATH_MAX))
-    {
-        // error!
-        Log::Out << "Couldn't get file system representation! " << std::endl;
-    }
-    CFRelease(resourcesURL);
-    
-    chdir(path);
-    Log::Out << "Current Path: " << path << endl;
+	CFBundleRef mainBundle = CFBundleGetMainBundle();
+	CFURLRef resourcesURL = CFBundleCopyResourcesDirectoryURL(mainBundle);
+	char path[PATH_MAX];
+	if (!CFURLGetFileSystemRepresentation(resourcesURL, TRUE, (UInt8 *)path, PATH_MAX))
+	{
+		// error!
+		Log::Out << "Couldn't get file system representation! " << std::endl;
+	}
+	CFRelease(resourcesURL);
+
+	chdir(path);
+	Log::Out << "Current Path: " << path << endl;
 #endif
-    // ----------------------------------------------------------------------------
-    
+	// ----------------------------------------------------------------------------
+
 	try {
 		Game *game = Game::GetInstance();
 		MusicManager *musicMgr = MusicManager::GetInstance();
+		//GLFuncs *g = GLFuncs::GetInstance();
 		Uint32 lastTick, currentTick;
 		Uint32 delta;
 		Uint32 accum = 0;
 
-		bool attract = false;
 		bool saveState = false;
 		bool fullScreen = true;
-        
+
 		Log::Out << "main: Initializing Engine..." << endl;
 
 		Log::Out << "Parsing parameters..." << endl;
 		for (int param = 1; param < argc; param++)
 		{
-			if (!strcmp(argv[param], "-a") || !strcmp(argv[param], "-A") || !strcmp(argv[param], "/a") || !strcmp(argv[param], "/A"))
-			{
-				if (!saveState)
-				{
-					attract = true;
-				}
-				else
-				{
-					Log::Out << "main: Cannot use both -a and -s parameters. -s will be ignored." << endl;
-				}
-			}
 			if (!strcmp(argv[param], "-s") || !strcmp(argv[param], "-S") || !strcmp(argv[param], "/s") || !strcmp(argv[param], "/S"))
 			{
-				if (!attract)
-				{
-					saveState = true;
-				}
-				else
-				{
-					Log::Out << "main: Cannot use both -s and -a parameters. -a will be ignored." << endl;
-				}
+				saveState = true;
 			}
 			if (!strcmp(argv[param], "-w") || !strcmp(argv[param], "-W") || !strcmp(argv[param], "/w") || !strcmp(argv[param], "/W"))
 			{
@@ -73,7 +55,6 @@ int main(int argc, char *argv[])
 			}
 		}
 
-		aliasing = false;
 		scanlines = true;
 		debugPaint = false;
 
@@ -81,9 +62,7 @@ int main(int argc, char *argv[])
 		// 512 x 384
 		if (game->Initialize(640, 480, fullScreen, "UWOL, The Quest for Money"))
 		{
-			game->ShowCursor(false);
-
-			game->SetAttractMode(attract);
+			game->SetInertia(true);
 			game->SetSaveAttract(saveState);
 
 			Log::Out << "main: Starting main loop..." << endl;
@@ -126,11 +105,11 @@ int main(int argc, char *argv[])
 	}
 	catch (exception& e)
 	{
-		cout << e.what() << endl;
-		Log::Dispose();
-		return -1;
+		Log::Out << e.what() << endl;
 	}
 
 	Log::Dispose();
+//	curl_global_cleanup();
+
 	return 0;
 }

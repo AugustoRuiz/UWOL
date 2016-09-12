@@ -7,6 +7,7 @@ EFanty::EFanty() : Enemigo()
 
 EFanty::~EFanty()
 {
+	delete this->_frameHalo;
 }
 
 void EFanty::Initialize()
@@ -14,7 +15,7 @@ void EFanty::Initialize()
 	this->_chaseable = NULL;
 	this->_haloValue = 0.0f;
 	this->_animPlayer.setAnimation(Animation::Get("fanty_float"));
-	this->_frameHalo = Frame("data/Halo.png");
+	this->_frameHalo = new Frame("data/Halo.png");
 
 	Enemigo::Initialize();
 

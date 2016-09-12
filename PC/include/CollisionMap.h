@@ -1,7 +1,6 @@
 #pragma once
 
 #include "GameData.h"
-#include "Graphics.h"
 
 class CollisionMap
 {
@@ -13,8 +12,6 @@ public:
 
 	CollisionType Collides(RECTANGLEF *srcRect, VECTOR2F *vel);
 	void Initialize(int nCols, int nRows, int cellW, int cellH);
-	void LoadMap(SDL_RWops *rw);
-	void WriteMap(SDL_RWops *rw);
 
 	int cols;
 	int rows;

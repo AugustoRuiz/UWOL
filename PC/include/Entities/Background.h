@@ -1,8 +1,6 @@
 #pragma once
 
 #include "GameData.h"
-#include "Graphics.h"
-#include "TextureMgr.h"
 
 class Background
 {
@@ -18,18 +16,20 @@ public:
 	void Draw();
 
 	static void StaticInit();
+	static void StaticDispose();
 
 private:
 	Graphics* _g;
 
-	static vector<Frame> _frames;
-	Frame _frame;
+	static vector<Frame*> _frames;
+	Frame* _frame;
 
 	TilesFondo _tileFondo;
 	int _width;
 	int _height;
 	int _tilesX;
 	int _tilesY;
+	static bool _staticDisposed;
 
 	void InitBackground(TilesFondo tileFondo, 
 			   int tilesX, 

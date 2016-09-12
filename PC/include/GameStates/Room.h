@@ -1,21 +1,15 @@
 #pragma once
 
 #include <fstream>
-#include "IUpdatable.h"
-#include "IDrawable.h"
 #include "GameData.h"
-#include "IGameState.h"
 #include "CollisionMap.h"
-#include "Graphics.h"
 #include "Background.h"
-#include "InputManager.h"
 #include "Plataforma.h"
 #include "Enemigo.h"
 #include "FactoriaEnemigo.h"
 #include "Coin.h"
 #include "Player.h"
 #include <cmath>
-#include "MusicManager.h"
 
 class Room : public IGameState
 {
@@ -24,11 +18,12 @@ public:
 	~Room(void);
 
 	// Implementación de IGameState.
-	void OnEnter(void) override;
-	void OnExit(void) override;
-	string Update(Uint32 milliSec, Event & inputEvent) override;
-	void Draw(void) override;
-	void Dispose(void) override;
+	virtual void OnEnter(void) override;
+	virtual void OnExit(void) override;
+	virtual string Update(Uint32 milliSec, Event & inputEvent) override;
+	virtual void Draw(void) override;
+	virtual void Dispose(void) override;
+	virtual Program * GetProgram(void) override;
 
 	void Restart();
 
@@ -47,29 +42,36 @@ public:
         
 	TPlayer *_player;
 
-	bool loadRoom(ifstream &roomsFile);
+	bool loadRoom(istream *roomsFile);
 
 	int getEstado();
 
+	unsigned int GetRand();
+
 	static void StaticInit();
+	static void StaticDispose();
 
 private:
 	int _depth;
-
+	unsigned int _rand;
 	bool _disposed;
 
 	int _initialTime;
 	int _estado;
 
-	float _valorOscuro;
+	float _valorOscuro, _ticks, _sinValue;
 
-	static Frame _textureCamiseta;
-	static Frame _textureFlechaIzq;
-	static Frame _textureFlechaDer;
-	static Frame _textureSombra;
-	static Sound _fxCoin, _fxHit, _fxGhost, _musicGhost;
-	static vector<Sound> _tunes;
-	Sound _tune;
+	Frame* _texFlechaIzq, *_texFlechaDer;
+
+	static Frame* _textureCamiseta;
+	static Frame* _texturePuerta;
+	static Frame* _textureFlechaIzq;
+	static Frame* _textureFlechaDer;
+	static Frame* _textureSombra;
+	static Frame* _textureFlecha;
+	static Sound* _fxCoin, *_fxHit, *_fxGhost, *_musicGhost, *_fxCamiseta;
+	static vector<Sound*> _tunes;
+	Sound* _tune;
 
 	Background *_back;
 

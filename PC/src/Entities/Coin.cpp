@@ -39,7 +39,7 @@ void Coin::setPos(char tileX, char tileY)
 
 void Coin::DrawShadow()
 {
-	Frame current = this->_animPlayer.GetCurrentFrame();
+	Frame* current = this->_animPlayer.GetCurrentFrame();
 	_g->BlitShadow(current, 
 		(this->_x * this->_tileSize.x), ((int)round(this->_y) * this->_tileSize.y),
 		this->_tileSize.x, this->_tileSize.y, 
@@ -59,8 +59,8 @@ bool Coin::UpdateWhenNoCoins()
 void Coin::Draw()
 {
 	_g->BlitFrame(this->_animPlayer.GetCurrentFrame(), 
-		          (this->_x * this->_tileSize.x), 
-		          (this->_y * this->_tileSize.y), 
+		          (int)(this->_x * this->_tileSize.x), 
+		(int)(this->_y * this->_tileSize.y),
 				  this->_tileSize.x,
 				  this->_tileSize.y,
 				  false, false);

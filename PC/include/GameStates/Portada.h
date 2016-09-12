@@ -1,12 +1,8 @@
 #pragma once
 
 #include <fstream>
-#include "Graphics.h"
 #include "GameData.h"
 #include "Stage.h"
-#include "IGameState.h"
-#include "InputManager.h"
-#include "Sound.h"
 
 #define WAIT_TIME 4000
 
@@ -19,9 +15,10 @@ public:
 	// Implementación de IGameState.
 	virtual void OnEnter(void) override;
 	virtual void OnExit(void) override;
-	string Update(Uint32 milliSec, Event & inputEvent) override;
-	void Draw(void) override;
-	void Dispose(void) override;
+	virtual string Update(Uint32 milliSec, Event & inputEvent) override;
+	virtual void Draw(void) override;
+	virtual void Dispose(void) override;
+	virtual Program * GetProgram(void) override;
 
 private:
 
@@ -29,11 +26,10 @@ private:
 
 	Graphics *_g;
 
-	vector<Frame> _imagenes;
-	Sound _sonido;
+	vector<Frame*> _imagenes;
+	Sound* _sonido;
 
 	unsigned int _currentFrame;
-
 
 	float _currentAlpha;
 	int _incrFactor;
@@ -41,5 +37,6 @@ private:
 	Uint32 _currentTick;
 
 	void UpdateCurrentTexture();
+
 };
 

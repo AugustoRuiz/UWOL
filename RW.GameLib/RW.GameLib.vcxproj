@@ -1,0 +1,261 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{8021BD5B-E70C-4DFF-A502-A84777254925}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>RWGameLib</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)ext\lib\</OutDir>
+    <CustomBuildAfterTargets>
+    </CustomBuildAfterTargets>
+    <IntDir>obj\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)ext\lib\</OutDir>
+    <CustomBuildAfterTargets>
+    </CustomBuildAfterTargets>
+    <IntDir>obj\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>CURL_STATICLIB;GLEW_STATIC;WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>include;$(SolutionDir)ext\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>SDL2main.lib;SDL2.lib;SDL2_image.lib;SDL2_mixer.lib;opengl32.lib;glu32.lib;glew32s.lib;version.lib;winmm.lib;imm32.lib;freetype2412.lib;zlib.lib;libpng16.lib;libwebp.lib;libjpeg.lib;timidity.lib;libFLAC_static.lib;smpeg.lib;libmodplug.lib;libogg_static.lib;libvorbis_static.lib;win_utf8_io_static.lib;libvorbisfile_static.lib;libcurl_a_debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
+    <Lib>
+      <AdditionalLibraryDirectories>$(SolutionDir)ext\lib</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>LIBCMT</IgnoreSpecificDefaultLibraries>
+      <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
+    </Lib>
+    <ResourceCompile>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <ResourceCompile>
+      <ResourceOutputFileName>$(IntDir)%(Filename).res</ResourceOutputFileName>
+    </ResourceCompile>
+    <CustomBuildStep>
+      <Command>
+      </Command>
+    </CustomBuildStep>
+    <PostBuildEvent>
+      <Command>xcopy /s /y $(ProjectDir)include\. $(SolutionDir)ext\include\RW.GameLib\</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>Copying header files...</Message>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>CURL_STATICLIB;GLEW_STATIC;WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>include;$(SolutionDir)ext\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>SDL2main.lib;SDL2.lib;SDL2_image.lib;SDL2_mixer.lib;opengl32.lib;glu32.lib;glew32s.lib;winmm.lib;imm32.lib;version.lib;freetype2412.lib;zlib.lib;libpng16.lib;libwebp.lib;libjpeg.lib;timidity.lib;libFLAC_static.lib;smpeg.lib;libmodplug.lib;libogg_static.lib;libvorbis_static.lib;win_utf8_io_static.lib;libvorbisfile_static.lib;libcurl_a.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
+    <Lib>
+      <AdditionalLibraryDirectories>$(SolutionDir)ext\lib</AdditionalLibraryDirectories>
+    </Lib>
+    <CustomBuildStep>
+      <Command>
+      </Command>
+    </CustomBuildStep>
+    <PostBuildEvent>
+      <Command>xcopy /s /y $(ProjectDir)include\. $(SolutionDir)ext\include\RW.GameLib\</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>Copying header files...</Message>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\Animation\Animation.h" />
+    <ClInclude Include="include\Animation\AnimationFrame.h" />
+    <ClInclude Include="include\Animation\AnimationPlayer.h" />
+    <ClInclude Include="include\Animation\Frame.h" />
+    <ClInclude Include="include\Common.h" />
+    <ClInclude Include="include\Entities\Component.h" />
+    <ClInclude Include="include\Entities\Entity.h" />
+    <ClInclude Include="include\Entities\IChaseable.h" />
+    <ClInclude Include="include\Entities\MessageLine.h" />
+    <ClInclude Include="include\GameStates\IGameState.h" />
+    <ClInclude Include="include\Graphics\GLFuncs.h" />
+    <ClInclude Include="include\Graphics\Graphics.h" />
+    <ClInclude Include="include\Graphics\IDrawable.h" />
+    <ClInclude Include="include\Graphics\Program.h" />
+    <ClInclude Include="include\Graphics\Scanlines.h" />
+    <ClInclude Include="include\Graphics\Shader.h" />
+    <ClInclude Include="include\Graphics\ShaderMgr.h" />
+    <ClInclude Include="include\Graphics\TextRenderer.h" />
+    <ClInclude Include="include\Graphics\TextureMgr.h" />
+    <ClInclude Include="include\Input\ActionKeys.h" />
+    <ClInclude Include="include\Input\ControlMode.h" />
+    <ClInclude Include="include\Input\Event.h" />
+    <ClInclude Include="include\Input\InputManager.h" />
+    <ClInclude Include="include\json\json-forwards.h" />
+    <ClInclude Include="include\json\json.h" />
+    <ClInclude Include="include\RW.GameLib.h" />
+    <ClInclude Include="include\Sound\MusicManager.h" />
+    <ClInclude Include="include\Sound\Sound.h" />
+    <ClInclude Include="include\Utils\FileFuncs.h" />
+    <ClInclude Include="include\Entities\IUpdatable.h" />
+    <ClInclude Include="include\Utils\Log.h" />
+    <ClInclude Include="include\Utils\Pack.h" />
+    <ClInclude Include="include\Utils\TimerFuncs.h" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Animation\Animation.cpp" />
+    <ClCompile Include="src\Animation\AnimationFrame.cpp" />
+    <ClCompile Include="src\Animation\AnimationPlayer.cpp" />
+    <ClCompile Include="src\Animation\Frame.cpp" />
+    <ClCompile Include="src\Entities\Component.cpp" />
+    <ClCompile Include="src\Entities\Entity.cpp" />
+    <ClCompile Include="src\Entities\MessageLine.cpp" />
+    <ClCompile Include="src\Graphics\GLFuncs.cpp" />
+    <ClCompile Include="src\Graphics\Graphics.cpp" />
+    <ClCompile Include="src\Graphics\Program.cpp" />
+    <ClCompile Include="src\Graphics\Scanlines.cpp" />
+    <ClCompile Include="src\Graphics\Shader.cpp" />
+    <ClCompile Include="src\Graphics\ShaderMgr.cpp" />
+    <ClCompile Include="src\Graphics\TextRenderer.cpp" />
+    <ClCompile Include="src\Graphics\TextureMgr.cpp" />
+    <ClCompile Include="src\Input\Event.cpp" />
+    <ClCompile Include="src\Input\InputManager.cpp" />
+    <ClCompile Include="src\StaticInitalizers.cpp" />
+    <ClCompile Include="src\Utils\Log.cpp" />
+    <ClCompile Include="src\Sound\MusicManager.cpp" />
+    <ClCompile Include="src\Sound\Sound.cpp" />
+    <ClCompile Include="src\Utils\Pack.cpp" />
+    <ClCompile Include="src\Utils\TimerFuncs.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="UWOL.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="resources\UWOL.ico" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

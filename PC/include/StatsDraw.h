@@ -1,10 +1,9 @@
 #pragma once
 
+#include <string>
 #include <sstream>
 #include <iomanip>
-
-#include "Graphics.h"
-#include "AnimationPlayer.h"
+#include "GameData.h"
 #include "Player.h"
 
 class StatsDraw
