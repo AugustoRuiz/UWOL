@@ -5,10 +5,11 @@ BINDIR=bin
 LIBDIR=lib
 MKDIR=mkdir
 
+AR=ar
 CC=gcc
 CXX=g++
-CXXFLAGS=-std=c++11 -I/usr/local/include -I../ext/include -I../ext/include/RW.GameLib -I../ext/include/RW.PackLib -D_GNU_SOURCE=1 -D_THREAD_SAFE -O3 -Werror -Wall -fsigned-char
-LDLIBS=-L/usr/local/lib -lSDL2 -lSDL2_image -lSDL2_mixer -logg -lvorbis -lGLEW -lz -Wl,-framework,Cocoa -framework OpenGL
+CXXFLAGS=-std=c++11 -D_GNU_SOURCE=1 -D_THREAD_SAFE -g -Werror -Wall -fsigned-char
+LDLIBS=-L/usr/local/lib -lz 
 
 vpath %.h $(INCDIR)
 vpath %.cpp $(SRCDIR)
@@ -19,15 +20,22 @@ HEADERS = $(shell find $(INCDIR))
 INCLUDES = $(sort $(addprefix -I,$(dir $(HEADERS))))
 SRCS = $(shell find $(SRCDIR) -name *.cc) $(shell find $(SRCDIR) -name *.cpp)
 OBJS = $(patsubst $(SRCDIR)%,$(OBJDIR)%,$(patsubst %.cc,%.o,$(patsubst %.cpp,%.o,$(SRCS))))
-APPNAME = $(BINDIR)/uwol
+APPNAME = $(BINDIR)/pack
+LIBNAME = $(BINDIR)/librwpack.a
 
-all: createFolders $(APPNAME)
+all: createFolders $(APPNAME) $(LIBNAME) tools
 
-$(APPNAME): $(OBJS)
-	$(CXX) $(LDFLAGS) -o $@ $(OBJS) ../ext/lib/librwpack.a ../ext/lib/librwgame.a $(LDLIBS) `sdl2-config --cflags --libs`
-	mv $(APPNAME) ../bin
-	../tools/pack bin ../bin/UWOL.pak
-	hdiutil create -volname "UWOL, The Quest for Money" -srcfolder ../bin -ov -format UDZO dmg/uwol.dmg
+tools: $(APPNAME)
+	cp $(APPNAME) ../tools
+	cp $(LIBNAME) ../ext/lib
+	cp include/* ../ext/include/RW.PackLib/
+
+$(APPNAME): $(OBJS) $(LIBNAME)
+	$(CXX) $(CXXFLAGS) -o obj/pack.o -c $(INCLUDES) Pack/main.cpp
+	$(CXX) $(LDFLAGS) -o $@ obj/pack.o $(OBJS) $(LIBNAME) $(LDLIBS)
+
+$(LIBNAME): $(OBJS)
+	$(AR) rvs $@ $(OBJS)
 
 $(OBJDIR)/%.o: %.cc
 	$(MKDIR) -p $(dir $@)
@@ -45,7 +53,9 @@ showVars:
 
 createFolders:
 	$(MKDIR) -p $(BINDIR)
-	$(MKDIR) -p dmg
+	$(MKDIR) -p ../tools
+	$(MKDIR) -p ../ext/lib
+	$(MKDIR) -p ../ext/include/RW.PackLib
 	
 clean:
 	$(RM) -rf $(OBJDIR)

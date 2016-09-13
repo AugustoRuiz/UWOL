@@ -62,7 +62,11 @@ SDL_Window *GLFuncs::Initialize(int screenWidth, int screenHeight, GLboolean ful
 	stringstream ss(glVersion);
 	ss >> version;
 
+#ifdef __APPLE__
+	this->_useShaders = true;
+#else
 	this->_useShaders = (glCreateProgram != NULL); //version >= 20;
+#endif
 	if (_useShaders) {
 		this->_glslVersion = getGLSLVersion();
 		Log::Out << "GLSL: " << (this->_glslVersion == "" ? "Not available!" : this->_glslVersion) << endl;
@@ -241,9 +245,13 @@ void GLFuncs::SetTexture(unsigned int channel, unsigned int texture) {
 			glActiveTexture(GL_TEXTURE0);
 		}
 		else {
+#ifndef __APPLE__
 			if (glActiveTexture != NULL) {
+#endif
 				glActiveTexture(GL_TEXTURE0 + channel);
+#ifndef __APPLE__
 			}
+#endif
 			glBindTexture(GL_TEXTURE_2D, texture);
 		}
 		_activeTextures[channel] = texture;
@@ -531,7 +539,7 @@ GLuint GLFuncs::CreateShader(GLenum eShaderType, const std::string &strShaderFil
 }
 
 void GLFuncs::DeleteShader(GLuint shaderId) {
-	if (!shaderId != 0) {
+	if (shaderId != 0) {
 		glDeleteShader(shaderId);
 	}
 }

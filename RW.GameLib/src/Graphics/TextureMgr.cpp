@@ -28,7 +28,9 @@ TEXTUREINFO* TextureMgr::LoadTexture(const string &sFileName) {
 			int originalWidth = textureSurf->w;
 			int originalHeight = textureSurf->h;
 
+#ifndef __APPLE__
 			if (!GLEW_ARB_texture_non_power_of_two) {
+#endif
 				int w = (int) pow(2, ceil(log(textureSurf->w) / log(2))); // Round up to the nearest power of two
 				int h = (int) pow(2, ceil(log(textureSurf->h) / log(2)));
 				if (w != originalWidth || h != originalHeight) {
@@ -37,7 +39,9 @@ TEXTUREINFO* TextureMgr::LoadTexture(const string &sFileName) {
 					SDL_FreeSurface(textureSurf);
 					textureSurf = newSurface;
 				}
+#ifndef __APPLE__
 			}
+#endif
 
 			result = this->GL_LoadTexture(textureSurf);
 
@@ -161,9 +165,13 @@ void TextureMgr::dumpTextureInfo(GLuint texNumber) {
 	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_COMPRESSED, &value);
 	Log::Out << value << endl << "Compressed image size: ";
 	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &value);
-	Log::Out << value << endl << "Buffer offset: ";
+	Log::Out << value << endl;
+#ifndef __APPLE__
+	Log::Out << "Buffer offset: ";
 	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_BUFFER_OFFSET, &value);
-	Log::Out << value << endl << "-------------" << endl;
+	Log::Out << value << endl;
+#endif
+	Log::Out << "-------------" << endl;
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 }

@@ -1,6 +1,6 @@
 #include "Player.h"
 
-#define UWOL_MAX_SPEED_X 3.1f
+#define UWOL_MAX_SPEED_X 3.0f
 #define UWOL_MAX_SPEED_Y 32.0f
 
 TPlayer::TPlayer() {
