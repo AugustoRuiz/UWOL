@@ -1,6 +1,6 @@
 #include "Player.h"
 
-#define UWOL_MAX_SPEED_X 3.0f
+#define UWOL_MAX_SPEED_X 3.1f
 #define UWOL_MAX_SPEED_Y 32.0f
 
 TPlayer::TPlayer() {
@@ -10,9 +10,9 @@ TPlayer::TPlayer() {
 	this->_map = NULL;
 
 	this->_colRect.x = 6;
-	this->_colRect.y = 8;
+	this->_colRect.y = 12;
 	this->_colRect.width = 20;
-	this->_colRect.height = 24;
+	this->_colRect.height = 20;
 
 	this->_posRect.x = 0;
 	this->_posRect.y = 0;
