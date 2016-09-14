@@ -1,4 +1,5 @@
 #include "Graphics/TextureMgr.h"
+#include "math.h"
 
 TextureMgr::TextureMgr(void) {
 }
