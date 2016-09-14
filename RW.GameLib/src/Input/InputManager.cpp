@@ -1,5 +1,7 @@
 #include "Input/InputManager.h"
 
+#define AXIS_DEAD_ZONE 0x3FFF
+
 InputManager::InputManager()
 {
 	//this->ActionMap.insert(ACTIONMAP_ITEM(ActionKeysLeft, SDLK_LEFT));
@@ -184,6 +186,25 @@ Event InputManager::Update(int milliSecs)
 					this->setKeyFromJoyEvent(hatStatus, HAT_DOWN, ActionKeysDown);
 				}
 				_previousHatStatus = hatStatus;
+
+				if(SDL_JoystickNumAxes(this->_joystick) >= 2) {
+					Sint16 joyX, joyY;
+					joyX = SDL_JoystickGetAxis(this->_joystick, 0);
+					joyY = SDL_JoystickGetAxis(this->_joystick, 1);
+					if(abs(joyX) > AXIS_DEAD_ZONE) {
+						if(joyX > 0) {
+							this->setKeyFromJoyEvent(1, 1, ActionKeysRight);
+						} else {
+							this->setKeyFromJoyEvent(1, 1, ActionKeysLeft);
+						}
+					} 
+					if(abs(joyY) > AXIS_DEAD_ZONE) {
+						if(joyY > 0) {
+							this->setKeyFromJoyEvent(0, 0, ActionKeysUp);
+							this->setKeyFromJoyEvent(1, 1, ActionKeysDown);
+						} 
+					} 
+				}
 			}
 		}
 	}

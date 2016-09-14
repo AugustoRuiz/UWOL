@@ -10,7 +10,6 @@ CC=gcc
 CXX=g++
 CXXFLAGS=-std=c++11 -I/usr/local/include -I../ext/include -D_GNU_SOURCE=1 -D_THREAD_SAFE -O3 -Werror -Wall -fsigned-char
 
-
 vpath %.h $(INCDIR)
 vpath %.cpp $(SRCDIR)
 vpath %.cc $(SRCDIR)

@@ -187,11 +187,8 @@ string Presentacion::Update(Uint32 milliSec, Event & inputEvent) {
 		}
 	}
 	if (inputEvent.Name == "JOY_UP") {
-		int button = inputEvent.Data["button"].asInt();
-		if (button == JOY_BUTTON_0 || button == JOY_BUTTON_1) {
-			input->SetControlMode(Joystick);
-			return "Piramide";
-		}
+		input->SetControlMode(Joystick);
+		return "Piramide";
 	}
 
 	if (this->_goNext) {
