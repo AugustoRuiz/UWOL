@@ -196,19 +196,19 @@ void Game::handleInput(Event &currentEvent) {
 			this->_eventBuffer.push_back((Uint32)(0x3FFF & key));
 		}
 
-		if (key == ActionKeysAddCoins) {
-			if (this->_currentStatus == "Stage") {
-				map<string, IGameState*>::iterator it = _states.find(_currentStatus);
-				if (it != _states.end()) {
-					IGameState *state = it->second;
-					Stage* s = (Stage*)state;
-					s->Player->_coinsTaken += 1;
-					vec3 color1 = vec3(0.9f);
-					vec3 color2 = vec3(0.7f);
-					this->_messageLine->ShowText("Added coin!", 1500, color1, color2);
-				}
-			}
-		}
+		//if (key == ActionKeysAddCoins) {
+		//	if (this->_currentStatus == "Stage") {
+		//		map<string, IGameState*>::iterator it = _states.find(_currentStatus);
+		//		if (it != _states.end()) {
+		//			IGameState *state = it->second;
+		//			Stage* s = (Stage*)state;
+		//			s->Player->_coinsTaken += 1;
+		//			vec3 color1 = vec3(0.9f);
+		//			vec3 color2 = vec3(0.7f);
+		//			this->_messageLine->ShowText("Added coin!", 1500, color1, color2);
+		//		}
+		//	}
+		//}
 	}
 	if (currentEvent.Name == "KEY_UP") {
 		ActionKeys key = (ActionKeys)(currentEvent.Data["key"].asInt());
@@ -260,18 +260,18 @@ void Game::handleInput(Event &currentEvent) {
 			//		this->_messageLine->ShowText(ss.str(), 1500, vec3(0.9f), vec3(0.7f));
 			//	}
 			//	break;
-		case ActionKeysDebug:
-			debugPaint = !debugPaint;
-			ss << "Debug paint: " << (debugPaint ? "ON" : "OFF");
-			this->_messageLine->ShowText(ss.str(), 1500, vec3(0.9f), vec3(0.7f));
-		//	this->changeStatus(this->_currentStatus, "Portada");
-		//	this->_attractTimes = 0;
-			break;
+		//case ActionKeysDebug:
+		//	debugPaint = !debugPaint;
+		//	ss << "Debug paint: " << (debugPaint ? "ON" : "OFF");
+		//	this->_messageLine->ShowText(ss.str(), 1500, vec3(0.9f), vec3(0.7f));
+		//	break;
 		case ActionKeysStopRecording:
 			// Dejamos de guardar después de guardar la pulsación de la tecla de grabar. Así la grabación 
 			// durará hasta el momento en el que se ha pulsado la tecla.
-			this->_savingStatus = false;
-			this->_messageLine->ShowText("Recording completed.", 1500, color1, color2);
+			if (this->_savingStatus) {
+				this->_savingStatus = false;
+				this->_messageLine->ShowText("Recording completed.", 1500, color1, color2);
+			}
 			break;
 		case ActionKeysPause:
 			this->_paused = !this->_paused;
@@ -281,39 +281,38 @@ void Game::handleInput(Event &currentEvent) {
 			else {
 				this->_messageLine->ShowText((""), 1, color1, color2);
 			}
-
 			break;
-		case ActionKeysNextScreen:
-			if (this->_currentStatus == "Stage") {
-				map<string, IGameState*>::iterator it = _states.find(_currentStatus);
-				if (it != _states.end()) {
-					IGameState *state = it->second;
-					Stage* s = (Stage*)state;
-					int nextIdx = s->RoomIndex + 1;
-					if (nextIdx < (int)s->Rooms.size()) {
-						s->GoToRoom(nextIdx);
-						this->_messageLine->ShowText("Next room", 1500, color1, color2);
-					}
-				}
-			}
-			break;
-		case ActionKeysPreviousScreen:
-			if (this->_currentStatus == "Stage") {
-				map<string, IGameState*>::iterator it = _states.find(_currentStatus);
-				if (it != _states.end()) {
-					IGameState *state = it->second;
-					Stage* s = (Stage*)state;
-					int nextIdx = s->RoomIndex - 1;
-					if (nextIdx >= 0) {
-						s->GoToRoom(nextIdx);
-						this->_messageLine->ShowText("Previous room", 1500, color1, color2);
-					}
-				}
-			}
-			break;
+		//case ActionKeysNextScreen:
+		//	if (this->_currentStatus == "Stage") {
+		//		map<string, IGameState*>::iterator it = _states.find(_currentStatus);
+		//		if (it != _states.end()) {
+		//			IGameState *state = it->second;
+		//			Stage* s = (Stage*)state;
+		//			int nextIdx = s->RoomIndex + 1;
+		//			if (nextIdx < (int)s->Rooms.size()) {
+		//				s->GoToRoom(nextIdx);
+		//				this->_messageLine->ShowText("Next room", 1500, color1, color2);
+		//			}
+		//		}
+		//	}
+		//	break;
+		//case ActionKeysPreviousScreen:
+		//	if (this->_currentStatus == "Stage") {
+		//		map<string, IGameState*>::iterator it = _states.find(_currentStatus);
+		//		if (it != _states.end()) {
+		//			IGameState *state = it->second;
+		//			Stage* s = (Stage*)state;
+		//			int nextIdx = s->RoomIndex - 1;
+		//			if (nextIdx >= 0) {
+		//				s->GoToRoom(nextIdx);
+		//				this->_messageLine->ShowText("Previous room", 1500, color1, color2);
+		//			}
+		//		}
+		//	}
+		//	break;
 		case ActionKeysToggleInertia:
 			this->_stage->Player->toggleInertia();
-			ss << "Sissy mode: " << (this->_stage->Player->hasInertia() ? "OFF" : "ON");
+			ss << "Inertia: " << (this->_stage->Player->hasInertia() ? "ON" : "OFF - Really??");
 			this->_messageLine->ShowText(ss.str(), 1500, color1, color2);
 			break;
 		default:
