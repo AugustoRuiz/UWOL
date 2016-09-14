@@ -8,7 +8,7 @@ public:
 	~EFranky();
 
 	void Initialize();
-	void Update(Uint32 milliSec) override;
+	void Update(Uint32 milliSec, const Event& inputEvent) override;
 	void Draw() override;
 	void DrawShadow(void) override;
 

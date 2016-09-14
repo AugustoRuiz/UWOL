@@ -20,7 +20,7 @@ public:
 	virtual bool DrawWhenNoCoins(void) override;
 
 	// Inherited via IUpdatable
-	virtual void Update(Uint32 milliSec) override;
+	virtual void Update(Uint32 milliSec, const Event& inputEvent) override;
 	virtual bool UpdateWhenNoCoins(void) override;
 
 private:

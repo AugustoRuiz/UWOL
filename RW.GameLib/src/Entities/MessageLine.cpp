@@ -2,8 +2,7 @@
 
 #define ALPHA_INCR 0.02f
 
-MessageLine::MessageLine()
-{
+MessageLine::MessageLine(){
 	this->_textAlpha = 0.0f;
 	this->_alphaIncr = 0.0f;
 	this->_textRender = new TextRenderer();
@@ -15,12 +14,10 @@ MessageLine::MessageLine()
 	this->_posY = (Uint32) (g->WorldHeight + (g->ScreenHeight - g->WorldHeight) / 2.0f + (2 * this->_textSize));
 }
 
-MessageLine::~MessageLine()
-{
+MessageLine::~MessageLine(){
 }
 
-void MessageLine::ShowText(const string & text, Uint32 msecs, vec3 &rgbT, vec3 &rgbB)
-{
+void MessageLine::ShowText(const string & text, Uint32 msecs, vec3 &rgbT, vec3 &rgbB) {
 	this->_alphaIncr = ALPHA_INCR;
 	this->_remainingTime = msecs;
 	this->_text = text;
@@ -28,8 +25,7 @@ void MessageLine::ShowText(const string & text, Uint32 msecs, vec3 &rgbT, vec3 &
 	this->_rgbB = rgbB;
 }
 
-void MessageLine::Draw(void)
-{
+void MessageLine::Draw(void) {
 	if (this->_textAlpha != 0) {
 		this->_textRender->DrawStringAlpha(
 			_posX, _posY,
@@ -40,8 +36,7 @@ void MessageLine::Draw(void)
 	}
 }
 
-void MessageLine::DrawShadow(void)
-{
+void MessageLine::DrawShadow(void) {
 	if (this->_textAlpha != 0) {
 		this->_textRender->DrawStringAlpha(
 			_posX + 2, _posY + 2,
@@ -52,13 +47,11 @@ void MessageLine::DrawShadow(void)
 	}
 }
 
-bool MessageLine::DrawWhenNoCoins(void)
-{
-	return false;
+bool MessageLine::DrawWhenNoCoins(void) {
+	return true;
 }
 
-void MessageLine::Update(Uint32 milliSec)
-{
+void MessageLine::Update(Uint32 milliSec, const Event& inputEvent) {
 	if (_alphaIncr != 0.0f) {
 		this->_textAlpha += _alphaIncr;
 		this->_textAlpha = glm::clamp(this->_textAlpha, 0.0f, 1.0f);
@@ -74,7 +67,6 @@ void MessageLine::Update(Uint32 milliSec)
 	}
 }
 
-bool MessageLine::UpdateWhenNoCoins(void)
-{
-	return false;
+bool MessageLine::UpdateWhenNoCoins(void) {
+	return true;
 }

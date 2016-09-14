@@ -82,7 +82,40 @@ void Coin::DrawInPos(int pX, int pY, float alpha)
 				  alpha, alpha, alpha, 1.0, false, false, false);
 }
 
-void Coin::Update(Uint32 milliSec)
+void Coin::DebugPaint() {
+	vector<VECTOR2> vertexes;
+	RECTANGLEF cRect = this->getCollisionRect();
+	int x1 = (int)(cRect.x);
+	int x2 = (int)(cRect.x + cRect.width);
+	int y1 = (int)(cRect.y);
+	int y2 = (int)(cRect.y + cRect.height);
+
+	vertexes.push_back(VECTOR2(x1, y1));
+	vertexes.push_back(VECTOR2(x2, y1));
+	vertexes.push_back(VECTOR2(x2, y1));
+	vertexes.push_back(VECTOR2(x2, y2));
+	vertexes.push_back(VECTOR2(x2, y2));
+	vertexes.push_back(VECTOR2(x1, y2));
+	vertexes.push_back(VECTOR2(x1, y2));
+	vertexes.push_back(VECTOR2(x1, y1));
+
+	_g->DrawPolyLines(vertexes, 1.0f, 1.0f, 1.0f, 1.0f);
+}
+
+RECTANGLEF Coin::getCollisionRect() {
+	RECTANGLEF result;
+	result.x = this->_colRect.x + (this->_x * this->_tileSize.x);
+	result.y = this->_colRect.y + (this->_y * this->_tileSize.y);
+	result.width = this->_colRect.width;
+	result.height = this->_colRect.height;
+	return result;
+}
+
+void Coin::setCollisionRect(const RECTANGLEF& rect) {
+	this->_colRect = rect;
+}
+
+void Coin::Update(Uint32 milliSec, const Event& inputEvent)
 {
 	this->_animPlayer.Update((Uint32)(milliSec * this->_rotationFactor));
 }

@@ -2,7 +2,8 @@
 
 #define NUM_COINS 100
 #define INCR_FACTOR 2
-#define WAIT_TIME_IN_MSECS 15400
+#define SONG_LOOP_LENGTH 15400
+#define WAIT_TIME_IN_MSECS 2 * SONG_LOOP_LENGTH
 
 Presentacion::Presentacion() {
 	this->Name = "Presentacion";
@@ -166,7 +167,7 @@ string Presentacion::Update(Uint32 milliSec, Event & inputEvent) {
 	}
 
 	for (int i = 0; i<NUM_COINS; i++) {
-		this->_coins[i]->Update(milliSec);
+		this->_coins[i]->Update(milliSec, inputEvent);
 		this->_coins[i]->_y += (int) this->_coins[i]->_speed.y;
 		if (this->_coins[i]->_y > _g->ScreenHeight) {
 			this->_coins[i]->_y = -32;

@@ -14,6 +14,7 @@ public:
 
 	void Draw();
 	void DrawShadow(void);
+	void DebugPaint(void);
 
 	virtual bool DrawWhenNoCoins(void);
 	virtual bool UpdateWhenNoCoins(void);
@@ -28,7 +29,10 @@ public:
 	int getTileIni();
 	int getTileVert();
 
-	void Update(Uint32 milliSec);
+	RECTANGLEF getCollisionRect();
+	void setCollisionRect(const RECTANGLEF& rect);
+
+	void Update(Uint32 milliSec, const Event& inputEvent);
 
 	void Initialize();
 	void Dispose();
@@ -44,6 +48,7 @@ protected:
 	AnimationPlayer _animPlayer;
 
 	VECTOR2 _tileSize;
+	RECTANGLEF _colRect;
 
 	TipoEnemigo _tipoEnemigo;
 	Velocidad _velocidad;

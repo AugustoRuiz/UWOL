@@ -36,7 +36,7 @@ void EFranky::Draw()
 }
 
 
-void EFranky::Update(Uint32 milliSec)
+void EFranky::Update(Uint32 milliSec, const Event& inputEvent)
 {
 	this->_animPlayer.Update(milliSec);
 

@@ -110,11 +110,11 @@ void Game::Update(Uint32 mSecs)
 {
 	string oldStatus = _currentStatus;
 
-	this->_messageLine->Update(mSecs);
-
 	this->_totalTicks += mSecs;
 
 	Event currentEvent = InputManager::GetInstance()->Update(mSecs);
+
+	this->_messageLine->Update(mSecs, currentEvent);
 
 	this->handleInput(currentEvent);
 
@@ -256,13 +256,13 @@ void Game::handleInput(Event &currentEvent) {
 			//		this->_messageLine->ShowText(ss.str(), 1500, vec3(0.9f), vec3(0.7f));
 			//	}
 			//	break;
-		//case ActionKeysDebug:
-		//	debugPaint = !debugPaint;
-		//	ss << "Debug paint: " << (debugPaint ? "ON" : "OFF");
-		//	this->_messageLine->ShowText(ss.str(), 1500, vec3(0.9f), vec3(0.7f));
+		case ActionKeysDebug:
+			debugPaint = !debugPaint;
+			ss << "Debug paint: " << (debugPaint ? "ON" : "OFF");
+			this->_messageLine->ShowText(ss.str(), 1500, vec3(0.9f), vec3(0.7f));
 		//	this->changeStatus(this->_currentStatus, "Portada");
 		//	this->_attractTimes = 0;
-		//	break;
+			break;
 		case ActionKeysStopRecording:
 			// Dejamos de guardar después de guardar la pulsación de la tecla de grabar. Así la grabación 
 			// durará hasta el momento en el que se ha pulsado la tecla.

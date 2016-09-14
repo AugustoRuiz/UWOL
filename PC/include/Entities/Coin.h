@@ -14,8 +14,9 @@ public:
 	void Draw() override;
 	void DrawInPos(int pX, int pY, float alpha);
 	void DrawShadow(void) override;
+	void DebugPaint(void);
 
-	void Update(Uint32 milliSec) override;
+	void Update(Uint32 milliSec, const Event& inputEvent) override;
 
 	void Initialize();
 	void Dispose();
@@ -32,10 +33,14 @@ public:
 	void SetFrame(int frame);
 	void SetTicks(int ticks);
 
+	RECTANGLEF getCollisionRect();
+	void setCollisionRect(const RECTANGLEF& rect);
+
 private:
 	AnimationPlayer _animPlayer;
 
 	VECTOR2 _tileSize;
+	RECTANGLEF _colRect;
 
 	Graphics *_g;
 

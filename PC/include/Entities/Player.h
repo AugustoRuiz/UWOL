@@ -3,6 +3,8 @@
 #include "GameData.h"
 #include "CollisionMap.h"
 
+#include <json/json.h>
+
 class TPlayer : public IDrawable, public IUpdatable, public IChaseable
 {
 public:
@@ -27,7 +29,7 @@ public:
 	void setInertia(bool inertia);
 	void toggleInertia();
 
-	void Update(Uint32 milliSec);
+	void Update(Uint32 milliSec, const Event& inputEvent);
 
 	void Initialize();
 	void Dispose();
@@ -53,6 +55,7 @@ private:
 
 	AnimationPlayer _animPlayer;
 	InputManager *_input;
+	ActionKeys _lastHorizontalKeyDown;
 
 	Sound _fxJump, _fxDie, _musicDie, _fxExtra, _fxExitLevel;
 

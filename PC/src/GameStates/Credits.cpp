@@ -95,7 +95,7 @@ string Credits::Update(Uint32 milliSec, Event & inputEvent)
 		return "Portada";
 	}
 
-	this->_fanty->Update(milliSec);
+	this->_fanty->Update(milliSec, inputEvent);
 
 	return this->Name;
 }

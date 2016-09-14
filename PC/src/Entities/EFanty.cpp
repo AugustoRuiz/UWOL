@@ -47,7 +47,7 @@ bool EFanty::UpdateWhenNoCoins()
 	return true;
 }
 
-void EFanty::Update(Uint32 milliSec)
+void EFanty::Update(Uint32 milliSec, const Event& inputEvent)
 {
 	VECTOR2F target;
 

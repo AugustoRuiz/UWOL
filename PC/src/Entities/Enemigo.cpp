@@ -79,7 +79,7 @@ void Enemigo::setAlpha(float alpha)
     this->_alpha = alpha;
 }
 
-void Enemigo::Update(Uint32 milliSec)
+void Enemigo::Update(Uint32 milliSec, const Event& inputEvent)
 {
 	int factor = (this->_velocidad == Rapido) ? 2 : 1;
 
@@ -120,4 +120,37 @@ void Enemigo::setVelocidad(Velocidad vel)
 void Enemigo::setTileSize(VECTOR2 tileSize)
 {
 	this->_tileSize = tileSize;
+}
+
+RECTANGLEF Enemigo::getCollisionRect() {
+	RECTANGLEF result;
+	result.x = this->_colRect.x + this->_x;
+	result.y = this->_colRect.y + this->_y;
+	result.width = this->_colRect.width;
+	result.height = this->_colRect.height;
+	return result;
+}
+
+void Enemigo::setCollisionRect(const RECTANGLEF& rect) {
+	this->_colRect = rect;
+}
+
+void Enemigo::DebugPaint() {
+	vector<VECTOR2> vertexes;
+
+	int x1 = (int)(this->_x + this->_colRect.x);
+	int x2 = (int)(x1 + this->_colRect.width);
+	int y1 = (int)(this->_y + this->_colRect.y);
+	int y2 = (int)(y1 + this->_colRect.height);
+
+	vertexes.push_back(VECTOR2(x1, y1));
+	vertexes.push_back(VECTOR2(x2, y1));
+	vertexes.push_back(VECTOR2(x2, y1));
+	vertexes.push_back(VECTOR2(x2, y2));
+	vertexes.push_back(VECTOR2(x2, y2));
+	vertexes.push_back(VECTOR2(x1, y2));
+	vertexes.push_back(VECTOR2(x1, y2));
+	vertexes.push_back(VECTOR2(x1, y1));
+
+	_g->DrawPolyLines(vertexes, 1.0f, 1.0f, 1.0f, 1.0f);
 }

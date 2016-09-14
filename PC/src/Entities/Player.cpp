@@ -10,9 +10,9 @@ TPlayer::TPlayer() {
 	this->_map = NULL;
 
 	this->_colRect.x = 6;
-	this->_colRect.y = 10;
+	this->_colRect.y = 8;
 	this->_colRect.width = 20;
-	this->_colRect.height = 22;
+	this->_colRect.height = 24;
 
 	this->_posRect.x = 0;
 	this->_posRect.y = 0;
@@ -110,8 +110,23 @@ void TPlayer::DrawShadow()
 	}
 }
 
-void TPlayer::Update(Uint32 milliSec)
+void TPlayer::Update(Uint32 milliSec, const Event& inputEvent)
 {
+	if (inputEvent.Name == "KEY_DOWN") {
+		Event evCopy = inputEvent;
+		ActionKeys k = (ActionKeys)(evCopy.Data["key"].asInt());
+
+		if (k == ActionKeysLeft || k == ActionKeysRight) {
+			this->_lastHorizontalKeyDown = k;
+		}
+	}
+	if (inputEvent.Name == "JOY_HAT") {
+		Event evCopy = inputEvent;
+		int hatStatus = evCopy.Data["hat"].asInt();
+		if ((hatStatus & HAT_LEFT) == HAT_LEFT) { this->_lastHorizontalKeyDown = ActionKeysLeft; };
+		if ((hatStatus & HAT_RIGHT) == HAT_RIGHT) { this->_lastHorizontalKeyDown = ActionKeysRight; };
+	}
+
 	if (!(this->_estado & Muriendo)) {
 		if (this->_estado & Parpadeo) {
 			this->_contParpadeo += milliSec;
@@ -349,12 +364,17 @@ void TPlayer::checkInput(Uint32 milliSec) {
 	}
 
 	int xDir = 0;
-	
-	if (_input->IsKeyPressed(ActionKeysLeft)) {
-		xDir = -1;
+
+	if (_input->IsKeyPressed(ActionKeysLeft) && _input->IsKeyPressed(ActionKeysRight)) {
+		xDir = (this->_lastHorizontalKeyDown == ActionKeysLeft) ? -1 : 1;
 	}
-	if (_input->IsKeyPressed(ActionKeysRight)) {
-		xDir = 1;
+	else {
+		if (_input->IsKeyPressed(ActionKeysLeft)) {
+			xDir = -1;
+		}
+		if (_input->IsKeyPressed(ActionKeysRight)) {
+			xDir = 1;
+		}
 	}
 
 	horizKeyPressed = (xDir != 0);

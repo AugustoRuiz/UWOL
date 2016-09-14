@@ -215,7 +215,7 @@ string Room::Update(Uint32 milliSec, Event & inputEvent) {
 	for (vector<IUpdatable*>::iterator it = _updatables.begin(); it != _updatables.end(); ++it) {
 		IUpdatable* current = *it;
 		if (!(this->_player->getEstado() & (TodasMonedasCogidas | Muriendo | Muerto)) || (current->UpdateWhenNoCoins())) {
-			current->Update(milliSec);
+			current->Update(milliSec, inputEvent);
 		}
 	}
 
@@ -223,12 +223,9 @@ string Room::Update(Uint32 milliSec, Event & inputEvent) {
 		return "";
 	}
 
-	int tileX1, tileX2, tileY1, tileY2;
-	this->_player->getTiles(tileX1, tileY1, tileX2, tileY2);
-
 	if (!(this->_player->getEstado() & Muriendo)) {
-		this->pickCoins(tileX1, tileX2, tileY1, tileY2);
-		this->pickCamiseta(tileX1, tileX2, tileY1, tileY2);
+		this->pickCoins(this->_player->_posRect);
+		this->pickCamiseta(this->_player->_posRect);
 		if (!(this->_player->getEstado() & Parpadeo)) {
 			this->checkEnemies(this->_player->_posRect);
 		}
@@ -239,7 +236,11 @@ string Room::Update(Uint32 milliSec, Event & inputEvent) {
 		if (this->TimeLeft <= 0) {
 			this->TimeLeft = 0;
 			this->CheckTime = false;
-			this->AddFanty();
+
+			this->_fanty = this->AddEnemy(Fanty, Lento, 6, 6, 5, VECTOR2(32, 32));
+			this->_fanty->setAlpha(0.65f);
+			((EFanty*)this->_fanty)->setChaseable(this->_player);
+
 			MusicManager::FadeOutMusic(500);
 			this->_fxGhost->PlayAsFx(false);
 		}
@@ -269,18 +270,19 @@ int Room::getEstado() {
 	return this->_estado;
 }
 
-void Room::checkEnemies(RECTANGLEF rect) {
+void Room::checkEnemies(const RECTANGLEF& rect) {
 	vector<Enemigo*>::iterator iter;
 	Enemigo* enem;
 
 	for (iter = this->_enemigos.begin(); iter != this->_enemigos.end(); iter++) {
 		enem = *iter;
+		RECTANGLEF enemRect = enem->getCollisionRect();
 
 		if (enem->getTipoEnemigo() == Fanty || !(this->_player->getEstado() & (TodasMonedasCogidas | Muriendo))) {
 			// Rectangle intersection: r1->player, r2->enemy.
 			//!( r2->left > r1->right || r2->right < r1->left || r2->top > r1->bottom || r2->bottom < r1->top)
-			if (!(enem->_x > rect.x + rect.width - 1 || enem->_x + this->_map->cellWidth - 1 < rect.x ||
-				enem->_y > rect.y + rect.height - 1 || enem->_y + this->_map->cellHeight - 1 < rect.y)) {
+			if (!(enemRect.x > rect.x + rect.width - 1 || enemRect.x + enemRect.width - 1 < rect.x ||
+				  enemRect.y > rect.y + rect.height - 1 || enemRect.y + enemRect.height - 1 < rect.y)) {
 				if (this->_player->getEstado() & Desnudo) {
 					this->_player->setEstado(Muriendo);
 				}
@@ -296,14 +298,17 @@ void Room::checkEnemies(RECTANGLEF rect) {
 	}
 }
 
-void Room::pickCamiseta(int tileX1, int tileX2, int tileY1, int tileY2) {
-	if (
-		(tileX1 == _camisetaX || tileX2 == _camisetaX)
-		&&
-		(tileY1 == _camisetaY || tileY2 == _camisetaY)
-		&&
-		(this->_player->getEstado() & Desnudo)
-		) {
+void Room::pickCamiseta(const RECTANGLEF &rect) {
+	RECTANGLEF cRect;
+
+	cRect.height = 32;
+	cRect.width = 32;
+	cRect.x = _camisetaX * cRect.width;
+	cRect.y = _camisetaY * cRect.height;
+
+	if (!(cRect.x > rect.x + rect.width - 1 || cRect.x + cRect.width - 1 < rect.x ||
+		cRect.y > rect.y + rect.height - 1 || cRect.y + cRect.height - 1 < rect.y) 
+		&& (this->_player->getEstado() & Desnudo)) {
 		this->quitarCamiseta();
 		this->_fxCamiseta->PlayAsFx(false);
 		this->_player->AddScore(15);
@@ -359,17 +364,16 @@ void Room::quitarCamiseta() {
 }
 
 
-void Room::pickCoins(int tileX1, int tileX2, int tileY1, int tileY2) {
+void Room::pickCoins(const RECTANGLEF& rect) {
 	vector<Coin*>::iterator iter;
 	vector<IDrawable*>::iterator iterDraw;
 	Coin *coin;
 
 	for (iter = this->_monedas.begin(); iter != this->_monedas.end(); iter++) {
 		coin = *iter;
-		if ((tileX1 == coin->_x || tileX2 == coin->_x)
-			&&
-			(tileY1 == coin->_y || tileY2 == coin->_y)
-			) {
+		RECTANGLEF cRect = coin->getCollisionRect();
+		if (!(cRect.x > rect.x + rect.width - 1 || cRect.x + cRect.width - 1 < rect.x ||
+			cRect.y > rect.y + rect.height - 1 || cRect.y + cRect.height - 1 < rect.y)) {
 			for (iterDraw = this->_drawables.begin(); iterDraw != this->_drawables.end(); iterDraw++) {
 				if (*iterDraw == coin) {
 					this->_drawables.erase(iterDraw);
@@ -398,12 +402,9 @@ void Room::Draw(void) {
 		int estadoUwol = this->_player->getEstado();
 
 		if (estadoUwol != Muerto) {
-			int count = (int) this->_drawables.size();
-
 			_back->Draw();
 
-			for (int ii = 0; ii < count; ii++) {
-				IDrawable* current = _drawables[ii];
+			for (IDrawable* current : _drawables) {
 				if (!(estadoUwol & (TodasMonedasCogidas | Muriendo)) || (current->DrawWhenNoCoins())) {
 					current->DrawShadow();
 				}
@@ -414,17 +415,13 @@ void Room::Draw(void) {
 
 			_player->DrawShadow();
 
-			for (int ii = 0; ii < count; ii++) {
-				IDrawable* current = _drawables[ii];
+			for (IDrawable* current : _drawables) {
 				if (!(estadoUwol & (TodasMonedasCogidas | Muriendo)) || (current->DrawWhenNoCoins())) {
 					current->Draw();
 				}
 			}
 
-			count = (int) this->_plataformas.size();
-
-			for (int i = 0; i < count; i++) {
-				Plataforma *plat = this->_plataformas[i];
+			for (Plataforma* plat : this->_plataformas) {
 				plat->Draw();
 			}
 
@@ -484,9 +481,7 @@ void Room::Draw(void) {
 					0.0f, 0.0f, 0.03125f, _valorOscuro, false, false, false);
 			}
 
-			count = (int) this->_enemigos.size();
-			for (int i = 0; i < count; i++) {
-				Enemigo *enem = this->_enemigos[i];
+			for (Enemigo *enem : this->_enemigos) {
 				if (enem->getTipoEnemigo() == Fanty) {
 					// enem->DrawShadow();
 					enem->Draw();
@@ -496,6 +491,13 @@ void Room::Draw(void) {
 			if (debugPaint) {
 				this->_map->DebugPaint();
 				this->_player->DebugPaint();
+
+				for (Enemigo *e : this->_enemigos) {
+					e->DebugPaint();
+				}
+				for (Coin* c : this->_monedas) {
+					c->DebugPaint();
+				}
 			}
 		}
 	}
@@ -569,39 +571,66 @@ Plataforma* Room::AddPlatform(TilePlataforma tipo, Direccion dir, char longitud,
 Enemigo* Room::AddEnemy(TipoEnemigo tipo, Velocidad velocidad, char tileIni, char tileFin, char tileVert, VECTOR2 tileSize) {
 	Enemigo *enem = FactoriaEnemigo::Create(tipo);
 
+	RECTANGLEF collisionRect;
+	collisionRect.x = 5;
+	collisionRect.y = 2 * collisionRect.x;
+	collisionRect.width = tileSize.x - (2 * collisionRect.x);
+	collisionRect.height = tileSize.y - collisionRect.y;
+
 	enem->setTileSize(tileSize);
 	enem->setPosition(tileIni, tileFin, tileVert);
 	enem->setVelocidad(velocidad);
+	enem->setCollisionRect(collisionRect);
 
 	this->_updatables.push_back(enem);
-	this->_drawables.push_back(enem);
+
+	if (tipo != Fanty) {
+		this->_drawables.push_back(enem);
+	}
+
 	this->_enemigos.push_back(enem);
 
 	return enem;
 }
 
-void Room::AddFanty() {
-	VECTOR2 vect;
-
-	vect.x = 32;
-	vect.y = 32;
-
-	this->_fanty->setTileSize(vect);
-	this->_fanty->setPosition(6, 6, 5);
-	this->_fanty->setVelocidad(Lento);
-
-	this->_updatables.push_back(this->_fanty);
-	this->_enemigos.push_back(this->_fanty);
-
-	this->_fanty->setAlpha(0.65f);
-	((EFanty*)this->_fanty)->setChaseable(this->_player);
-}
+//void Room::AddFanty() {
+//	VECTOR2 vect;
+//
+//	vect.x = 32;
+//	vect.y = 32;
+//
+//	RECTANGLEF collisionRect;
+//	collisionRect.x = 6;
+//	collisionRect.y = 6;
+//	collisionRect.width = vect.x - (2 * collisionRect.x);
+//	collisionRect.height = vect.y - (2 * collisionRect.y);
+//
+//	this->_fanty->setTileSize(vect);
+//	this->_fanty->setPosition(6, 6, 5);
+//	this->_fanty->setVelocidad(Lento);
+//	this->_fanty->setCollisionRect(collisionRect);
+//
+//	this->_updatables.push_back(this->_fanty);
+//	this->_enemigos.push_back(this->_fanty);
+//
+//	this->_fanty->setAlpha(0.65f);
+//	((EFanty*)this->_fanty)->setChaseable(this->_player);
+//}
 
 Coin* Room::AddCoin(char tileX, char tileY, VECTOR2 tileSize) {
 	Coin *coin = new Coin();
+	
+	RECTANGLEF cRect;
+	
+	cRect.x = 4;
+	cRect.y = cRect.x;
+	cRect.width = tileSize.x - 2 * cRect.x;
+	cRect.height = tileSize.y - 2 * cRect.y;
+
 	coin->_rotationFactor = ((rand() % 30) / 10.0f) + 0.5f;
 	coin->setTileSize(tileSize);
 	coin->setPos(tileX, tileY);
+	coin->setCollisionRect(cRect);
 
 	this->_updatables.push_back(coin);
 	this->_drawables.push_back(coin);
@@ -672,6 +701,7 @@ bool Room::loadRoom(istream *roomsFile) {
 		moreData = (unsigned char)roomsFile->peek();
 		Log::Out << "Adding Enemy: " << (int)tipoEnemigo << endl;
 	}
+
 
 	// Saltamos el siguiente caracter...
 	roomsFile->seekg(1, ios_base::cur);

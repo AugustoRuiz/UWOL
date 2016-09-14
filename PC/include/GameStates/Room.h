@@ -81,12 +81,12 @@ private:
 
 	Enemigo* _fanty;
 
-	void AddFanty();
+	//void AddFanty();
 
-	void pickCoins(int tileX1, int tileX2, int tileY1, int tileY2);
-	void checkEnemies(RECTANGLEF rect);
+	void pickCoins(const RECTANGLEF& rect);
+	void checkEnemies(const RECTANGLEF& rect);
+	void pickCamiseta(const RECTANGLEF& rect);
 
-	void pickCamiseta(int tileX1, int tileX2, int tileY1, int tileY2);
 	void colocarCamiseta();
 	void quitarCamiseta();
 
