@@ -34,10 +34,10 @@ Descargas/Downloads:
 
 Windows: http://augustoruiz.asuscomm.com/uwol/UWOL.Win.1.0.0.0.zip
 MacOS: http://augustoruiz.asuscomm.com/uwol/UWOL.OSX.1.0.0.0.zip
-
-Linux - Ubuntu - binarios / binaries: http://augustoruiz.asuscomm.com/uwol/UWOL.Ubuntu.1.0.0.0.zip
-
 Raspberry Pi: En progreso.
+Linux:
+ - Ubuntu - binarios / binaries: http://augustoruiz.asuscomm.com/uwol/UWOL.Ubuntu.1.0.0.0.zip
+
 
 Instrucciones de compilación:
 ----------------------------
