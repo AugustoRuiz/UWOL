@@ -6,6 +6,7 @@
 
 #include "DirUtils.h"
 #include "PackEntries.h"
+#include "PackEntry.h"
 
 using namespace std;
 

@@ -89,12 +89,16 @@ void Graphics::BlitColoredFrameAbs(Frame* frame, int x, int y, int width, int he
 	tx2 = flipX ? frame->Coords.tx1 : frame->Coords.tx2;
 	ty2 = flipY ? frame->Coords.ty1 : frame->Coords.ty2;
 
+#ifndef __APPLE__
 	if (!GLEW_ARB_texture_non_power_of_two) {
+#endif
 		tx1 *= frame->Texture->texCoords.tx2;
 		tx2 *= frame->Texture->texCoords.tx2;
 		ty1 *= frame->Texture->texCoords.ty2;
 		ty2 *= frame->Texture->texCoords.ty2;
+#ifndef __APPLE__
 	}
+#endif
 
 	_gl->BlitColoredRect(x, y, width, height,
 		tx1, ty1, tx2, ty2,

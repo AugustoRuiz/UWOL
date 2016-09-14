@@ -46,12 +46,14 @@ bool Enemigo::UpdateWhenNoCoins()
 
 void Enemigo::DrawShadow()
 {
-	_g->BlitShadow(_animPlayer.GetCurrentFrame(), (int)this->_x, (int)this->_y, this->_tileSize.x, this->_tileSize.y, (this->_direccion != 1), false);
+	Frame* f = _animPlayer.GetCurrentFrame();
+	_g->BlitShadow(f, (int)this->_x, (int)this->_y, this->_tileSize.x, this->_tileSize.y, (this->_direccion != 1), false);
 }
 
 void Enemigo::Draw()
 {
-	_g->BlitFrame(_animPlayer.GetCurrentFrame(), (int)this->_x, (int)this->_y, this->_tileSize.x, this->_tileSize.y, (this->_direccion != 1), false);
+	Frame* f = _animPlayer.GetCurrentFrame();
+	_g->BlitFrame(f, (int)this->_x, (int)this->_y, this->_tileSize.x, this->_tileSize.y, (this->_direccion != 1), false);
 }
 
 void Enemigo::setTipoEnemigo(TipoEnemigo tipo)

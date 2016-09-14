@@ -1,6 +1,6 @@
 #include "Player.h"
 
-#define UWOL_MAX_SPEED_X 3.1f
+#define UWOL_MAX_SPEED_X 3.0f
 #define UWOL_MAX_SPEED_Y 32.0f
 
 TPlayer::TPlayer() {
@@ -307,12 +307,12 @@ void TPlayer::DebugPaint() {
 
 bool TPlayer::isOverTile(int tileX, int tileY) {
 	int tileX1, tileX2, tileY1, tileY2;
-	int posMap1, posMap2, posMap3, posMap4;
+	int posMap1, posMap2; //, posMap3, posMap4;
 
 	posMap1 = this->_map->cols * 9 + 1;
 	posMap2 = this->_map->cols * 8 + 1;
-	posMap3 = this->_map->cols * 9 + 10;
-	posMap4 = this->_map->cols * 8 + 10;
+//	posMap3 = this->_map->cols * 9 + 10;
+//	posMap4 = this->_map->cols * 8 + 10;
 
 	tileX1 = (int)((this->_x + this->_colRect.x) / this->_map->cellWidth);
 	tileX2 = (int)((this->_x + this->_colRect.x + this->_colRect.width - 1) / this->_map->cellWidth);

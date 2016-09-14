@@ -11,7 +11,8 @@ EFranky::~EFranky()
 
 void EFranky::Initialize()
 {
-	this->_animPlayer.setAnimation(Animation::Get("franky_float_right"));
+	Animation* frankyFloatAnim = Animation::Get("franky_float_right");
+	this->_animPlayer.setAnimation(frankyFloatAnim);
 
 	Enemigo::Initialize();
 
@@ -22,7 +23,8 @@ void EFranky::Initialize()
 
 void EFranky::DrawShadow()
 {
-		_g->BlitShadow(_animPlayer.GetCurrentFrame(), 
+	Frame* animFrame = _animPlayer.GetCurrentFrame();
+		_g->BlitShadow(animFrame, 
 			(int)this->_x, (int)this->_y, 
 			this->_tileSize.x, this->_tileSize.y, 
 			!((this->_estado == EFranky::ESTADO_GIRANDO) || (this->_direccion == 1)), false);
@@ -30,7 +32,8 @@ void EFranky::DrawShadow()
  
 void EFranky::Draw()
 {
-		_g->BlitFrame(_animPlayer.GetCurrentFrame(), 
+	Frame* animFrame = _animPlayer.GetCurrentFrame();
+		_g->BlitFrame(animFrame, 
 			(int)this->_x, (int)this->_y, this->_tileSize.x, this->_tileSize.y, 
 			!((this->_estado == EFranky::ESTADO_GIRANDO) || (this->_direccion == 1)), false);
 }
@@ -47,31 +50,29 @@ void EFranky::Update(Uint32 milliSec, const Event& inputEvent)
 
 		if(this->_x <= this->_tileIni * this->_tileSize.x)
 		{
+			Animation* anim = Animation::Get("franky_turn_right");
 			this->_x = (float) (this->_tileIni * this->_tileSize.x);
 			this->_direccion *= -1;
 			this->_estado = EFranky::ESTADO_GIRANDO;
-			this->_animPlayer.setAnimation(Animation::Get("franky_turn_right"));
+			this->_animPlayer.setAnimation(anim);
 		}
 
 		if(this->_x >= this->_tileFin * this->_tileSize.x)
 		{
+			Animation* anim = Animation::Get("franky_turn_left");
 			this->_x = (float) (this->_tileFin * this->_tileSize.x);
 			this->_direccion *= -1;
 			this->_estado = EFranky::ESTADO_GIRANDO;
-			this->_animPlayer.setAnimation(Animation::Get("franky_turn_left"));
+			this->_animPlayer.setAnimation(anim);
 		}
 	}
 	else
 	{
 		// Esperamos a que termine de girar...
 		if (_animPlayer.AnimationEnded) {
+			Animation* anim = Animation::Get("franky_float_right");;
 			this->_estado = EFranky::ESTADO_MOVIENDO;
-			if (this->_direccion == 1) {
-				this->_animPlayer.setAnimation(Animation::Get("franky_float_right"));
-			}
-			else {
-				this->_animPlayer.setAnimation(Animation::Get("franky_float_right"));
-			}
+			this->_animPlayer.setAnimation(anim);
 		}
 	}
 }

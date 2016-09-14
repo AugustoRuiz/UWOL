@@ -36,7 +36,7 @@ private:
 #ifdef WIN32
 	static void getWin32FileList(const wstring& path, vector<wstring>& result);
 #else
-	static void getGekkoFileList(const wstring& path, vector<wstring>& result);
+	static void getFileList(const wstring& path, vector<wstring>& result);
 #endif
 
 };

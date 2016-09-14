@@ -7,8 +7,8 @@ MKDIR=mkdir
 
 CC=gcc
 CXX=g++
-CXXFLAGS=-std=c++11 -I/usr/local/include/SDL2 -D_GNU_SOURCE=1 -D_THREAD_SAFE -g -Werror -Wall -fsigned-char
-LDLIBS=-L/usr/local/lib -lSDL2 -lSDL2_image -lSDL2_mixer -logg -lvorbis -lglut -lGLEW -lGLU -lGL
+CXXFLAGS=-std=c++11 -I/usr/local/include/SDL2 -I../ext/include -I../ext/include/RW.GameLib -I../ext/include/RW.PackLib -D_GNU_SOURCE=1 -D_THREAD_SAFE -g -Werror -Wall -fsigned-char
+LDLIBS=-L/usr/local/lib -L../ext/lib -lSDL2 -lSDL2_image -lSDL2_mixer -logg -lvorbis -lglut -lGLEW -lGLU -lGL -lz
 
 vpath %.h $(INCDIR)
 vpath %.cpp $(SRCDIR)
@@ -24,7 +24,9 @@ APPNAME = $(BINDIR)/uwol
 all: createFolders $(APPNAME)
 
 $(APPNAME): $(OBJS)
-	$(CXX) $(LDFLAGS) -o $@ $(OBJS) $(LDLIBS) `sdl2-config --cflags --libs`
+	$(CXX) $(LDFLAGS) -o $@ $(OBJS) ../ext/lib/librwpack.a ../ext/lib/librwgame.a $(LDLIBS) `sdl2-config --cflags --libs`
+	mv $(APPNAME) ../bin
+	../tools/pack bin ../bin/UWOL.pak
 
 $(OBJDIR)/%.o: %.cc
 	$(MKDIR) -p $(dir $@)

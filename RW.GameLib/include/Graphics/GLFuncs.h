@@ -95,7 +95,7 @@ protected :
 	static GLFuncs _instance;
 
 	map<int, map<string, int>> _uniformLocationCache;
-	GLuint getUniformLocation(GLuint programId, const std::string &uniformName);
+	GLint getUniformLocation(GLuint programId, const std::string &uniformName);
 
 	void checkSDLError(int line);
 	string getErrorString(GLuint error);

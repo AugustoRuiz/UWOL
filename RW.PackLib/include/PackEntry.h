@@ -12,10 +12,12 @@
 
 using namespace std;
 
+#define END_OF_HEADER (((uint64_t)1) << ((CHAR_BIT * sizeof(uint64_t)) - 1))
+
 class PackEntry
 {
 public:
-	static const uint64_t END_OF_HEADER = (((uint64_t)1) << ((CHAR_BIT * sizeof(uint64_t)) - 1));
+//	static const uint64_t END_OF_HEADER = (((uint64_t)1) << ((CHAR_BIT * sizeof(uint64_t)) - 1));
 
 	PackEntry(wstring& entryName, wstring& path);
 	PackEntry(wstring& entryName, void *data, uint64_t size);
