@@ -1,0 +1,37 @@
+Diseñado por / Designed by: anjuel & na_th_an
+Argumento / Story: David Pimperl Marco
+Código / Code: Augusto Ruiz
+Gráficos juego / In-game graphics: anjuel
+Gráficos adicionales / Additional graphics: na_th_an
+Portada / Cover art: Ferrán Criado
+Música / Music: Augusto Ruiz
+Efectos / Sound FX: WYZ
+
+Niveles y soporte / Levels and support: Augusto Ruiz, anjuel, na_th_an, kendroock, daivod, dadman, t.brazil, ivanZX, benway, sejuan, konamito, danthalas, metalbrain, zemman
+
+Disclaimer: si alguien ha creado niveles y no se ve reflejado en la lista, por favor, que nos lo diga y lo incluimos. Disculpad las molestias si se da el caso.
+
+Soporte linux / Linux support: utopian
+
+Pruebas / Testers: Imanok, Guillian, WYZ, utopian, pagantipaco, Metalbrain, Sejuan
+
+La historia es la misma!
+
+Controles/Controls:
+
+Teclado/Keyboard
+
+O, CURSOR IZQUIERDA: IZQUIERDA							O, LEFT CURSOR: LEFT
+P, CURSOR DERECHA: DERECHA								P, RIGHT CURSOR: RIGHT
+Q, CTRL: SALTO											Q, CTRL: JUMP
+A, CURSOR ABAJO: ACTIVAR FLECHA PARA SALIR DEL NIVEL	A, DOWN CURSOR: ACTIVATE ARROW TO EXIT LEVEL
+
+Joystick/Gamepad:
+
+Puedes usar el stick analógico o el pad digital para moverte. Usa el botón 1 para saltar, y abajo en el stick o pad para salir de nivel. / You can use the analog stick or the digital pad to move. Use the button to jump, and down in the stick/pad to exit level.
+
+Descargas/Downloads:
+
+Windows: http://augustoruiz.asuscomm.com/uwol/UWOL.Win.1.0.0.0.zip
+Linux: Sigue estas instrucciones / Follow these instructions.
+MacOS: http://augustoruiz.asuscomm.com/uwol/UWOL.OSX.1.0.0.0.zip
