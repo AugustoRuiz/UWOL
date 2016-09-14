@@ -1,0 +1,74 @@
+Diseñado por / Designed by: anjuel & na_th_an
+Argumento / Story: David Pimperl Marco
+Código / Code: Augusto Ruiz
+Gráficos juego / In-game graphics: anjuel
+Gráficos adicionales / Additional graphics: na_th_an
+Portada / Cover art: Ferrán Criado
+Música / Music: Augusto Ruiz
+Efectos / Sound FX: WYZ
+
+Niveles y soporte / Levels and support: Augusto Ruiz, anjuel, na_th_an, kendroock, daivod, dadman, t.brazil, ivanZX, benway, sejuan, konamito, danthalas, metalbrain, zemman
+
+Disclaimer: si alguien ha creado niveles y no se ve reflejado en la lista, por favor, que nos lo diga y lo incluimos. Disculpad las molestias si se da el caso.
+
+Soporte linux / Linux support: utopian
+
+Pruebas / Testers: Imanok, Guillian, WYZ, utopian, pagantipaco, Metalbrain, Sejuan
+
+La historia es la misma!
+
+Controles/Controls:
+
+Teclado/Keyboard
+
+O, CURSOR IZQUIERDA: IZQUIERDA							O, LEFT CURSOR: LEFT
+P, CURSOR DERECHA: DERECHA								P, RIGHT CURSOR: RIGHT
+Q, CTRL: SALTO											Q, CTRL: JUMP
+A, CURSOR ABAJO: ACTIVAR FLECHA PARA SALIR DEL NIVEL	A, DOWN CURSOR: ACTIVATE ARROW TO EXIT LEVEL
+
+Joystick/Gamepad:
+
+Puedes usar el stick analógico o el pad digital para moverte. Usa el botón 1 para saltar, y abajo en el stick o pad para salir de nivel. / You can use the analog stick or the digital pad to move. Use the button to jump, and down in the stick/pad to exit level.
+
+Descargas/Downloads:
+
+Windows: http://augustoruiz.asuscomm.com/uwol/UWOL.Win.1.0.0.0.zip
+MacOS: http://augustoruiz.asuscomm.com/uwol/UWOL.OSX.1.0.0.0.zip
+Raspberry Pi: En progreso.
+Linux:
+ - Ubuntu - binarios / binaries: http://augustoruiz.asuscomm.com/uwol/UWOL.Ubuntu.1.0.0.0.zip
+
+
+Instrucciones de compilación:
+----------------------------
+
+Obtener las bibliotecas necesarias (utilizando el gestor de paquetes - apt, yum,...):
+
+libsdl2-dev, libsdl2-image-dev, libsdl-mixer-dev, libogg-dev, libvorbis-dev, mesa-common-dev, libz-dev
+
+Descarga el código de:
+
+http://github.com/AugustoRuiz/UWOL
+
+En la carpeta UWOL ejecutar:
+
+./makelinux.sh
+
+Se creará el ejecutable en la carpeta bin.
+
+Build instructions:
+------------------
+
+Get the following libraries:
+
+libsdl2-dev, libsdl2-image-dev, libsdl-mixer-dev, libogg-dev, libvorbis-dev, mesa-common-dev, libz-dev
+
+Download the code from: 
+
+http://github.com/AugustoRuiz/UWOL
+
+In UWOL folder, run:
+
+./makelinux.sh
+
+The executable will be created in bin folder.
