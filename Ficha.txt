@@ -33,5 +33,42 @@ Puedes usar el stick analógico o el pad digital para moverte. Usa el botón 1 p
 Descargas/Downloads:
 
 Windows: http://augustoruiz.asuscomm.com/uwol/UWOL.Win.1.0.0.0.zip
-Linux: Sigue estas instrucciones / Follow these instructions.
 MacOS: http://augustoruiz.asuscomm.com/uwol/UWOL.OSX.1.0.0.0.zip
+
+Linux - Ubuntu - binarios / binaries: http://augustoruiz.asuscomm.com/uwol/UWOL.Ubuntu.1.0.0.0.zip
+
+Raspberry Pi: En progreso.
+
+Instrucciones de compilación:
+----------------------------
+
+Obtener las bibliotecas necesarias (utilizando el gestor de paquetes - apt, yum,...):
+
+libsdl2-dev, libsdl2-image-dev, libsdl-mixer-dev, libogg-dev, libvorbis-dev, mesa-common-dev, libz-dev
+
+Descarga el código de:
+
+http://github.com/AugustoRuiz/UWOL
+
+En la carpeta UWOL ejecutar:
+
+./makelinux.sh
+
+Se creará el ejecutable en la carpeta bin.
+
+Build instructions:
+------------------
+
+Get the following libraries:
+
+libsdl2-dev, libsdl2-image-dev, libsdl-mixer-dev, libogg-dev, libvorbis-dev, mesa-common-dev, libz-dev
+
+Download the code from: 
+
+http://github.com/AugustoRuiz/UWOL
+
+In UWOL folder, run:
+
+./makelinux.sh
+
+The executable will be created in bin folder.
