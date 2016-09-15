@@ -1,6 +1,6 @@
 # UWOL
 
-This is the unfinished PC port of "UWOL, The Quest for Money", which was being developed in parallel to the ZX Spectrum version. Also a Wii port was in the works using DevKitPro at a time when SDL wasn't working properly for Audio.
+This is the Mac and PC (Win and Linux) port of "UWOL, The Quest for Money", which was being developed in parallel to the ZX Spectrum version.
 
 This is how it looks:
 
