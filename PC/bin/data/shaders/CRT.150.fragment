@@ -19,9 +19,12 @@ in vec2 UV;
 in vec4 vertColor;
 // Ouput data
 out vec4 fragColor;
+#define tex texture
 #else
 varying vec2 UV;
 varying vec4 vertColor;
+#define tex texture2D
+#define fragColor gl_FragColor
 #endif
 
 // Values that stay constant for the whole mesh.
@@ -63,11 +66,7 @@ vec3 ToSrgb(vec3 c){return vec3(ToSrgb1(c.r),ToSrgb1(c.g),ToSrgb1(c.b));}
 vec3 Fetch(vec2 pos,vec2 off){
   vec3 result;
   pos = (floor( pos*iResolution + off) + vec2(0.5,0.5))/iResolution;
-#if __VERSION__ >= 140
-  result = ToLinear(1.2 * texture(iChannel0 , pos.xy, -16.0).rgb);
-#else
-  result = ToLinear(1.2 * texture2D(iChannel0 , pos.xy, -16.0).rgb);
-#endif
+  result = ToLinear(1.2 * tex(iChannel0 , pos.xy, -16.0).rgb);
   return result;
 }
 
@@ -152,10 +151,5 @@ void main() {
     vec4 result;
     result.rgb = Tri(pos) * Mask(gl_FragCoord.xy);
     result.a = 1.0;
-    result = vertColor * vec4(ToSrgb(result.rgb), result.a);
-#if __VERSION__ >= 140
-    fragColor = result;
-#else
-    gl_FragColor = result;
-#endif
+    fragColor = vertColor * vec4(ToSrgb(result.rgb), result.a);
 }

@@ -241,7 +241,10 @@ void GLFuncs::OffsetMVP(float offsetX, float offsetY) {
 }
 
 void GLFuncs::SetTexture(unsigned int channel, unsigned int texture) {
-	glEnable(GL_TEXTURE_2D);
+	if(!this->_useShaders) {
+		glEnable(GL_TEXTURE_2D);
+	}
+	
 	if (_activeTextures[channel] != texture) {
 		if (this->_useShaders) {
 			glActiveTexture(GL_TEXTURE0 + channel);

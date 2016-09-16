@@ -4,9 +4,12 @@ in vec2 UV;
 in vec4 vertColor;
 // Ouput data
 out vec4 fragColor;
+#define tex texture
 #else
 varying vec2 UV;
 varying vec4 vertColor;
+#define fragColor gl_FragColor
+#define tex texture2D
 #endif
 
 // Values that stay constant for the whole mesh.
@@ -51,18 +54,9 @@ vec3 ToSrgb(vec3 c){return vec3(ToSrgb1(c.r),ToSrgb1(c.g),ToSrgb1(c.b));}
 vec3 Fetch(vec2 pos,vec2 off){
   vec3 result;
   pos = (floor( pos*iResolution + off) + vec2(0.5,0.5))/iResolution;
-#if __VERSION__ >= 140
-  //result = ToLinear(1.2 * texture(iChannel0 , pos.xy, -16.0).rgb);
-  result.r = texture(iChannel0, vec2(pos.x - 0.004 * sin(iGlobalTime), pos.y)).r;
-  result.g = texture(iChannel0, vec2(pos.x                           , pos.y)).g;
-  result.b = texture(iChannel0, vec2(pos.x + 0.004 * cos(iGlobalTime), pos.y)).b;
-#else
-  //result = ToLinear(1.2 * texture2D(iChannel0 , pos.xy, -16.0).rgb);
-  result.r = texture2D(tex, vec2(pos.x - 0.004 * sin(iGlobalTime), pos.y)).r;
-  result.g = texture2D(tex, vec2(pos.x                           , pos.y)).g;
-  result.b = texture2D(tex, vec2(pos.x + 0.004 * cos(iGlobalTime), pos.y)).b;
-#endif
-  //result = ToLinear(1.2 * result);
+  result.r = tex(iChannel0, vec2(pos.x - 0.004 * sin(iGlobalTime), pos.y)).r;
+  result.g = tex(iChannel0, vec2(pos.x                           , pos.y)).g;
+  result.b = tex(iChannel0, vec2(pos.x + 0.004 * cos(iGlobalTime), pos.y)).b;
   return result;
 }
 
@@ -148,7 +142,7 @@ vec3 scanline(vec2 coord, vec3 screen) {
 
 float noise(vec2 p) {
 	float smp;
-	smp = texture2D(iChannel1,vec2(p.x,2.*cos(iGlobalTime))*mod(iGlobalTime/1000.0,1.0)*8. + p*1.).x;
+	smp = tex(iChannel1,vec2(p.x,2.*cos(iGlobalTime))*mod(iGlobalTime/1000.0,1.0)*8. + p*1.).x;
 	smp *= smp;
 	return smp;
 }
@@ -196,9 +190,5 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 void main() {
 	vec4 result;
 	mainImage(result, UV);
-#if __VERSION__ >= 140
-    fragColor = result;
-#else
-    gl_FragColor = result;
-#endif
+  fragColor = result;
 }

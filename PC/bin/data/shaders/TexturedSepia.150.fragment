@@ -19,9 +19,12 @@ in vec2 UV;
 in vec4 vertColor;
 // Ouput data
 out vec4 fragColor;
+#define tex texture
 #else
 varying vec2 UV;
 varying vec4 vertColor;
+#define tex texture2D
+#define fragColor gl_FragColor
 #endif
 
 // Values that stay constant for the whole mesh.

@@ -1,6 +1,7 @@
 #include "Presentacion.h"
 
-#define NUM_COINS 100
+#define NUM_COINS 50
+
 #define INCR_FACTOR 2
 #define SONG_LOOP_LENGTH 15400
 #define WAIT_TIME_IN_MSECS 2 * SONG_LOOP_LENGTH

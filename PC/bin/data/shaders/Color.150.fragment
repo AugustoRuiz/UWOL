@@ -5,13 +5,10 @@ in vec4 vertColor;
 out vec4 fragColor;
 #else
 varying vec4 vertColor;
+#define fragColor gl_FragColor
 #endif
 
 void main()
 {
-#if __VERSION__ >= 140
   fragColor = vertColor;
-#else
-  gl_FragColor = vertColor;
-#endif
 }

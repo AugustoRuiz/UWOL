@@ -4,9 +4,12 @@ in vec2 UV;
 in vec4 vertColor;
 // Ouput data
 out vec4 fragColor;
+#define tex texture
 #else
 varying vec2 UV;
 varying vec4 vertColor;
+#define tex texture2D
+#define fragColor gl_FragColor
 #endif
 
 // Values that stay constant for the whole mesh.
@@ -14,9 +17,5 @@ uniform sampler2D iChannel0;
 
 void main(){
 	// Output color = color of the texture at the specified UV
-#if __VERSION__ >= 140
-	fragColor = texture( iChannel0, mod(UV, vec2(1.0,1.0)) ) * vertColor;
-#else
-	gl_FragColor = texture2D( iChannel0, mod(UV, vec2(1.0,1.0)) ) * vertColor;
-#endif
+	fragColor = tex(iChannel0, mod(UV, vec2(1.0,1.0)) ) * vertColor;
 }
