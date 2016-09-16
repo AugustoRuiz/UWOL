@@ -22,6 +22,10 @@ void TextRenderer::DrawStringAlpha(int x, int y, int textSize, const string &tex
 
 	if (this->_texture == NULL) {
 		this->_texture = TextureMgr::GetInstance()->LoadTexture("data/font.png");
+		if(this->_texture == NULL) {
+			Log::Out << "TextRenderer::DrawStringAlpha: Couldn't load font!" << endl;
+			return;
+		}
 	}
 
 	if (g->CanUseShaders()) {
