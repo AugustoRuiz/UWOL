@@ -68,6 +68,10 @@ SDL_Window *GLFuncs::Initialize(int screenWidth, int screenHeight, GLboolean ful
 	this->_useShaders = (glCreateProgram != NULL); //version >= 20;
 #endif
 	if (_useShaders) {
+		this->_vtxAttribIdx = 0;
+		this->_uvAttribIdx = 1;
+		this->_colAttribIdx = 2;
+
 		this->_glslVersion = getGLSLVersion();
 		Log::Out << "GLSL: " << (this->_glslVersion == "" ? "Not available!" : this->_glslVersion) << endl;
 	}
@@ -425,6 +429,10 @@ GLuint GLFuncs::CreateProgram(const std::vector<GLuint> &shaderList)
 		return (GLuint)0;
 	}
 
+	glBindAttribLocation(program, this->_vtxAttribIdx, "vertexPosition");
+	glBindAttribLocation(program, this->_uvAttribIdx, "vertexUV");
+	glBindAttribLocation(program, this->_colAttribIdx, "vertexColor");
+
 	glLinkProgram(program);
 
 	GLint status;
@@ -548,9 +556,6 @@ void GLFuncs::UseProgram(GLuint programId) {
 	if (this->_useShaders && this->_currentProgram != programId && programId != 0) {
 		glUseProgram(programId);
 		this->_currentProgram = programId;
-		this->_vtxAttribIdx = glGetAttribLocation(programId, "vertexPosition");
-		this->_uvAttribIdx = glGetAttribLocation(programId, "vertexUV");
-		this->_colAttribIdx = glGetAttribLocation(programId, "vertexColor");
 	}
 }
 
