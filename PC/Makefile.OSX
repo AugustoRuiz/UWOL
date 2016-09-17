@@ -7,8 +7,8 @@ MKDIR=mkdir
 
 CC=gcc
 CXX=g++
-CXXFLAGS=-std=c++11 -I/usr/local/include -I../ext/include -I../ext/include/RW.GameLib -I../ext/include/RW.PackLib -D_GNU_SOURCE=1 -D_THREAD_SAFE -O3 -Werror -Wall -fsigned-char -mmacosx-version-min=10.7 -stdlib=libc++
-LDFLAGS=-mmacosx-version-min=10.7 -stdlib=libc++
+CXXFLAGS=-std=c++11 -I/usr/local/include -I../ext/include -I../ext/include/RW.GameLib -I../ext/include/RW.PackLib -D_GNU_SOURCE=1 -D_THREAD_SAFE -O3 -Werror -Wall -fsigned-char -mmacosx-version-min=10.7 -stdlib=libc++ -g
+LDFLAGS=-std=c++11 -D_GNU_SOURCE=1 -D_THREAD_SAFE -O3 -Werror -Wall -fsigned-char -mmacosx-version-min=10.7 -stdlib=libc++ -g
 LDLIBS=-L/usr/local/lib ../ext/lib/librwpack.a ../ext/lib/librwgame.a /usr/local/lib/libSDL2.a /usr/local/lib/libSDL2_image.a /usr/local/lib/libSDL2_mixer.a /usr/local/lib/libogg.a /usr/local/lib/libvorbis.a /usr/local/lib/libGLEW.a -lz -lm -liconv -Wl,-framework,ForceFeedback -lobjc -Wl,-framework,CoreVideo -Wl,-framework,Cocoa -Wl,-framework,Carbon -Wl,-framework,IOKit -Wl,-framework,CoreAudio -Wl,-framework,AudioToolbox -Wl,-framework,AudioUnit -Wl,-framework,OpenGL
 
 vpath %.h $(INCDIR)

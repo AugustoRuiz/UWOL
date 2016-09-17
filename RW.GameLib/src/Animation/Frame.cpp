@@ -30,18 +30,22 @@ void Frame::Init(const Json::Value& frame)
 		string path = frame.get("img", "").asString();
 		if (!path.empty()) {
 			this->Texture = TextureMgr::GetInstance()->LoadTexture(path);
-			Json::Value rectCoords = frame["rect"];
-			if (rectCoords != Json::Value::null) {
-				this->Coords.tx1 = (rectCoords[0].asFloat() / this->Texture->width);
-				this->Coords.ty1 = (rectCoords[1].asFloat() / this->Texture->height);
-				this->Coords.tx2 = (rectCoords[2].asFloat() / this->Texture->width);
-				this->Coords.ty2 = (rectCoords[3].asFloat() / this->Texture->height);
-			}
-			else {
-				this->Coords.tx1 = 0.0f;
-				this->Coords.ty1 = 0.0f;
-				this->Coords.tx2 = 1.0f;
-				this->Coords.ty2 = 1.0f;
+			if(NULL != this->Texture) {
+				Json::Value rectCoords = frame["rect"];
+				if (rectCoords != Json::Value::null) {
+					this->Coords.tx1 = (rectCoords[0].asFloat() / this->Texture->width);
+					this->Coords.ty1 = (rectCoords[1].asFloat() / this->Texture->height);
+					this->Coords.tx2 = (rectCoords[2].asFloat() / this->Texture->width);
+					this->Coords.ty2 = (rectCoords[3].asFloat() / this->Texture->height);
+				}
+				else {
+					this->Coords.tx1 = 0.0f;
+					this->Coords.ty1 = 0.0f;
+					this->Coords.tx2 = 1.0f;
+					this->Coords.ty2 = 1.0f;
+				}
+			} else {
+				Log::Out << "Couldn't load texture: " << path << endl;
 			}
 		}
 	}
