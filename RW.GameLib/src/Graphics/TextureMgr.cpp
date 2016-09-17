@@ -14,11 +14,11 @@ TextureMgr* TextureMgr::GetInstance() {
 TEXTUREINFO* TextureMgr::LoadTexture(const string &sFileName) {
 	TEXTUREINFO* result = NULL;
 
-	//Log::Out << "TextureMgr: Loading texture '" << sFileName << "'...";
+	Log::Out << "TextureMgr: Loading texture '" << sFileName << "'...";
 
 	if (cache.find(sFileName) != cache.end())
 	{
-		//Log::Out << "IN CACHE!" << endl;
+		Log::Out << "IN CACHE!" << endl;
 		result = cache[sFileName];
 	}
 	else
@@ -29,6 +29,7 @@ TEXTUREINFO* TextureMgr::LoadTexture(const string &sFileName) {
 			int originalWidth = textureSurf->w;
 			int originalHeight = textureSurf->h;
 
+			Log::Out << "Image size is (" << originalWidth << "x" << originalHeight << ")" << endl;
 #ifndef __APPLE__
 			if (!GLEW_ARB_texture_non_power_of_two) {
 #endif
@@ -43,11 +44,12 @@ TEXTUREINFO* TextureMgr::LoadTexture(const string &sFileName) {
 #ifndef __APPLE__
 			}
 #endif
-
+			Log::Out << "Texture size should be (" << textureSurf->w << "x" << textureSurf->h << ")" << endl;
 			result = this->GL_LoadTexture(textureSurf);
 
 			if (result != NULL) {
-				//Log::Out << "texture #" << result->texture << endl;
+				Log::Out << "texture #" << result->texture << endl;
+
 				result->width = originalWidth;
 				result->height = originalHeight;
 
@@ -105,26 +107,30 @@ TEXTUREINFO* TextureMgr::GL_LoadTexture(SDL_Surface *textureSurf) {
 		//Load the texture
 		glBindTexture(GL_TEXTURE_2D, texNumber);
 		GLenum textureFormat;
-
+		Log::Out << (int)textureSurf->format->BytesPerPixel << " bytes per pixel.";
 		if (textureSurf->format->BitsPerPixel == 24) {
 			if (textureSurf->format->Rmask == 0xff) {
+				Log::Out << "Texture format is GL_RGB - ";
 				textureFormat = GL_RGB;
 			}
 			else {
+				Log::Out << "Texture format is GL_BGR - ";
 				textureFormat = GL_BGR;
 			}
 		}
 		else {
 			if (textureSurf->format->Rmask == 0xff) {
+				Log::Out << "Texture format is GL_RGBA - ";
 				textureFormat = GL_RGBA;
 			}
 			else {
+				Log::Out << "Texture format is GL_BGRA - ";
 				textureFormat = GL_BGRA;
 			}
 		}
 
 		//Generate the texture
-		glTexImage2D(GL_TEXTURE_2D, 0, textureFormat, textureSurf->w, textureSurf->h, 0, textureFormat, GL_UNSIGNED_BYTE, textureSurf->pixels);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureSurf->w, textureSurf->h, 0, textureFormat, GL_UNSIGNED_BYTE, textureSurf->pixels);
 
 		//Use nearest filtering, very good
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);

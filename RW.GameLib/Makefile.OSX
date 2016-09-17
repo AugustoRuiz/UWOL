@@ -8,7 +8,7 @@ MKDIR=mkdir
 AR=ar
 CC=gcc
 CXX=g++
-CXXFLAGS=-std=c++11 -I/usr/local/include -I../ext/include -D_GNU_SOURCE=1 -D_THREAD_SAFE -O3 -Werror -Wall -fsigned-char -stdlib=libc++ -mmacosx-version-min=10.7 -g
+CXXFLAGS=-std=c++11 -I/Library/Frameworks/SDL2.framework/Headers -I/Library/Frameworks/SDL2_mixer.framework/Headers -I/Library/Frameworks/SDL2_image.framework/Headers -I/usr/local/include -I../ext/include -D_GNU_SOURCE=1 -D_THREAD_SAFE -O3 -Werror -Wall -fsigned-char -stdlib=libc++ -mmacosx-version-min=10.7 -g -F/Library/Frameworks
 
 vpath %.h $(INCDIR)
 vpath %.cpp $(SRCDIR)

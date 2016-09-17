@@ -113,11 +113,10 @@ Event InputManager::Update(int milliSecs)
 		}
 	}
 	else {
-		while (SDL_PollEvent(&event) && result.Name=="") {
-			if (SDL_NumJoysticks() > 0 && (this->_joystick == NULL)) {
-				this->_joystick = SDL_JoystickOpen(0);
-			}
-
+		if (SDL_NumJoysticks() > 0 && (this->_joystick == NULL)) {
+			this->_joystick = SDL_JoystickOpen(0);
+		}
+		while (SDL_PollEvent(&event)) {
 			switch (event.type) {
 				// Look for a keypress 
 			case SDL_KEYDOWN:
@@ -173,38 +172,38 @@ Event InputManager::Update(int milliSecs)
 			default:
 				break;
 			}
+		}
 
-			if (this->_joystick != NULL) {
-				Uint8 hatStatus = SDL_JoystickGetHat(this->_joystick, 0);
-				if (hatStatus != _previousHatStatus) {
-					result.Name = "JOY_HAT";
-					result.Data["hat"] = hatStatus;
-				}
-				if (this->_controlMode == Joystick) {
-					this->setKeyFromJoyEvent(hatStatus, HAT_LEFT, ActionKeysLeft);
-					this->setKeyFromJoyEvent(hatStatus, HAT_RIGHT, ActionKeysRight);
-					this->setKeyFromJoyEvent(hatStatus, HAT_DOWN, ActionKeysDown);
-				}
-				_previousHatStatus = hatStatus;
+		if (this->_joystick != NULL) {
+			Uint8 hatStatus = SDL_JoystickGetHat(this->_joystick, 0);
+			if (hatStatus != _previousHatStatus) {
+				result.Name = "JOY_HAT";
+				result.Data["hat"] = hatStatus;
+			}
+			if (this->_controlMode == Joystick) {
+				this->setKeyFromJoyEvent(hatStatus, HAT_LEFT, ActionKeysLeft);
+				this->setKeyFromJoyEvent(hatStatus, HAT_RIGHT, ActionKeysRight);
+				this->setKeyFromJoyEvent(hatStatus, HAT_DOWN, ActionKeysDown);
+			}
+			_previousHatStatus = hatStatus;
 
-				if(SDL_JoystickNumAxes(this->_joystick) >= 2) {
-					Sint16 joyX, joyY;
-					joyX = SDL_JoystickGetAxis(this->_joystick, 0);
-					joyY = SDL_JoystickGetAxis(this->_joystick, 1);
-					if(abs(joyX) > AXIS_DEAD_ZONE) {
-						if(joyX > 0) {
-							this->setKeyFromJoyEvent(1, 1, ActionKeysRight);
-						} else {
-							this->setKeyFromJoyEvent(1, 1, ActionKeysLeft);
-						}
+			if(SDL_JoystickNumAxes(this->_joystick) >= 2) {
+				Sint16 joyX, joyY;
+				joyX = SDL_JoystickGetAxis(this->_joystick, 0);
+				joyY = SDL_JoystickGetAxis(this->_joystick, 1);
+				if(abs(joyX) > AXIS_DEAD_ZONE) {
+					if(joyX > 0) {
+						this->setKeyFromJoyEvent(1, 1, ActionKeysRight);
+					} else {
+						this->setKeyFromJoyEvent(1, 1, ActionKeysLeft);
+					}
+				} 
+				if(abs(joyY) > AXIS_DEAD_ZONE) {
+					if(joyY > 0) {
+						this->setKeyFromJoyEvent(0, 0, ActionKeysUp);
+						this->setKeyFromJoyEvent(1, 1, ActionKeysDown);
 					} 
-					if(abs(joyY) > AXIS_DEAD_ZONE) {
-						if(joyY > 0) {
-							this->setKeyFromJoyEvent(0, 0, ActionKeysUp);
-							this->setKeyFromJoyEvent(1, 1, ActionKeysDown);
-						} 
-					} 
-				}
+				} 
 			}
 		}
 	}
