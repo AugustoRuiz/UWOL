@@ -8,9 +8,9 @@ MKDIR=mkdir
 AR=ar
 CC=gcc
 CXX=g++
-CXXFLAGS=-std=c++11 -D_GNU_SOURCE=1 -D_THREAD_SAFE -g -Werror -Wall -fsigned-char -mmacosx-version-min=10.7 -stdlib=libc++ -g
+CXXFLAGS=-std=c++11 -D_GNU_SOURCE=1 -D_THREAD_SAFE -Werror -Wall -fsigned-char -mmacosx-version-min=10.7 -stdlib=libc++
 LDLIBS=-L/usr/local/lib -lz
-LDFLAGS=-stdlib=libc++ -mmacosx-version-min=10.7 -g
+LDFLAGS=-stdlib=libc++ -mmacosx-version-min=10.7
 
 vpath %.h $(INCDIR)
 vpath %.cpp $(SRCDIR)

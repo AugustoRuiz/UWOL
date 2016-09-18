@@ -139,11 +139,13 @@ void Credits::Draw(void)
 
 	drawCentered(posY, "^Code and Music: _Augusto Ruiz"); posY += 16;
 	drawCentered(posY, "^Sound FX: _WYZ"); posY += 16;
-	drawCentered(posY, "^Linux support: _utopian"); posY += 48;
+	drawCentered(posY, "^Linux support: _utopian"); posY += 16;
+	drawCentered(posY, "^OSX support: _falvarez"); posY += 32;
 
 	drawCentered(posY, "^Testers: _Imanok, Guillian,"); posY += 16;
 	drawCentered(posY, "_WYZ, utopian, pagantipaco,"); posY += 16;
-	drawCentered(posY, "_Metalbrain, Sejuan"); posY += 48;
+	drawCentered(posY, "_Metalbrain, Sejuan, falvarez,"); posY += 16;
+	drawCentered(posY, "_David B."); posY += 32;
 	
 	drawCentered(posY, "*@ 2006 - 2016 Retroworks"); posY += 64;
 
