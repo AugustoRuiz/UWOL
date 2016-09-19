@@ -7,8 +7,9 @@ MKDIR=mkdir
 
 CC=gcc
 CXX=g++
-CXXFLAGS=-std=c++11 -I../ext/include -I../ext/include/RW.GameLib -I../ext/include/RW.PackLib -D_GNU_SOURCE=1 -D_THREAD_SAFE -g -Werror -Wall -fsigned-char `sdl2-config --cflags`
+CXXFLAGS=-std=c++11 -I../ext/include -I../ext/include/RW.GameLib -I../ext/include/RW.PackLib -D_GNU_SOURCE=1 -D_THREAD_SAFE -Werror -Wall -fsigned-char `sdl2-config --cflags` -g
 LDLIBS=-L/usr/local/lib -L../ext/lib `sdl2-config --static-libs` -lSDL2_image -lSDL2_mixer -logg -lvorbis -lglut -lGLEW -lGLU -lGL -lz
+LDFLAGS=-g
 
 vpath %.h $(INCDIR)
 vpath %.cpp $(SRCDIR)

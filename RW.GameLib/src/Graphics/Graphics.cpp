@@ -41,21 +41,28 @@ bool Graphics::Initialize(int screenWidth, int screenHeight, int worldWidth, int
 	this->WorldHeight = worldHeight;
 	this->OffsetX = (this->ScreenWidth - this->WorldWidth) / 2.0f;
 	this->OffsetY = (this->ScreenHeight - this->WorldHeight) / 2.0f;
-	result = (NULL != _gl->Initialize(this->ScreenWidth, this->ScreenHeight, fullscreen, name));
 
-	this->_framebufferTexture = new TEXTUREINFO();
-	this->_framebufferTexture->texture = _gl->GetFramebufferTexture();
-	this->_framebufferTexture->width = this->ScreenWidth;
-	this->_framebufferTexture->height = this->ScreenHeight;
+	SDL_Window* w = _gl->Initialize(this->ScreenWidth, this->ScreenHeight, fullscreen, name);
 
-	vector<string> vertexShaders = { "data/shaders/Default.150.vertex" };
-	vector<string> fragmentShaders = { "data/shaders/TexturedColored.150.fragment" };
+	result = (NULL != w);
 
-	vector<string> lineVertexShaders = { "data/shaders/Line.150.vertex" };
-	vector<string> lineFragmentShaders = { "data/shaders/Color.150.fragment" };
+	if(result) {
+		SDL_GL_GetDrawableSize(w, &(this->DisplayWidth), &(this->DisplayHeight));
 
-	this->DefaultProgram = new Program(vertexShaders, fragmentShaders);
-	this->DefaultLineProgram = new Program(lineVertexShaders, lineFragmentShaders);
+		this->_framebufferTexture = new TEXTUREINFO();
+		this->_framebufferTexture->texture = _gl->GetFramebufferTexture();
+		this->_framebufferTexture->width = this->ScreenWidth;
+		this->_framebufferTexture->height = this->ScreenHeight;
+
+		vector<string> vertexShaders = { "data/shaders/Default.150.vertex" };
+		vector<string> fragmentShaders = { "data/shaders/TexturedColored.150.fragment" };
+
+		vector<string> lineVertexShaders = { "data/shaders/Line.150.vertex" };
+		vector<string> lineFragmentShaders = { "data/shaders/Color.150.fragment" };
+
+		this->DefaultProgram = new Program(vertexShaders, fragmentShaders);
+		this->DefaultLineProgram = new Program(lineVertexShaders, lineFragmentShaders);
+	}
 
 	return result;
 }

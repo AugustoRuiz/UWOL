@@ -518,8 +518,8 @@ void Game::SwapBuffers() {
 			p->SetUniform("sepiaRgb", vec3(1.2f, 1.0f, 0.8f));
 		}
 		p->SetUniform("iGlobalTime", (float)this->_totalTicks);
-		p->SetUniform("MVP", GLFuncs::GetInstance()->MVP);
-		p->SetUniform("iResolution", vec2(this->_g->ScreenWidth, this->_g->ScreenHeight));
+		p->SetUniform("MVP", GLFuncs::GetInstance()->StaticProjection);
+		p->SetUniform("iResolution", vec2(this->_g->DisplayWidth, this->_g->DisplayHeight));
 	}
 
 	this->_g->SwapBuffers();

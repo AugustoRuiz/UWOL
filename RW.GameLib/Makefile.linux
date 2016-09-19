@@ -8,7 +8,7 @@ MKDIR=mkdir
 AR=ar
 CC=gcc
 CXX=g++
-CXXFLAGS=-std=c++11 -D_GNU_SOURCE=1 -D_THREAD_SAFE -g -Werror -Wall -fsigned-char -I../ext/include
+CXXFLAGS=-std=c++11 -D_GNU_SOURCE=1 -D_THREAD_SAFE -Werror -Wall -fsigned-char -I../ext/include -g
 
 vpath %.h $(INCDIR)
 vpath %.cpp $(SRCDIR)

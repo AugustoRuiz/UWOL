@@ -32,6 +32,9 @@ public:
 	int WorldWidth;
 	int WorldHeight;
 
+	int DisplayWidth;
+	int DisplayHeight;
+
 	VECTOR2 LightPosition;
 	VECTOR2 MaxShadowOffset;
 

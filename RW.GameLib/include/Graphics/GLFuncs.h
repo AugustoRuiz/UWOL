@@ -27,6 +27,7 @@ public:
 	void SetPack(Pack* pack);
 
 	glm::mat4 MVP;
+	glm::mat4 StaticProjection;
 
 	SDL_Window* Initialize(int screenWidth, int screenHeight, 
 						   GLboolean fullscreen, const char* name);
@@ -121,6 +122,9 @@ protected :
 
 	int _screenWidth;
 	int _screenHeight;
+
+	int _realWidth;
+	int _realHeight;
 
 	SDL_Window *_window;
 	SDL_Renderer *_renderer;

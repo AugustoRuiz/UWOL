@@ -13,28 +13,53 @@ SDL_Window *GLFuncs::Initialize(int screenWidth, int screenHeight, GLboolean ful
 {
 	Uint32 flags;
 
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK) != 0) {
+	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
 		Log::Out << "Unable to initialize SDL: " << SDL_GetError() << endl;
 		return NULL;
 	}
-
 	atexit(SDL_Quit);
 
 	flags = SDL_WINDOW_OPENGL;
 
+	_screenWidth = screenWidth;
+	_screenHeight = screenHeight;
+
 	if (fullscreen)
 	{
 		flags |= SDL_WINDOW_FULLSCREEN;
-	}
 
-	_screenWidth = screenWidth;
-	_screenHeight = screenHeight;
+		SDL_DisplayMode currentDisplay;
+		if(SDL_GetCurrentDisplayMode(0, &currentDisplay)) {
+			Log::Out << "Couldn't get current display mode: " << SDL_GetError() << endl;
+			_realWidth = _screenWidth;
+			_realHeight = _screenHeight;
+		} else {
+			Log::Out << "Current display mode: " << currentDisplay.w << "x" << currentDisplay.h << endl;
+			double desiredRatio = (double)screenWidth / screenHeight;
+			double realRatio = (double)currentDisplay.w / currentDisplay.h;
+			if(desiredRatio == realRatio) {
+				_realWidth = currentDisplay.w;
+				_realHeight = currentDisplay.h;
+			} else if(desiredRatio > realRatio) {
+				// real screen is taller
+				_realWidth = currentDisplay.w;
+				_realHeight = currentDisplay.h * ((double)screenWidth/currentDisplay.w);
+			} else {
+				// real screen is wider
+				_realHeight = currentDisplay.h;
+				_realWidth = currentDisplay.w * ((double)screenHeight/currentDisplay.h);
+			}
+		}
+	} else {
+		_realWidth = _screenWidth;
+		_realHeight = _screenHeight;
+	}
 
 	setGLAttributes();
 
 	_window = SDL_CreateWindow(name,
 		SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-		screenWidth, screenHeight,
+		_realWidth, _realHeight,
 		flags);
 
 	if (!_window) {
@@ -117,6 +142,7 @@ SDL_Window *GLFuncs::Initialize(int screenWidth, int screenHeight, GLboolean ful
 	}
 
 	this->ResetMVP();
+	this->StaticProjection = glm::ortho(0.0f, (float)_screenWidth, (float)_screenHeight, 0.0f, -1.0f, 1.0f);
 
 	GLint texture_units;
 
@@ -692,9 +718,10 @@ void GLFuncs::SwapBuffers()
 		// Render to the screen
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glDrawBuffer(GL_BACK);
-		// Render on the whole framebuffer, complete from the lower left corner to the upper right
-		glViewport(0, 0, _screenWidth, _screenHeight);
 
+		// Render on the whole framebuffer, complete from the lower left corner to the upper right
+		glViewport(0, 0, _realWidth, _realHeight);
+		
 		// Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT);
 
