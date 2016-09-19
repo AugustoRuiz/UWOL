@@ -146,8 +146,8 @@ vec3 Mask(vec2 pos) {
 }
 
 void main() {
-    vec2 pos = gl_FragCoord.xy/iResolution;
-    pos = Warp(gl_FragCoord.xy/iResolution);
+    //vec2 pos = gl_FragCoord.xy/iResolution;
+    vec2 pos = Warp(UV);
     vec4 result;
     result.rgb = Tri(pos) * Mask(gl_FragCoord.xy);
     result.a = 1.0;

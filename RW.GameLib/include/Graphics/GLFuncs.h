@@ -82,6 +82,8 @@ public:
 	void SwapBuffers();
 	GLuint GetFramebufferTexture();
 
+	void GetRealSize(int *realWidth, int *realHeight);
+
 protected :
 	GLFuncs(void) { this->_pack = NULL; };
 
@@ -125,6 +127,9 @@ protected :
 
 	int _realWidth;
 	int _realHeight;
+
+	int _windowWidth;
+	int _windowHeight;
 
 	SDL_Window *_window;
 	SDL_Renderer *_renderer;

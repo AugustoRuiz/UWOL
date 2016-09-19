@@ -47,7 +47,7 @@ bool Graphics::Initialize(int screenWidth, int screenHeight, int worldWidth, int
 	result = (NULL != w);
 
 	if(result) {
-		SDL_GL_GetDrawableSize(w, &(this->DisplayWidth), &(this->DisplayHeight));
+		_gl->GetRealSize(&(this->DisplayWidth), &(this->DisplayHeight));
 
 		this->_framebufferTexture = new TEXTUREINFO();
 		this->_framebufferTexture->texture = _gl->GetFramebufferTexture();

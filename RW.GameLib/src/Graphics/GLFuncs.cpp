@@ -24,6 +24,9 @@ SDL_Window *GLFuncs::Initialize(int screenWidth, int screenHeight, GLboolean ful
 	_screenWidth = screenWidth;
 	_screenHeight = screenHeight;
 
+	_windowWidth = _screenWidth;
+	_windowHeight = _screenHeight;
+
 	if (fullscreen)
 	{
 		flags |= SDL_WINDOW_FULLSCREEN;
@@ -49,17 +52,24 @@ SDL_Window *GLFuncs::Initialize(int screenWidth, int screenHeight, GLboolean ful
 				_realHeight = currentDisplay.h;
 				_realWidth = currentDisplay.w * ((double)screenHeight/currentDisplay.h);
 			}
+			_windowWidth = currentDisplay.w;
+			_windowHeight = currentDisplay.h;
 		}
 	} else {
 		_realWidth = _screenWidth;
 		_realHeight = _screenHeight;
 	}
 
+	Log::Out << "Real size: " << _realWidth << "x" << _realHeight << endl;
+	Log::Out << "Window size: " << _windowWidth << "x" << _windowHeight << endl;
+
+	Log::Out << "Offset: " << (_windowWidth - _realWidth) / 2 << "x" << (_windowHeight - _realHeight) / 2 << endl;
+
 	setGLAttributes();
 
 	_window = SDL_CreateWindow(name,
 		SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-		_realWidth, _realHeight,
+		_windowWidth, _windowHeight,
 		flags);
 
 	if (!_window) {
@@ -109,7 +119,7 @@ SDL_Window *GLFuncs::Initialize(int screenWidth, int screenHeight, GLboolean ful
 		this->_useFramebuffer = this->initFramebuffer();
 	}
 
-	glViewport(0, 0, screenWidth, screenHeight);
+	glViewport(0, 0, _screenWidth, _screenHeight);
 
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -142,7 +152,7 @@ SDL_Window *GLFuncs::Initialize(int screenWidth, int screenHeight, GLboolean ful
 	}
 
 	this->ResetMVP();
-	this->StaticProjection = glm::ortho(0.0f, (float)_screenWidth, (float)_screenHeight, 0.0f, -1.0f, 1.0f);
+	this->StaticProjection = glm::ortho(0.0f, (float)_windowWidth, (float)_windowHeight, 0.0f, -1.0f, 1.0f);
 
 	GLint texture_units;
 
@@ -150,6 +160,11 @@ SDL_Window *GLFuncs::Initialize(int screenWidth, int screenHeight, GLboolean ful
 	_activeTextures.resize(texture_units, 0);
 
 	return _window;
+}
+
+void GLFuncs::GetRealSize(int *realWidth, int *realHeight) {
+	*realWidth = _windowWidth;
+	*realHeight = _windowHeight;
 }
 
 bool GLFuncs::CanUseShaders() {
@@ -721,7 +736,7 @@ void GLFuncs::SwapBuffers()
 		glDrawBuffer(GL_BACK);
 
 		// Render on the whole framebuffer, complete from the lower left corner to the upper right
-		glViewport(0, 0, _realWidth, _realHeight);
+		glViewport(0, 0, _windowWidth, _windowHeight);
 		
 		// Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT);
@@ -732,7 +747,12 @@ void GLFuncs::SwapBuffers()
 		glBindTexture(GL_TEXTURE_2D, _renderedTexture);
 
 		// Renderizar la textura.
-		BlitRect(0, 0, _screenWidth, _screenHeight, 0.0f, 1.0f, 1.0f, 0.0f);
+		//BlitRect(0, 0, _realWidth, _realHeight, 0.0f, 1.0f, 1.0f, 0.0f);
+		
+		BlitRect((_windowWidth - _realWidth)/2, 
+			(_windowHeight - _realHeight)/2, 
+			_realWidth, 
+			_realHeight, 0.0f, 1.0f, 1.0f, 0.0f);
 	}
 
 	SDL_GL_SwapWindow(this->_window);
@@ -748,6 +768,5 @@ void GLFuncs::SwapBuffers()
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
 	}
 }
