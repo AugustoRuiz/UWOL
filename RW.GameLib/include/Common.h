@@ -9,10 +9,10 @@
 #ifdef __APPLE__
 #include "CoreFoundation/CoreFoundation.h"
 #if TARGET_IOS
-#import <OpenGLES/ES2/gl.h>
-#import <OpenGLES/ES2/glext.h> 
+#include <OpenGLES/ES2/gl.h>
+#include <OpenGLES/ES2/glext.h> 
 #else
-#import <OpenGL/OpenGL.h>
+#include <OpenGL/OpenGL.h>
 // OpenGL 3.2 is only supported on MacOS X Lion and later
 // CGL_VERSION_1_3 is defined as 1 on MacOS X Lion and later
 #if CGL_VERSION_1_3
@@ -23,9 +23,9 @@
 #endif //!CGL_VERSION_1_3
 
 #if ESSENTIAL_GL_PRACTICES_SUPPORT_GL3
-#import <OpenGL/gl3.h>
+#include <OpenGL/gl3.h>
 #else
-#import <OpenGL/gl.h>
+#include <OpenGL/gl.h>
 #endif //!ESSENTIAL_GL_PRACTICES_SUPPORT_GL3
 
 #endif // !TARGET_IOS

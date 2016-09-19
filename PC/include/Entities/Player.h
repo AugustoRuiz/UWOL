@@ -13,11 +13,11 @@ public:
 
 	void setTileSize(VECTOR2 tileSize);
 
-	bool DrawWhenNoCoins();
-	bool UpdateWhenNoCoins();
+	bool DrawWhenNoCoins() override;
+	bool UpdateWhenNoCoins() override;
 
-	void Draw();
-	void DrawShadow(void);
+	void Draw() override;
+	void DrawShadow(void) override;
 
 	void setPosition(char tileX, char tileY);
 	void setAlpha(float alpha);
@@ -29,7 +29,7 @@ public:
 	void setInertia(bool inertia);
 	void toggleInertia();
 
-	void Update(Uint32 milliSec, const Event& inputEvent);
+	void Update(Uint32 milliSec, const Event& inputEvent) override;
 
 	void Initialize();
 	void Dispose();

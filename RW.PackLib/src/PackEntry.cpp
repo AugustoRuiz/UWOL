@@ -168,7 +168,7 @@ PackEntry* PackEntry::ReadHeader(istream& stream)
 		BigEndian<uint64_t> nameCharCount;
 		nameCharCount.SetChars(bytes);
 		
-		delete bytes;
+		delete[] bytes;
 		
 		uint64_t nameSize = ((uint64_t)nameCharCount);
 		wchar_t* nameBytes = new wchar_t[(unsigned int)nameSize];
@@ -183,7 +183,7 @@ PackEntry* PackEntry::ReadHeader(istream& stream)
 			result->name[(unsigned int)i] = theCharValue;
 		}
 
-		delete nameBytes;
+		delete[] nameBytes;
 	}
 	return result;
 }

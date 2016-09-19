@@ -7,7 +7,7 @@ MKDIR=mkdir
 
 CC=gcc
 CXX=g++
-CXXFLAGS=-std=c++11 -I/Library/Frameworks/SDL2.framework/Headers -I/Library/Frameworks/SDL2_mixer.framework/Headers -I/Library/Frameworks/SDL2_image.framework/Headers -I/usr/local/include -F/Library/Frameworks -I../ext/include -I../ext/include/RW.GameLib -I../ext/include/RW.PackLib -D_GNU_SOURCE=1 -D_THREAD_SAFE -O3 -Werror -Wall -fsigned-char -mmacosx-version-min=10.7 -stdlib=libc++
+CXXFLAGS=-std=c++11 -I/Library/Frameworks/SDL2.framework/Headers -I/Library/Frameworks/SDL2_mixer.framework/Headers -I/Library/Frameworks/SDL2_image.framework/Headers -I/usr/local/include -F/Library/Frameworks -I../ext/include -I../ext/include/RW.GameLib -I../ext/include/RW.PackLib -D_GNU_SOURCE=1 -D_THREAD_SAFE -O3 -Werror -Wall -fsigned-char -mmacosx-version-min=10.7 -stdlib=libc++ -pedantic-errors
 LDFLAGS=-std=c++11 -D_GNU_SOURCE=1 -D_THREAD_SAFE -O3 -Werror -Wall -fsigned-char -mmacosx-version-min=10.7 -stdlib=libc++ -F/Library/Frameworks
 LDLIBS=-L/usr/local/lib ../ext/lib/librwpack.a ../ext/lib/librwgame.a /usr/local/lib/libGLEW.a -lz -lm -framework OpenGL -framework SDL2 -framework SDL2_image -framework SDL2_mixer -framework CoreFoundation
 
