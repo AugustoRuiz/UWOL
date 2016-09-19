@@ -168,6 +168,7 @@ bool GLFuncs::initFramebuffer() {
 	Log::Out << "Creating framebuffer" << endl;
 	// Inicializemos el framebuffer para poder renderizar sobre una textura, así podremos aplicar shaders 
 	// a lo que pintemos. ;)
+
 	glGenFramebuffers(1, &_frameBufferName);
 	Log::Out << "Framebuffer #" << _frameBufferName << endl;
 	if (_frameBufferName == 0) {
@@ -332,8 +333,8 @@ void GLFuncs::BlitVerts(float vertex_buffer_data[], unsigned int vBufSize,
 	float uv_buffer_data[], unsigned int uvBufSize,
 	float color_buffer_data[], unsigned int cBufSize)
 {
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 	if (this->_useVBO) {
 		glEnableVertexAttribArray(_vtxAttribIdx);
@@ -725,6 +726,9 @@ void GLFuncs::SwapBuffers()
 		// Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT);
 
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
 		glBindTexture(GL_TEXTURE_2D, _renderedTexture);
 
 		// Renderizar la textura.
@@ -741,5 +745,9 @@ void GLFuncs::SwapBuffers()
 		glDrawBuffers(1, drawBuffers);
 
 		glViewport(0, 0, _screenWidth, _screenHeight);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
 	}
 }
