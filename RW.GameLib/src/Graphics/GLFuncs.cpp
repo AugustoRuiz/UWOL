@@ -34,36 +34,19 @@ SDL_Window *GLFuncs::Initialize(int screenWidth, int screenHeight, GLboolean ful
 		SDL_DisplayMode currentDisplay;
 		if(SDL_GetCurrentDisplayMode(0, &currentDisplay)) {
 			Log::Out << "Couldn't get current display mode: " << SDL_GetError() << endl;
-			_realWidth = _screenWidth;
-			_realHeight = _screenHeight;
 		} else {
 			Log::Out << "Current display mode: " << currentDisplay.w << "x" << currentDisplay.h << endl;
-			double desiredRatio = (double)screenWidth / screenHeight;
-			double realRatio = (double)currentDisplay.w / currentDisplay.h;
-			if(desiredRatio == realRatio) {
-				_realWidth = currentDisplay.w;
-				_realHeight = currentDisplay.h;
-			} else if(desiredRatio > realRatio) {
-				// real screen is taller
-				_realWidth = currentDisplay.w;
-				_realHeight = currentDisplay.h * ((double)screenWidth/currentDisplay.w);
-			} else {
-				// real screen is wider
-				_realHeight = currentDisplay.h;
-				_realWidth = currentDisplay.w * ((double)screenHeight/currentDisplay.h);
-			}
 			_windowWidth = currentDisplay.w;
 			_windowHeight = currentDisplay.h;
 		}
-	} else {
-		_realWidth = _screenWidth;
-		_realHeight = _screenHeight;
 	}
 
-	Log::Out << "Real size: " << _realWidth << "x" << _realHeight << endl;
 	Log::Out << "Window size: " << _windowWidth << "x" << _windowHeight << endl;
 
-	Log::Out << "Offset: " << (_windowWidth - _realWidth) / 2 << "x" << (_windowHeight - _realHeight) / 2 << endl;
+	int realW, realH;
+	GetRealSize(&realW, &realH);
+	Log::Out << "Real size: " << realW << "x" << realH << endl;
+	this->StaticProjection = glm::ortho(0.0f, (float)realW, (float)realH, 0.0f, -1.0f, 1.0f);
 
 	setGLAttributes();
 
@@ -152,7 +135,6 @@ SDL_Window *GLFuncs::Initialize(int screenWidth, int screenHeight, GLboolean ful
 	}
 
 	this->ResetMVP();
-	this->StaticProjection = glm::ortho(0.0f, (float)_windowWidth, (float)_windowHeight, 0.0f, -1.0f, 1.0f);
 
 	GLint texture_units;
 
@@ -163,8 +145,15 @@ SDL_Window *GLFuncs::Initialize(int screenWidth, int screenHeight, GLboolean ful
 }
 
 void GLFuncs::GetRealSize(int *realWidth, int *realHeight) {
-	*realWidth = _windowWidth;
-	*realHeight = _windowHeight;
+	double ratio = (double)_windowWidth / _windowHeight;
+
+	if(ratio >= 1.0) {
+		*realWidth = (int) (_windowWidth / ratio);
+		*realHeight = _windowHeight;
+	} else {
+		*realWidth = _windowWidth;
+		*realHeight = (int) (_windowHeight * ratio);
+	}
 }
 
 bool GLFuncs::CanUseShaders() {
@@ -735,9 +724,12 @@ void GLFuncs::SwapBuffers()
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glDrawBuffer(GL_BACK);
 
+		int w, h;
+		GetRealSize(&w, &h);
+
 		// Render on the whole framebuffer, complete from the lower left corner to the upper right
 		glViewport(0, 0, _windowWidth, _windowHeight);
-		
+
 		// Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT);
 
@@ -748,11 +740,7 @@ void GLFuncs::SwapBuffers()
 
 		// Renderizar la textura.
 		//BlitRect(0, 0, _realWidth, _realHeight, 0.0f, 1.0f, 1.0f, 0.0f);
-		
-		BlitRect((_windowWidth - _realWidth)/2, 
-			(_windowHeight - _realHeight)/2, 
-			_realWidth, 
-			_realHeight, 0.0f, 1.0f, 1.0f, 0.0f);
+		BlitRect(0, 0, w, h, 0.0f, 1.0f, 1.0f, 0.0f);
 	}
 
 	SDL_GL_SwapWindow(this->_window);

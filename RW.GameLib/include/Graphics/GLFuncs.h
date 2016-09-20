@@ -125,9 +125,6 @@ protected :
 	int _screenWidth;
 	int _screenHeight;
 
-	int _realWidth;
-	int _realHeight;
-
 	int _windowWidth;
 	int _windowHeight;
 
