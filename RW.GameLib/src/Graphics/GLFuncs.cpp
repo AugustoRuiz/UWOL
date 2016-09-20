@@ -46,7 +46,7 @@ SDL_Window *GLFuncs::Initialize(int screenWidth, int screenHeight, GLboolean ful
 	int realW, realH;
 	GetRealSize(&realW, &realH);
 	Log::Out << "Real size: " << realW << "x" << realH << endl;
-	this->StaticProjection = glm::ortho(0.0f, (float)realW, (float)realH, 0.0f, -1.0f, 1.0f);
+	this->StaticProjection = glm::ortho(0.0f, (float)_windowWidth, (float)_windowHeight, 0.0f, -1.0f, 1.0f);
 
 	setGLAttributes();
 
@@ -146,13 +146,14 @@ SDL_Window *GLFuncs::Initialize(int screenWidth, int screenHeight, GLboolean ful
 
 void GLFuncs::GetRealSize(int *realWidth, int *realHeight) {
 	double ratio = (double)_windowWidth / _windowHeight;
+	double originalRatio = (double) _screenWidth / _screenHeight;
 
-	if(ratio >= 1.0) {
-		*realWidth = (int) (_windowWidth / ratio);
-		*realHeight = _windowHeight;
+	if(ratio > originalRatio) {
+		*realWidth = (int) _windowHeight * originalRatio;
+		*realHeight = (int) _windowHeight;
 	} else {
-		*realWidth = _windowWidth;
-		*realHeight = (int) (_windowHeight * ratio);
+		*realWidth = (int) _windowWidth;
+		*realHeight = (int) _windowWidth / originalRatio;
 	}
 }
 
@@ -740,7 +741,11 @@ void GLFuncs::SwapBuffers()
 
 		// Renderizar la textura.
 		//BlitRect(0, 0, _realWidth, _realHeight, 0.0f, 1.0f, 1.0f, 0.0f);
-		BlitRect(0, 0, w, h, 0.0f, 1.0f, 1.0f, 0.0f);
+		BlitRect((int)((_windowWidth - w)/2), 
+			(int)((_windowHeight-h)/2), 
+			w, 
+			h,
+			0.0f, 1.0f, 1.0f, 0.0f);
 	}
 
 	SDL_GL_SwapWindow(this->_window);
