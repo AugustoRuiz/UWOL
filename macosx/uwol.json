@@ -1,0 +1,12 @@
+{
+    "title": "UWOL, The Quest for Money",
+    "background": "background.png",
+    "icon": "UWOL.app/Contents/Resources/UWOL.icns",
+    "icon-size": 80,
+    "contents": [
+        { "x": 10, "y": 10, "type": "file", "path": "UWOL.app" },
+        { "x": 200, "y": 10, "type": "link", "path": "/Applications" },
+        { "x": 10, "y": 120, "type": "file", "path": "Licenses" },
+        { "x": 240, "y": 160, "type": "file", "path": "README.txt" }
+    ]
+}
