@@ -151,8 +151,8 @@ vec3 Mask(vec2 pos) {
 }
 
 void main(){
-    vec2 pos = gl_FragCoord.xy/iResolution;
-    pos = Warp(gl_FragCoord.xy/iResolution);
+    //vec2 pos = gl_FragCoord.xy/iResolution;
+    vec2 pos = Warp(UV);
     vec4 result;
     result.rgb = Tri(pos) * Mask(gl_FragCoord.xy);
     result.a = 1.0;
@@ -163,9 +163,5 @@ void main(){
 	vec3 sepiaColor = vec3(gray) * sepiaRgb;
 	result.rgb = mix(result.rgb, sepiaColor, 0.75);
 	result = result * vertColor;
-#if __VERSION__ >= 140
 	fragColor = result;
-#else
-	gl_FragColor = result;
-#endif
 }

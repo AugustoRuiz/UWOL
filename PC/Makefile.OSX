@@ -30,7 +30,6 @@ $(APPNAME): $(OBJS)
 	Rez -append resources/uwol.rsrc -o $(APPNAME)
 	mv $(APPNAME) ../bin
 	../tools/pack bin ../bin/UWOL.pak
-	hdiutil create -volname "UWOL, The Quest for Money" -srcfolder ../bin -ov -format UDZO dmg/uwol.dmg
 
 $(OBJDIR)/%.o: %.cc
 	$(MKDIR) -p $(dir $@)
