@@ -396,10 +396,10 @@ void Game::ShowCursor(bool show) {
 }
 
 void Game::drawStatusMsg(const string& str) {
-	Program* currentProgram = this->_blitProgram;
-	if (this->_blitProgramMap.size() > 0) {
-		this->_blitProgram = this->_blitProgramMap.begin()->second;
-	}
+	//Program* currentProgram = this->_blitProgram;
+	//if (this->_blitProgramMap.size() > 0) {
+	//	this->_blitProgram = this->_blitProgramMap.begin()->second;
+	//}
 
 	float grayValue = 0.4f;
 	int fontSize = 8;
@@ -412,7 +412,7 @@ void Game::drawStatusMsg(const string& str) {
 
 	this->SwapBuffers();
 
-	this->_blitProgram = currentProgram;
+	//this->_blitProgram = currentProgram;
 }
 
 void Game::loadResources() {

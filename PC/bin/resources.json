@@ -43,6 +43,13 @@
                 "data/shaders/Default.150.vertex",
                 "data/shaders/TexturedSepia.150.fragment"
             ]
+        },
+        {
+            "name" : "Scanlines",
+            "shaderPaths": [
+                "data/shaders/Default.150.vertex",
+                "data/shaders/SimpleScanlines.fragment"
+            ]
         }
     ],
     "images": [

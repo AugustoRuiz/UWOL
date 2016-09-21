@@ -1,0 +1,37 @@
+#if __VERSION__ >= 140
+// Interpolated values from the vertex shaders
+in vec2 UV;
+in vec4 vertColor;
+// Ouput data
+out vec4 fragColor;
+#define tex texture
+#else
+varying vec2 UV;
+varying vec4 vertColor;
+#define fragColor gl_FragColor
+#define tex texture2D
+#endif
+
+// Values that stay constant for the whole mesh.
+uniform sampler2D iChannel0;
+
+// Shadow mask.
+vec4 Mask(vec2 pos) {
+  vec4 mask=vec4(1.0);
+  if(mod(pos.y, 2) < 1) {
+    mask = vec4(0.5);
+  }
+  mask.a = 1.0;
+  return mask;
+}
+
+void mainImage( out vec4 col, in vec2 coord )
+{
+  col = tex(iChannel0, coord) * Mask(gl_FragCoord.xy); 
+}
+
+void main() {
+	vec4 result;
+	mainImage(result, UV);
+  fragColor = result;
+}

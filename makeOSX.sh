@@ -6,3 +6,6 @@ make -f Makefile.OSX
 cd ..
 cd PC
 make -f Makefile.OSX
+cd ..
+./buildOSXApp.sh
+./buildOSXDmg.sh
