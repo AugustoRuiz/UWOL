@@ -1,6 +1,6 @@
 {
     "version": "1.0.0",
-    "baseUrl": "http://P775284.rm.gr.repsolypf.com/UWOL/",
+    "baseUrl": "http://localhost/UWOL/",
     "outputShaders": [
         {
 			"name" : "basic",
